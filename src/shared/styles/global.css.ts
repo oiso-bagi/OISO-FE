@@ -1,14 +1,18 @@
 import { globalStyle } from "@vanilla-extract/css";
-import "./theme.css";
+import "./theme.css.ts";
 
 globalStyle("*", {
   boxSizing: "border-box",
 });
 
-globalStyle("body", {
+globalStyle("html, body, #root", {
   margin: 0,
+  minHeight: "100%",
+});
+
+globalStyle("body", {
   fontFamily: "Pretendard, sans-serif",
-  backgroundColor: "#ffffff",
+  backgroundColor: "#cfcfcf",
   color: "#171717",
 });
 
