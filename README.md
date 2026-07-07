@@ -29,9 +29,9 @@ pnpm dev
 └─ main.tsx
 ```
 
-### 1. Code Convention
+### 1. Github Convention
 
-- [Code Convention](./docs/CONVENTION.md)
+- [Github Convention](./docs/CONVENTION.md)
 
 ### 2. 컴포넌트 작성 규칙
 
