@@ -1,6 +1,11 @@
-import { globalStyle } from "@vanilla-extract/css";
+import { fontFace, globalStyle } from "@vanilla-extract/css";
 
 import { vars } from "./theme.css";
+
+const pretendard = fontFace({
+  src: 'url("/fonts/PretendardVariable.woff2") format("woff2")',
+  fontDisplay: "swap",
+});
 
 globalStyle("*", {
   boxSizing: "border-box",
@@ -12,7 +17,7 @@ globalStyle("html, body, #root", {
 });
 
 globalStyle("body", {
-  fontFamily: vars.font.body,
+  fontFamily: `${pretendard}, ${vars.font.body}`,
   backgroundColor: vars.color.background,
   color: vars.color.black,
 });
