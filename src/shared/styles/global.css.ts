@@ -18,7 +18,7 @@ globalStyle("html, body, #root", {
 
 globalStyle("body", {
   fontFamily: `${pretendard}, ${vars.font.body}`,
-  backgroundColor: vars.color.background,
+  backgroundColor: vars.color.white,
   color: vars.color.black,
 });
 
