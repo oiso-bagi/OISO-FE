@@ -30,7 +30,14 @@ export const vars = createGlobalTheme(":root", {
     borderLight: "#DCDDDE",
   },
   font: {
+    heading: '"Black Han Sans", sans-serif',
     body: "Pretendard, sans-serif",
+  },
+  fontWeight: {
+    regular: "400",
+    medium: "500",
+    semibold: "600",
+    bold: "700",
   },
   fontSize: {
     xs: "12px",
