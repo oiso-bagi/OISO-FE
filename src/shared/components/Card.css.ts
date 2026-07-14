@@ -65,7 +65,7 @@ export const infoBox = style({
 export const savingBox = style([
   infoBox,
   {
-    backgroundColor: vars.color.warning,
+    backgroundColor: vars.color.secondary500, // 임시 수정
   },
 ]);
 
