@@ -7,7 +7,7 @@ export const appContainer = style({
   minHeight: "100vh",
 
   margin: "0 auto",
-  backgroundColor: vars.color.background,
+  backgroundColor: vars.color.bg,
   position: "relative",
 });
 
