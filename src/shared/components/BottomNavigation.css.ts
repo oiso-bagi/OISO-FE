@@ -1,5 +1,9 @@
 import { style } from "@vanilla-extract/css";
 
+import { vars } from "../styles/theme.css";
+
+import * as typo from "@/shared/styles/typography.css";
+
 export const navigation = style({
   position: "fixed",
   left: "50%",
@@ -42,7 +46,7 @@ export const iconBox = style({
 });
 
 export const activeIconBox = style({
-  backgroundColor: "#e85b3a",
+  backgroundColor: vars.color.secondary500,
   border: "3px solid #000000",
 });
 
@@ -57,13 +61,14 @@ export const activeIcon = style({
 });
 
 export const label = style({
-  color: "#777777",
-  fontSize: "11px",
+  color: vars.color.neutral500,
+  fontSize: typo.detail4,
   fontWeight: 500,
   lineHeight: 1,
 });
 
 export const activeLabel = style({
-  color: "#000000",
+  color: vars.color.black,
+  fontSize: typo.detail3,
   fontWeight: 700,
 });

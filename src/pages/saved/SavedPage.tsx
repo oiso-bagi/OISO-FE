@@ -1,36 +1,60 @@
 import { Card } from "@/shared/components/Card";
+import { Header } from "@/shared/components/header/Header";
 
-// Card컴포넌트 사용 예시입니다! 참고만 하고 수정 부탁드립니다~!
+import { pageContent } from "@/shared/styles/layout.css";
+
 const savedRoutes = [
   {
     id: 1,
-    title: "기장 해안 드라이브",
-    savedDate: "2026.05.30 저장",
-    priceText: "-17,000원",
-    tags: ["5개소", "약 5시간", "58,000원", "버스"],
+    title: "원도심 로컬 체험 코스",
+    metaText: "📅 2026. 5. 18.  📍 4개 장소  🚶 도보 + 🚇 지하철",
+    infos: [
+      { label: "비용", value: "45,000원" },
+      { label: "시간", value: "180분" },
+      { label: "거리", value: "3.2km" },
+      { label: "절약", value: "-25,000원", variant: "saving" as const },
+    ],
   },
   {
     id: 2,
-    title: "영도 반나절 가성비 코스",
-    savedDate: "2026.06.01 저장",
-    priceText: "-18,000원",
-    tags: ["4개소", "약 4시간", "45,000원", "도보+도시철도"],
+    title: "문화유적 탐방 코스",
+    metaText: "📅 2026. 6. 22.  📍 5개 장소  🚶 도보 + 🚌 버스",
+    infos: [
+      { label: "비용", value: "55,000원" },
+      { label: "시간", value: "240분" },
+      { label: "거리", value: "4.5km" },
+      { label: "절약", value: "-30,000원", variant: "saving" as const },
+    ],
+  },
+  {
+    id: 3,
+    title: "자연 탐험 트레킹 코스",
+    metaText: "📅 2026. 7. 10.  📍 3개 장소  🚶 도보 + 🚲 자전거",
+    infos: [
+      { label: "비용", value: "50,000원" },
+      { label: "시간", value: "150분" },
+      { label: "거리", value: "6.0km" },
+      { label: "절약", value: "-20,000원", variant: "saving" as const },
+    ],
   },
 ];
 
 export function SavedPage() {
   return (
     <div>
-      {savedRoutes.map((route) => (
-        <Card
-          key={route.id}
-          title={route.title}
-          savedDate={route.savedDate}
-          priceText={route.priceText}
-          tags={route.tags}
-          detailTo={`/result/${route.id}`}
-        />
-      ))}
+      <Header backTo="/" title="저장한 루트" right={<span>3개</span>} />
+      <main className={pageContent}>
+        {savedRoutes.map((route) => (
+          <Card
+            key={route.id}
+            title={route.title}
+            metaText={route.metaText}
+            infos={route.infos}
+            detailTo={`/result/${route.id}`}
+            onDeleteClick={() => console.log(`${route.title} 삭제`)}
+          />
+        ))}
+      </main>
     </div>
   );
 }

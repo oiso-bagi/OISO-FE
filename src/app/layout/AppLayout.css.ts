@@ -1,3 +1,4 @@
+import { vars } from "@/shared/styles/theme.css";
 import { style } from "@vanilla-extract/css";
 
 export const appContainer = style({
@@ -6,7 +7,7 @@ export const appContainer = style({
   minHeight: "100vh",
 
   margin: "0 auto",
-  backgroundColor: "#ffffff",
+  backgroundColor: vars.color.bg,
   position: "relative",
 });
 

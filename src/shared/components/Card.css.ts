@@ -1,98 +1,117 @@
 import { style } from "@vanilla-extract/css";
+import { vars } from "@/shared/styles/theme.css";
 
 export const card = style({
   width: "100%",
+  padding: "18px 16px 12px",
 
-  padding: "14px 16px 16px",
-
-  backgroundColor: "#ffffff",
-  border: "3px solid #000000",
-  boxShadow: "6px 6px 0 #000000",
-
-  color: "#000000",
+  backgroundColor: vars.color.white,
+  border: `3px solid ${vars.color.black}`,
+  boxShadow: `6px 6px 0 ${vars.color.black}`,
 });
 
 export const header = style({
   display: "flex",
-  alignItems: "flex-start",
   justifyContent: "space-between",
-  gap: "12px",
+  alignItems: "flex-start",
+  gap: vars.space.sm,
 });
 
 export const title = style({
   margin: 0,
-
-  fontSize: "20px",
-  fontWeight: 800,
-  lineHeight: 1.25,
-  letterSpacing: "-0.5px",
+  fontFamily: vars.font.heading,
+  fontSize: vars.fontSize.lg,
+  fontWeight: vars.fontWeight.regular,
+  lineHeight: "28px",
 });
 
-export const price = style({
-  flexShrink: 0,
-
-  fontSize: "17px",
-  fontWeight: 800,
-  lineHeight: 1.3,
-  whiteSpace: "nowrap",
-});
-
-export const savedDate = style({
-  margin: "10px 0 12px",
-
-  color: "#666666",
-  fontSize: "14px",
-  fontWeight: 500,
+export const deleteButton = style({
+  background: "none",
+  border: "none",
+  padding: 0,
+  cursor: "pointer",
+  fontSize: vars.fontSize.xl,
   lineHeight: 1,
 });
 
-export const tagList = style({
+export const meta = style({
   display: "flex",
-  flexWrap: "wrap",
-  gap: "8px",
+  alignItems: "center",
+  gap: vars.space.xs,
 
-  marginTop: "8px",
+  marginTop: vars.space.sm,
+
+  fontFamily: vars.font.body,
+  fontSize: vars.fontSize.md,
+  fontWeight: vars.fontWeight.semibold,
 });
 
-export const tag = style({
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
+export const infoList = style({
+  display: "grid",
+  gridTemplateColumns: "repeat(4, 1fr)",
+  gap: vars.space.xs,
 
-  minHeight: "26px",
-  padding: "2px 8px",
+  marginTop: vars.space.md,
+});
 
-  backgroundColor: "#ffffff",
-  border: "3px solid #000000",
+export const infoBox = style({
+  border: `2px solid ${vars.color.black}`,
+  backgroundColor: vars.color.white,
 
-  fontSize: "14px",
-  fontWeight: 800,
-  lineHeight: 1,
+  padding: "6px 4px",
+  textAlign: "center",
+});
+
+export const savingBox = style([
+  infoBox,
+  {
+    backgroundColor: vars.color.secondary500, // 임시 수정
+  },
+]);
+
+export const infoLabel = style({
+  display: "block",
+
+  fontFamily: vars.font.body,
+  fontSize: vars.fontSize.xs,
+  fontWeight: vars.fontWeight.semibold,
+});
+
+export const infoValue = style({
+  display: "block",
+  marginTop: "4px",
+
+  fontFamily: vars.font.body,
+  fontSize: vars.fontSize.xs,
+  fontWeight: vars.fontWeight.semibold,
 });
 
 export const footer = style({
   display: "flex",
   justifyContent: "flex-end",
 
-  marginTop: "14px",
+  marginTop: vars.space.sm,
 });
 
 export const detailLink = style({
-  color: "#000000",
-  fontSize: "16px",
-  fontWeight: 800,
-  lineHeight: 1,
+  color: vars.color.black,
+
+  fontFamily: vars.font.body,
+  fontSize: vars.fontSize.md,
+  fontWeight: vars.fontWeight.semibold,
+
   textDecoration: "none",
 });
 
 export const detailButton = style({
-  color: "#000000",
-  fontSize: "16px",
-  fontWeight: 800,
-  lineHeight: 1,
-
   background: "none",
   border: "none",
   padding: 0,
   cursor: "pointer",
+
+  color: vars.color.black,
+
+  fontFamily: vars.font.body,
+  fontSize: vars.fontSize.md,
+  fontWeight: vars.fontWeight.semibold,
 });

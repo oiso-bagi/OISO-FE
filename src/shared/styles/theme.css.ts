@@ -2,36 +2,35 @@ import { createGlobalTheme } from "@vanilla-extract/css";
 
 export const vars = createGlobalTheme(":root", {
   color: {
-    // Brand
-    primary: "#81EA14",
-    primaryLight: "#D5FAB0",
-    primaryBackground: "#E8FFC4",
-
-    // Semantic
-    error: "#FD3C11",
-    warning: "#FF9A89",
-
-    // Neutral
-    black: "#000000",
     white: "#FFFFFF",
+    black: "#000000",
+    bg: "#F0F4E8",
 
-    gray900: "#000000",
-    gray700: "#646668",
-    gray500: "#DCDDDE",
-    gray300: "#E0E4E6",
-    gray100: "#F6FFE8",
+    primary500: "#81EA14",
+    primary400: "#9EF04A",
+    primary300: "#D5FAB0",
+    primary100: "#E8FFC4",
 
-    // Background
-    background: "#E8FFC4",
-    surface: "#FFFFFF",
+    secondary500: "#FD1187",
+    secondary100: "#FF9ECF",
 
-    // Border
-    border: "#000000",
-    borderLight: "#DCDDDE",
+    neutral900: "#2E2836",
+    neutral500: "#646668",
+    neutral100: "#DCDDDE",
   },
+
   font: {
+    heading: '"Black Han Sans", sans-serif',
     body: "Pretendard, sans-serif",
   },
+
+  fontWeight: {
+    regular: "400",
+    medium: "500",
+    semibold: "600",
+    bold: "700",
+  },
+
   fontSize: {
     xs: "12px",
     sm: "14px",
@@ -40,12 +39,14 @@ export const vars = createGlobalTheme(":root", {
     xl: "24px",
     xxl: "32px",
   },
+
   radius: {
     sm: "4px",
     md: "8px",
     lg: "12px",
     full: "9999px",
   },
+
   space: {
     xxs: "4px",
     xs: "8px",
