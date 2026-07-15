@@ -2,7 +2,7 @@ import { style } from "@vanilla-extract/css";
 
 import { vars } from "../styles/theme.css";
 
-import * as typo from "@/shared/styles/typography.css";
+import { typographyStyles } from "@/shared/styles/typography";
 
 export const navigation = style({
   position: "fixed",
@@ -60,15 +60,17 @@ export const activeIcon = style({
   filter: "brightness(0) invert(1)",
 });
 
-export const label = style({
-  color: vars.color.neutral500,
-  fontSize: typo.detail4,
-  fontWeight: 500,
-  lineHeight: 1,
-});
+export const label = style([
+  typographyStyles.detail4,
+  {
+    color: vars.color.neutral500,
+    lineHeight: 1,
+  },
+]);
 
-export const activeLabel = style({
-  color: vars.color.black,
-  fontSize: typo.detail3,
-  fontWeight: 700,
-});
+export const activeLabel = style([
+  typographyStyles.detail3,
+  {
+    color: vars.color.black,
+  },
+]);
