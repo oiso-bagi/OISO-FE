@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Assign PR to author
-        uses: actions/github-script@v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -42,7 +42,7 @@ jobs:
             }
 
       - name: Request reviewers
-        uses: actions/github-script@v9
+        uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
