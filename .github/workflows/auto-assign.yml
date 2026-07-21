@@ -1,0 +1,67 @@
+name: Auto Assign And Review
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  assign-author:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign PR to author
+        uses: actions/github-script@v9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const author = context.payload.pull_request.user.login
+            const pullNumber = context.payload.pull_request.number
+
+            try {
+              await github.rest.issues.checkUserCanBeAssigned({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                assignee: author,
+              })
+
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pullNumber,
+                assignees: [author],
+              })
+            } catch (error) {
+              core.warning(`Failed to add assignee: ${error.message}`)
+            }
+
+      - name: Request reviewers
+        uses: actions/github-script@v9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const author = context.payload.pull_request.user.login
+            const pullNumber = context.payload.pull_request.number
+            const reviewers = ['hdg0116', 'gyogyo05', 'jeniferkim'].filter((reviewer) => reviewer !== author)
+
+            if (reviewers.length === 0) {
+              core.info('No reviewers to request.')
+              return
+            }
+
+            try {
+              await github.rest.pulls.requestReviewers({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pullNumber,
+                reviewers,
+              })
+            } catch (error) {
+              core.warning(`Failed to request reviewers: ${error.message}`)
+            }

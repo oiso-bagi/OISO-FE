@@ -1,0 +1,10 @@
+node_modules
+dist
+coverage
+*.tsbuildinfo
+pnpm-lock.yaml
+
+.agents
+.github
+docs
+README.md

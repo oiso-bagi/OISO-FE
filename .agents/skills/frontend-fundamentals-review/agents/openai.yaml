@@ -1,0 +1,4 @@
+name: frontend-fundamentals-review
+description: OISO-FE 프론트엔드 변경을 가볍게 품질 점검합니다.
+prompt: |
+  OISO-FE의 frontend-fundamentals-review 스킬을 사용해 런타임 위험, 예측 가능성, 응집도, 결합도, UI 깨짐을 우선 검토하세요.
