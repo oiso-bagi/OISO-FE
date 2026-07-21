@@ -66,6 +66,7 @@ tsconfig.json
 - Git, issue, PR, branch, commit, naming, component export 기준은 기존 `docs/CONVENTION.md`를 그대로 따릅니다.
 - typography와 vanilla-extract 관련 세부 기준은 기존 `docs/VANILLA_EXTRACT_TYPOGRAPHY.md`를 그대로 따릅니다.
 - React, Router, Query, API client, vanilla-extract 책임은 실제 `src/` 구조를 기준으로 설명합니다.
+- CI workflow는 PR과 `main`, `develop` branch push에서 실행합니다.
 - 개인 선호 설정은 repo에 커밋하지 않고 사용자 전역 Codex config에 둡니다.
 - repo-local config와 hook은 팀 공통 정책이 필요할 때만 추가합니다.
 - repo-local skill은 OISO-FE 구조에 맞는 필수 작업 흐름만 유지하고, DONGCHIMI 전용 모노레포, 디자인시스템, E2E, 배포, 성능 skill은 추가하지 않습니다.
