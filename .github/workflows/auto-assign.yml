@@ -8,13 +8,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
-permissions:
-  issues: write
-  pull-requests: write
-
 jobs:
   assign-author:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     steps:
       - name: Assign PR to author
         uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553
@@ -41,6 +39,11 @@ jobs:
               core.warning(`Failed to add assignee: ${error.message}`)
             }
 
+  request-reviewers:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
       - name: Request reviewers
         uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553
         with:
