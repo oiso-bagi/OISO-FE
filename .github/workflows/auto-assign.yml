@@ -4,12 +4,15 @@ on:
   pull_request:
     types: [opened, reopened, synchronize, ready_for_review]
 
+# Fork PRs are intentionally skipped. This workflow uses pull_request instead of
+# pull_request_target so automation only runs with repository-scoped PR context.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
   assign-author:
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -21,7 +24,7 @@ jobs:
           script: |
             const author = context.payload.pull_request.user.login
             const pullNumber = context.payload.pull_request.number
-            const isBestEffortError = (error) => [403, 404, 422].includes(error.status)
+            const isBestEffortError = (error) => [403, 404].includes(error.status)
 
             try {
               await github.rest.issues.checkUserCanBeAssigned({
@@ -46,6 +49,7 @@ jobs:
             }
 
   request-reviewers:
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -58,7 +62,7 @@ jobs:
             const author = context.payload.pull_request.user.login
             const pullNumber = context.payload.pull_request.number
             const reviewers = ['hdg0116', 'gyogyo05', 'jeniferkim'].filter((reviewer) => reviewer !== author)
-            const isBestEffortError = (error) => [403, 404, 422].includes(error.status)
+            const isBestEffortError = (error) => [403, 404].includes(error.status)
 
             if (reviewers.length === 0) {
               core.info('No reviewers to request.')
