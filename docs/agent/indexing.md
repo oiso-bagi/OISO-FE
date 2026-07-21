@@ -75,7 +75,7 @@ UI에서 직접 호출할 필요가 있는 skill은 같은 디렉터리 아래 `
 - `.agents/skills` 아래에 skill을 중첩 그룹으로 만들지 않습니다.
 - 하위 디렉터리에 다른 규칙이 꼭 필요할 때만 해당 디렉터리에 `AGENTS.md`를 추가합니다.
 - 하위 `AGENTS.md`에는 root 문서의 긴 규칙을 복사하지 않고, local 추가 규칙만 둡니다.
-- runtime, package manager, 테스트 명령은 Codex skill이나 config에 고정하지 않고 `package.json`을 참조합니다.
+- runtime, package manager, 검증 명령은 `package.json`을 기준으로 유지합니다. 현재 skill 문서에는 OISO-FE의 현재 package manager인 pnpm 기준 명령만 적습니다.
 
 ## Verification
 
