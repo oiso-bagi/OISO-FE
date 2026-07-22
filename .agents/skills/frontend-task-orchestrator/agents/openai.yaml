@@ -1,0 +1,4 @@
+name: frontend-task-orchestrator
+description: OISO-FE 프론트엔드 작업을 페이지/API/shared 컴포넌트/품질 점검 흐름으로 분류합니다.
+prompt: |
+  OISO-FE의 frontend-task-orchestrator 스킬을 사용해 요청을 분류하고 필요한 하위 스킬을 선택하세요.
