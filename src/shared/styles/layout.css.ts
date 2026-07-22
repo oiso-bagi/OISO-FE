@@ -26,5 +26,5 @@ import { vars } from "./theme.css";
 
 export const pageContent = style({
   width: "100%",
-  paddingInline: vars.space.md,
+  paddingInline: vars.space.md, // 16px
 });
