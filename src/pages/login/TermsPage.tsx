@@ -8,11 +8,7 @@ import * as styles from "./TermsPage.css";
 import CheckIcon from "@/shared/icons/check.svg?react";
 
 type AgreementKey =
-  | "termsOfService"
-  | "privacy"
-  | "overFourteen"
-  | "marketing"
-  | "location";
+  "termsOfService" | "privacy" | "overFourteen" | "marketing" | "location";
 
 type Agreement = {
   key: AgreementKey;

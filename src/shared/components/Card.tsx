@@ -1,8 +1,4 @@
-import type {
-  ComponentPropsWithoutRef,
-  ElementType,
-  ReactNode,
-} from "react";
+import type { ComponentPropsWithoutRef, ElementType, ReactNode } from "react";
 
 import * as styles from "./Card.css";
 
