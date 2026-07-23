@@ -1,0 +1,83 @@
+version: 1
+labels:
+  - label: "fix"
+    title: '(?i)^\[?fix\]?([(:\s]|$)'
+  - label: "fix"
+    branch: "(?i)^fix/"
+
+  - label: "feat"
+    title: '(?i)^\[?feat\]?([(:\s]|$)'
+  - label: "feat"
+    branch: "(?i)^feat/"
+
+  - label: "design"
+    title: '(?i)^\[?design\]?([(:\s]|$)'
+  - label: "design"
+    branch: "(?i)^design/"
+
+  - label: "docs"
+    title: '(?i)^\[?docs?\]?([(:\s]|$)'
+  - label: "docs"
+    branch: "(?i)^docs?/"
+
+  - label: "chore"
+    title: '(?i)^\[?chore\]?([(:\s]|$)'
+  - label: "chore"
+    branch: "(?i)^chore/"
+
+  - label: "refactor"
+    title: '(?i)^\[?refactor\]?([(:\s]|$)'
+  - label: "refactor"
+    branch: "(?i)^refactor/"
+
+  - label: "ci"
+    title: '(?i)^\[?ci\]?([(:\s]|$)'
+  - label: "ci"
+    branch: "(?i)^ci/"
+
+  - label: "perf"
+    title: '(?i)^\[?perf\]?([(:\s]|$)'
+  - label: "perf"
+    branch: "(?i)^perf/"
+
+  - label: "remove"
+    title: '(?i)^\[?remove\]?([(:\s]|$)'
+  - label: "remove"
+    branch: "(?i)^remove/"
+
+  - label: "name"
+    title: '(?i)^\[?name\]?([(:\s]|$)'
+  - label: "name"
+    branch: "(?i)^name/"
+
+  - label: "file"
+    title: '(?i)^\[?file\]?([(:\s]|$)'
+  - label: "file"
+    branch: "(?i)^file/"
+
+  - label: "comment"
+    title: '(?i)^\[?comment\]?([(:\s]|$)'
+  - label: "comment"
+    branch: "(?i)^comment/"
+
+  - label: "test"
+    title: '(?i)^\[?test\]?([(:\s]|$)'
+  - label: "test"
+    branch: "(?i)^test/"
+
+  - label: "style"
+    title: '(?i)^\[?(style|format|prettier)\]?([(:\s]|$)'
+  - label: "style"
+    branch: "(?i)^(style|format|prettier)/"
+
+  - label: "wontfix"
+    title: '(?i)(\bwontfix\b|won''t fix|작업하지 않음)'
+
+  - label: "지원"
+    authors: ["jeniferkim"]
+
+  - label: "진교"
+    authors: ["gyogyo05"]
+
+  - label: "다경"
+    authors: ["hdg0116"]

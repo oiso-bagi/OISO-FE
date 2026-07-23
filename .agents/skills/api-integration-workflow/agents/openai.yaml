@@ -1,0 +1,4 @@
+name: api-integration-workflow
+description: OISO-FE Axios/TanStack Query API 연동 흐름을 구현합니다.
+prompt: |
+  OISO-FE의 api-integration-workflow 스킬을 사용해 API contract, query key, cache/error 동작을 확인하며 작업하세요.
