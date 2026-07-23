@@ -19,7 +19,11 @@ export const http = {
     return data;
   },
 
-  patch: async <T>(url: string, body?: unknown, config?: AxiosRequestConfig) => {
+  patch: async <T>(
+    url: string,
+    body?: unknown,
+    config?: AxiosRequestConfig,
+  ) => {
     const { data } = await apiClient.patch<T>(url, body, config);
 
     return data;
