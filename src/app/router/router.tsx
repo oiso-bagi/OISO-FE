@@ -4,8 +4,8 @@ import { AppLayout } from "@/app/layout/AppLayout";
 import { AuthLayout } from "@/app/layout/AuthLayout";
 
 import { HomePage } from "@/pages/home/HomePage";
-import { CoursePage } from "@/pages/route/CoursePage";
-import { SavedPage } from "@/pages/saved/SavedPage";
+import { RoutePage } from "@/pages/route/RoutePage";
+import { SavedRoutePage } from "@/pages/route/SavedRoutePage";
 import { LoginPage } from "@/pages/login/LoginPage";
 import { SurveyPage } from "@/pages/survey/SurveyPage";
 import { DashboardPage } from "@/pages/dashboard/DashboardPage";
@@ -20,11 +20,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "/route",
-        element: <CoursePage />,
+        element: <RoutePage />,
       },
       {
         path: "/saved",
-        element: <SavedPage />,
+        element: <SavedRoutePage />,
       },
       {
         path: "/survey",
