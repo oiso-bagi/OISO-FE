@@ -21,3 +21,15 @@ export const statusText = style([
     textAlign: "center",
   },
 ]);
+
+/** 카드를 펼쳤을 때 상세 조회 상태를 카드 안에 표시합니다. */
+export const detailStatusText = style([
+  typo.body9,
+  {
+    margin: 0,
+    paddingBlock: "20px",
+
+    color: vars.color.neutral500,
+    textAlign: "center",
+  },
+]);

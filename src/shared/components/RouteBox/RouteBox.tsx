@@ -43,7 +43,7 @@ export interface RouteBoxProps {
   onDelete?: () => void;
 }
 
-export default function RouteBox({
+export function RouteBox({
   variant = "default",
   title,
   placeCount,

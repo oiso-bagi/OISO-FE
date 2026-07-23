@@ -17,6 +17,10 @@ export function RouteStopList({ stops, onSave }: RouteStopListProps) {
     <section className={styles.stopSection}>
       <h4 className={styles.stopSectionTitle}>경유지</h4>
 
+      {stops.length === 0 && (
+        <p className={styles.stopEmptyText}>등록된 경유지가 없어요.</p>
+      )}
+
       <ol className={styles.stopList}>
         {stops.map((stop, index) => (
           <li key={stop.id} className={styles.stopListItem}>
@@ -59,5 +63,3 @@ export function RouteStopList({ stops, onSave }: RouteStopListProps) {
     </section>
   );
 }
-
-export default RouteStopList;

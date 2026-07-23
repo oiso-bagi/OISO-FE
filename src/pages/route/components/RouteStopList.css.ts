@@ -23,6 +23,18 @@ export const stopSectionTitle = style([
   },
 ]);
 
+export const stopEmptyText = style([
+  typo.body9,
+  {
+    width: "100%",
+    margin: 0,
+    paddingBlock: "16px",
+
+    color: vars.color.neutral500,
+    textAlign: "center",
+  },
+]);
+
 export const stopList = style({
   display: "flex",
   flexDirection: "column",
