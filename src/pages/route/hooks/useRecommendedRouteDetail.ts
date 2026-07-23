@@ -1,6 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { getRecommendedRouteDetail } from "../api/recommendedRouteApi";
+import {
+  USE_MOCK_DATA,
+  getMockRecommendedRouteDetail,
+} from "../mocks/routeMocks";
 import { routeQueryKeys } from "./queryKeys";
 
 /**
@@ -10,7 +14,10 @@ import { routeQueryKeys } from "./queryKeys";
 export const useRecommendedRouteDetail = (routeId: number | null) => {
   return useQuery({
     queryKey: routeQueryKeys.recommendedRouteDetail(routeId ?? -1),
-    queryFn: () => getRecommendedRouteDetail(routeId as number),
+    queryFn: () =>
+      USE_MOCK_DATA
+        ? getMockRecommendedRouteDetail(routeId as number)
+        : getRecommendedRouteDetail(routeId as number),
     select: (data) => data.route,
     enabled: routeId !== null,
   });
