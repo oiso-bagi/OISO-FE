@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Card } from "@/shared/components/Card";
@@ -36,13 +36,9 @@ export function TermsPage() {
   const [checked, setChecked] = useState(initialAgreementState);
 
   const isAllchecked = agreements.every(({ key }) => checked[key]);
-  const isRequiredChecked = useMemo(
-    () =>
-      agreements
-        .filter(({ isRequired }) => isRequired)
-        .every(({ key }) => checked[key]),
-    [checked],
-  );
+  const isRequiredChecked = agreements
+    .filter(({ isRequired }) => isRequired)
+    .every(({ key }) => checked[key]);
 
   const handleAllChange = () => {
     const shouldCheckAll = !isAllchecked;
