@@ -7,6 +7,8 @@ import { HomePage } from "@/pages/home/HomePage";
 import { RoutePage } from "@/pages/route/RoutePage";
 import { SavedRoutePage } from "@/pages/route/SavedRoutePage";
 import { LoginPage } from "@/pages/login/LoginPage";
+import { TermsPage } from "@/pages/login/TermsPage";
+import { AuthCallbackPage } from "@/pages/login/AuthCallbackPage";
 import { SurveyPage } from "@/pages/survey/SurveyPage";
 import { DashboardPage } from "@/pages/dashboard/DashboardPage";
 
@@ -42,6 +44,14 @@ export const router = createBrowserRouter([
       {
         path: "/login",
         element: <LoginPage />,
+      },
+      {
+        path: "/terms",
+        element: <TermsPage />,
+      },
+      {
+        path: "/auth/callback",
+        element: <AuthCallbackPage />,
       },
     ],
   },

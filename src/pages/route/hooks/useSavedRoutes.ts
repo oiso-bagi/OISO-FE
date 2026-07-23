@@ -18,7 +18,9 @@ import { routeQueryKeys } from "./queryKeys";
 export const useSavedRoutes = () => {
   return useQuery({
     queryKey: routeQueryKeys.savedRoutes(),
-    queryFn: USE_MOCK_DATA ? async () => getMockSavedRouteList() : getSavedRoutes,
+    queryFn: USE_MOCK_DATA
+      ? async () => getMockSavedRouteList()
+      : getSavedRoutes,
   });
 };
 
