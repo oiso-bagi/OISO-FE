@@ -47,14 +47,14 @@ export const typographyStyles = {
     fontFamily: vars.font.body,
     fontSize: "18px",
     fontWeight: vars.fontWeight.bold,
-    lineHeight: "25.2px",
+    lineHeight: "26px",
   },
 
   body2: {
     fontFamily: vars.font.body,
     fontSize: "16px",
     fontWeight: vars.fontWeight.bold,
-    lineHeight: "134%",
+    lineHeight: "24px",
   },
 
   body3: {
@@ -82,55 +82,55 @@ export const typographyStyles = {
     fontFamily: vars.font.body,
     fontSize: "14px",
     fontWeight: vars.fontWeight.medium,
-    lineHeight: "136%",
+    lineHeight: "20px",
   },
 
   body7: {
     fontFamily: vars.font.body,
     fontSize: "12px",
     fontWeight: vars.fontWeight.bold,
-    lineHeight: "16px",
+    lineHeight: "18px",
   },
 
   body8: {
     fontFamily: vars.font.body,
     fontSize: "12px",
     fontWeight: vars.fontWeight.semibold,
-    lineHeight: "20px",
+    lineHeight: "18px",
   },
 
   body9: {
     fontFamily: vars.font.body,
     fontSize: "12px",
     fontWeight: vars.fontWeight.medium,
-    lineHeight: "134%",
+    lineHeight: "18px",
   },
 
   detail1: {
     fontFamily: vars.font.body,
     fontSize: "14px",
     fontWeight: vars.fontWeight.medium,
-    lineHeight: "20px",
+    lineHeight: "normal",
   },
 
   detail2: {
     fontFamily: vars.font.body,
     fontSize: "12px",
     fontWeight: vars.fontWeight.bold,
-    lineHeight: "16px",
+    lineHeight: "normal",
   },
 
   detail3: {
     fontFamily: vars.font.body,
     fontSize: "10px",
     fontWeight: vars.fontWeight.bold,
-    lineHeight: "14px",
+    lineHeight: "normal",
   },
 
   detail4: {
     fontFamily: vars.font.body,
     fontSize: "10px",
     fontWeight: vars.fontWeight.medium,
-    lineHeight: "14px",
+    lineHeight: "normal",
   },
 } as const;

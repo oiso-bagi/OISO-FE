@@ -1,0 +1,4 @@
+name: app-shared-component-workflow
+description: OISO-FE shared 컴포넌트를 작고 재사용 가능하게 구현합니다.
+prompt: |
+  OISO-FE의 app-shared-component-workflow 스킬을 사용해 page-local/shared 경계와 props, 상태, 스타일을 확인하며 작업하세요.

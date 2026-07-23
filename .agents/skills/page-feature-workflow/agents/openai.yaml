@@ -1,0 +1,4 @@
+name: page-feature-workflow
+description: OISO-FE 페이지/라우트 단위 기능을 구현하고 검증합니다.
+prompt: |
+  OISO-FE의 page-feature-workflow 스킬을 사용해 페이지, 라우트, 레이아웃, 반응형 영향을 확인하며 작업하세요.

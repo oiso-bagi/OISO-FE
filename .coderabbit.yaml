@@ -1,0 +1,206 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: "ko-KR"
+early_access: false
+
+tone_instructions: |
+  한국어로 간결하고 건설적인 코드 리뷰를 제공해 주세요.
+  실제 버그, 보안, 접근성, 타입 안정성, 유지보수성 문제를 우선하고,
+  단순 취향이나 과한 추상화 제안은 피해주세요.
+  프로젝트의 README.md와 docs/CONVENTION.md에 적힌 규칙을 우선 적용해 주세요.
+
+reviews:
+  profile: "assertive"
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  review_details: false
+  assess_linked_issues: false
+  related_prs: false
+  related_issues: false
+  suggested_labels: true
+  sequence_diagrams: false
+  changed_files_summary: true
+  high_level_summary_in_walkthrough: true
+  high_level_summary_placeholder: "PR의 주요 변경 사항을 요약합니다."
+  collapse_walkthrough: true
+  commit_status: true
+  fail_commit_status: false
+  abort_on_close: true
+
+  path_filters:
+    - "src/**"
+    - "public/**"
+    - "docs/**"
+    - ".github/**"
+    - "README.md"
+    - "package.json"
+    - "vite.config.ts"
+    - "tsconfig*.json"
+    - ".oxlintrc.json"
+    - "!.coderabbit.yaml"
+    - "!pnpm-lock.yaml"
+    - "!node_modules/**"
+    - "!dist/**"
+    - "!coverage/**"
+    - "!**/*.svg"
+    - "!**/*.png"
+    - "!**/*.jpg"
+    - "!**/*.jpeg"
+    - "!**/*.gif"
+    - "!**/*.webp"
+    - "!**/*.ico"
+    - "!**/*.avif"
+    - "!**/*.mp4"
+    - "!**/*.webm"
+    - "!**/*.mp3"
+    - "!**/*.ogg"
+
+  path_instructions:
+    - path: "src/**/*.ts"
+      instructions: |
+        TypeScript 코드를 리뷰할 때 다음을 중점적으로 확인해 주세요.
+        - `import type`을 사용할 수 있는 타입 전용 import가 값 import로 작성되지 않았는지 확인합니다.
+        - import 순서는 외부 라이브러리, 내부 절대경로(`@/*`), 상대경로, 스타일 파일 순서를 따르는지 확인합니다.
+        - `var` 사용, 불필요한 `let`, 사용하지 않는 변수와 매개변수를 지적합니다.
+        - `@/*` alias가 실제 `src/*` 경로와 맞는지 확인하고, 존재하지 않는 alias 제안은 하지 않습니다.
+        - API 응답처럼 확장될 수 있는 객체 계약은 `interface`, 단순 조합 타입은 `type`을 우선 고려합니다.
+        - boolean 타입 변수는 is, has, can, should 접두사를 사용하는지 확인합니다.
+        - 커스텀 훅은 `useLoginForm`, `useSavedRoutes`처럼 `use`로 시작하는지 확인합니다.
+
+    - path: "src/**/*.tsx"
+      instructions: |
+        React 컴포넌트 코드를 리뷰할 때 다음을 중점적으로 확인해 주세요.
+        - 컴포넌트와 페이지 컴포넌트는 PascalCase 파일명과 named export를 사용하는지 확인합니다.
+        - 컴포넌트, 유틸 함수, 타입 export에서 default export를 사용하지 않는지 확인합니다.
+        - import 순서는 외부 라이브러리, 내부 절대경로(`@/*`), 상대경로, 스타일 파일 순서를 따르는지 확인합니다.
+        - props 타입은 컴포넌트 파일 내부의 `ComponentNameProps` 형식을 우선합니다.
+        - 이벤트 핸들러는 `handle*` 네이밍을 따르는지 확인합니다.
+        - API 요청 함수는 `getUserInfo`, `postLogin`, `patchUserProfile`, `deleteSavedRoute`처럼 HTTP 동사 + 도메인 형태를 따르는지 확인합니다.
+        - 커스텀 훅은 `use`로 시작하는지 확인합니다.
+        - 접근성 문제를 우선합니다. 버튼과 링크의 의미, label 연결, 키보드 포커스, ARIA 사용이 적절한지 확인합니다.
+        - `useMemo`, `useCallback`, `React.memo`는 실제 비용이나 참조 안정성 문제가 있을 때만 제안합니다.
+        - React Router 기반 SPA이므로 Next.js App Router나 server/client boundary 전제를 적용하지 않습니다.
+
+    - path: "src/**/*.css.ts"
+      instructions: |
+        Vanilla Extract 스타일 코드를 리뷰할 때 다음을 중점적으로 확인해 주세요.
+        - 스타일 파일은 관련 컴포넌트와 같은 폴더에 두고 `ComponentName.css.ts` 형식을 따르는지 확인합니다.
+        - 반복되는 색상, 간격, 타이포그래피 값은 `src/shared/styles`의 theme, layout, typography 토큰 재사용을 우선합니다.
+        - 반응형 레이아웃에서 텍스트 겹침, 터치 영역 부족, 고정 폭으로 인한 모바일 깨짐 가능성을 확인합니다.
+        - 전역 스타일로 해결할 문제와 컴포넌트 지역 스타일로 해결할 문제의 책임이 섞이지 않았는지 확인합니다.
+
+    - path: "src/app/**"
+      instructions: |
+        앱 진입점, 라우터, 레이아웃, provider 코드를 리뷰할 때 다음을 중점적으로 확인해 주세요.
+        - 전역 provider와 layout의 책임이 명확한지 확인합니다.
+        - 라우트 경로와 레이아웃 중첩이 사용자 흐름과 맞는지 확인합니다.
+        - React Query provider 설정 변경 시 staleTime, retry, error 처리 영향 범위를 함께 확인합니다.
+
+    - path: "src/pages/**"
+      instructions: |
+        페이지 코드를 리뷰할 때 다음을 중점적으로 확인해 주세요.
+        - 페이지 컴포넌트는 `*Page.tsx` 네이밍과 named export를 따르는지 확인합니다.
+        - 페이지가 지나치게 비대해질 경우 지역 컴포넌트, hook, API 호출 분리를 제안합니다.
+        - 임시 fixture UI와 실제 API 연동 경계가 명확한지 확인합니다.
+        - 사용자 입력, loading, empty, error 상태가 필요한 화면에서 누락되지 않았는지 확인합니다.
+
+    - path: "src/shared/api/**"
+      instructions: |
+        API 계층을 리뷰할 때 다음을 중점적으로 확인해 주세요.
+        - Axios client 설정을 우선 재사용하고 API base URL이나 token을 하드코딩하지 않았는지 확인합니다.
+        - 에러를 조용히 삼키지 않고 호출부가 처리할 수 있는 형태로 전달하는지 확인합니다.
+        - 요청/응답 타입이 명확하며 API 함수명은 `getUserInfo`, `postLogin`, `patchUserProfile`, `deleteSavedRoute`처럼 HTTP 동사 + 도메인 형태를 따르는지 확인합니다.
+
+    - path: "src/shared/query/**"
+      instructions: |
+        TanStack Query 관련 코드를 리뷰할 때 다음을 중점적으로 확인해 주세요.
+        - query key에 응답을 바꾸는 모든 파라미터가 포함되는지 확인합니다.
+        - mutation 이후 invalidate, setQueryData, optimistic update 중 선택이 명확한지 확인합니다.
+        - query hook 이름은 `useGetUserListQuery`, mutation hook 이름은 `usePostLoginMutation`처럼 역할이 드러나도록 제안합니다.
+
+    - path: "src/shared/components/**"
+      instructions: |
+        공통 컴포넌트를 리뷰할 때 다음을 중점적으로 확인해 주세요.
+        - app/page 전용 로직이 shared 컴포넌트로 새어 들어오지 않았는지 확인합니다.
+        - 재사용 가능한 props 설계인지, 불필요하게 넓은 책임을 갖지 않는지 확인합니다.
+        - 버튼, 카드, 헤더, 내비게이션 등은 접근성과 터치 사용성을 함께 확인합니다.
+
+    - path: "src/shared/assets/**"
+      instructions: |
+        에셋 변경을 리뷰할 때 다음을 중점적으로 확인해 주세요.
+        - 실제로 사용되는 에셋인지 확인하고, 사용하지 않는 큰 파일 추가를 지적합니다.
+        - SVG를 React 컴포넌트로 가져오는 경우 vite-plugin-svgr 설정과 사용 방식이 맞는지 확인합니다.
+
+    - path: "docs/**"
+      instructions: |
+        문서를 리뷰할 때 다음을 중점적으로 확인해 주세요.
+        - 현재 Vite/React/TypeScript 구조와 맞지 않는 오래된 설명을 지적합니다.
+        - 실행 명령은 `pnpm install`, `pnpm dev`, `pnpm build`, `pnpm lint` 기준으로 안내되는지 확인합니다.
+        - 검증한 사실과 향후 계획이 섞이지 않도록 구분되어 있는지 확인합니다.
+
+    - path: ".github/**"
+      instructions: |
+        GitHub 템플릿과 워크플로를 리뷰할 때 다음을 중점적으로 확인해 주세요.
+        - PR 템플릿이 작업 내용, 변경 사항, 확인 방법, 스크린샷, 관련 이슈를 충분히 담는지 확인합니다.
+        - GitHub Actions가 추가되면 pnpm 기반 설치, lint, TypeScript build 검증 흐름이 맞는지 확인합니다.
+
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - "develop"
+      - "main"
+    labels:
+      - "!wip"
+      - "!draft"
+      - "!skip-review"
+    ignore_usernames:
+      - "dependabot"
+      - "renovate"
+    ignore_title_keywords:
+      - "[skip-review]"
+
+  pre_merge_checks:
+    title:
+      mode: "warning"
+      requirements: "PR 제목은 `type: 작업 내용 (#이슈번호)` 형식을 권장합니다. 이슈 번호가 없으면 생략할 수 있습니다."
+    description:
+      mode: "warning"
+    issue_assessment:
+      mode: "off"
+
+  finishing_touches:
+    docstrings:
+      enabled: false
+    unit_tests:
+      enabled: false
+
+  tools:
+    eslint:
+      enabled: false
+    languagetool:
+      enabled: true
+      level: "default"
+    markdownlint:
+      enabled: true
+    gitleaks:
+      enabled: true
+    yamllint:
+      enabled: true
+    actionlint:
+      enabled: true
+
+chat:
+  art: false
+  auto_reply: true
+
+knowledge_base:
+  web_search:
+    enabled: true
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - "README.md"
+      - "docs/CONVENTION.md"
+      - "docs/**/*.md"
