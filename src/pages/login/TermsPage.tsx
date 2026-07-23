@@ -2,10 +2,9 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Card } from "@/shared/components/Card";
+import CheckIcon from "@/shared/icons/check.svg?react";
 
 import * as styles from "./TermsPage.css";
-
-import CheckIcon from "@/shared/icons/check.svg?react";
 
 type AgreementKey =
   "termsOfService" | "privacy" | "overFourteen" | "marketing" | "location";
@@ -13,15 +12,15 @@ type AgreementKey =
 type Agreement = {
   key: AgreementKey;
   label: string;
-  required: boolean;
+  isRequired: boolean;
 };
 
 const agreements: Agreement[] = [
-  { key: "termsOfService", label: "이용약관", required: true },
-  { key: "privacy", label: "개인정보 수집·이용", required: true },
-  { key: "overFourteen", label: "만 14세 이상", required: true },
-  { key: "marketing", label: "마케팅 정보 수신", required: false },
-  { key: "location", label: "위치기반 서비스", required: false },
+  { key: "termsOfService", label: "이용약관", isRequired: true },
+  { key: "privacy", label: "개인정보 수집·이용", isRequired: true },
+  { key: "overFourteen", label: "만 14세 이상", isRequired: true },
+  { key: "marketing", label: "마케팅 정보 수신", isRequired: false },
+  { key: "location", label: "위치기반 서비스", isRequired: false },
 ];
 
 const initialAgreementState: Record<AgreementKey, boolean> = {
@@ -36,24 +35,24 @@ export function TermsPage() {
   const navigate = useNavigate();
   const [checked, setChecked] = useState(initialAgreementState);
 
-  const allChecked = agreements.every(({ key }) => checked[key]);
-  const requiredChecked = useMemo(
+  const isAllchecked = agreements.every(({ key }) => checked[key]);
+  const isRequiredChecked = useMemo(
     () =>
       agreements
-        .filter(({ required }) => required)
+        .filter(({ isRequired }) => isRequired)
         .every(({ key }) => checked[key]),
     [checked],
   );
 
   const handleAllChange = () => {
-    const nextChecked = !allChecked;
+    const shouldCheckAll = !isAllchecked;
 
     setChecked({
-      termsOfService: nextChecked,
-      privacy: nextChecked,
-      overFourteen: nextChecked,
-      marketing: nextChecked,
-      location: nextChecked,
+      termsOfService: shouldCheckAll,
+      privacy: shouldCheckAll,
+      overFourteen: shouldCheckAll,
+      marketing: shouldCheckAll,
+      location: shouldCheckAll,
     });
   };
 
@@ -65,7 +64,7 @@ export function TermsPage() {
   };
 
   const handleSubmit = () => {
-    if (!requiredChecked) return;
+    if (!isRequiredChecked) return;
 
     // TODO: 약관 동의 API 연동 후 다음 온보딩 경로로 이동해 주세요.
     navigate("/survey");
@@ -79,18 +78,18 @@ export function TermsPage() {
             <input
               className={styles.hiddenCheckbox}
               type="checkbox"
-              checked={allChecked}
+              checked={isAllchecked}
               onChange={handleAllChange}
             />
             <span className={styles.checkbox} aria-hidden="true">
-              {allChecked && <CheckIcon className={styles.checkIcon} />}
+              {isAllchecked && <CheckIcon className={styles.checkIcon} />}
             </span>
             <span>전체 동의합니다</span>
           </label>
         </Card>
 
         <Card className={styles.agreementBox}>
-          {agreements.map(({ key, label, required }, index) => (
+          {agreements.map(({ key, label, isRequired }, index) => (
             <div
               key={key}
               className={
@@ -115,12 +114,12 @@ export function TermsPage() {
               <div className={styles.agreementActions}>
                 <span
                   className={
-                    required
+                    isRequired
                       ? `${styles.typeBadge} ${styles.requiredBadge}`
                       : styles.typeBadge
                   }
                 >
-                  {required ? "필수" : "선택"}
+                  {isRequired ? "필수" : "선택"}
                 </span>
                 <button
                   type="button"
@@ -138,7 +137,7 @@ export function TermsPage() {
       <button
         type="button"
         className={styles.submitButton}
-        disabled={!requiredChecked}
+        disabled={!isRequiredChecked}
         onClick={handleSubmit}
       >
         동의하고 시작하기

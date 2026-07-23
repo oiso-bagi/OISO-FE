@@ -164,7 +164,7 @@ export const footer = style([
   },
 ]);
 
-export const signupLink = style([
+export const signupText = style([
   body7,
   {
     marginLeft: "4px",

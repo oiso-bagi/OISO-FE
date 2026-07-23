@@ -1,4 +1,3 @@
-import * as styles from "./LoginPage.css";
 import OisoLogo from "@/shared/icons/oiso_logo.svg?react";
 import Cost from "@/shared/icons/cost.svg?react";
 import BestRoute from "@/shared/icons/best_route.svg?react";
@@ -6,10 +5,12 @@ import LocalBalance from "@/shared/icons/local.svg?react";
 import KakaoLogo from "@/shared/icons/kakao.svg?react";
 import GoogleLogo from "@/shared/icons/google.svg?react";
 
+import * as styles from "./LoginPage.css";
+
 const benefits = [
-  { icon: <Cost />, label: "가성비 분석", highlighted: false },
-  { icon: <BestRoute />, label: "동선 최적화", highlighted: true },
-  { icon: <LocalBalance />, label: "지역 균형", highlighted: false },
+  { icon: <Cost />, label: "가성비 분석", isHighlighted: false },
+  { icon: <BestRoute />, label: "동선 최적화", isHighlighted: true },
+  { icon: <LocalBalance />, label: "지역 균형", isHighlighted: false },
 ] as const;
 
 export function LoginPage() {
@@ -30,11 +31,11 @@ export function LoginPage() {
         </p>
 
         <ul className={styles.benefitList} aria-label="서비스 특징">
-          {benefits.map(({ icon, label, highlighted }) => (
+          {benefits.map(({ icon, label, isHighlighted }) => (
             <li
               key={label}
               className={
-                highlighted ? styles.highlightedBenefit : styles.benefit
+                isHighlighted ? styles.highlightedBenefit : styles.benefit
               }
             >
               <span className={styles.benefitIcon} aria-hidden="true">
@@ -62,10 +63,7 @@ export function LoginPage() {
       <footer className={styles.footer}>
         <p>2026 관광데이터 활용 공모전 · 개발 부문</p>
         <p>
-          계정이 없으신가요?{" "}
-          <a className={styles.signupLink} href="/signup">
-            회원가입
-          </a>
+          계정이 없으신가요? <span className={styles.signupText}>회원가입</span>
         </p>
       </footer>
     </div>
