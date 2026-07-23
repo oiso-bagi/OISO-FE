@@ -4,7 +4,8 @@ import { AppLayout } from "@/app/layout/AppLayout";
 import { AuthLayout } from "@/app/layout/AuthLayout";
 
 import { HomePage } from "@/pages/home/HomePage";
-import { CoursePage } from "@/pages/route/CoursePage";
+import { RoutePage } from "@/pages/route/RoutePage";
+import { SavedRoutePage } from "@/pages/route/SavedRoutePage";
 import { LoginPage } from "@/pages/login/LoginPage";
 import { TermsPage } from "@/pages/login/TermsPage";
 import { AuthCallbackPage } from "@/pages/login/AuthCallbackPage";
@@ -21,7 +22,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "/route",
-        element: <CoursePage />,
+        element: <RoutePage />,
+      },
+      {
+        path: "/saved",
+        element: <SavedRoutePage />,
       },
       {
         path: "/survey",
