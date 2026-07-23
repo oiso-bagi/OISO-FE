@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 
 import TrashcanIcon from "@/shared/assets/svg/trashcan.svg?react";
 import LocationIcon from "@/shared/assets/svg/location.svg?react";
+import RecommendBadgeIcon from "@/shared/assets/svg/recommendBadge.svg?react";
 
 import * as styles from "./RouteBox.css";
 
@@ -101,7 +102,13 @@ export default function RouteBox({
           </span>
         )}
 
-        {isRecommended && <div className={styles.recommendBadge}>추천</div>}
+        {isRecommended && (
+          <RecommendBadgeIcon
+            className={styles.recommendBadge}
+            role="img"
+            aria-label="추천 루트"
+          />
+        )}
       </div>
 
       <div className={styles.routeInfo}>

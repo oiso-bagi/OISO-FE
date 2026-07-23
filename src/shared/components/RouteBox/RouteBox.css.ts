@@ -110,10 +110,10 @@ export const titleRow = style({
 
   selectors: {
     // 추천 배지는 absolute 로 오른쪽 위에 걸쳐 있어 레이아웃 자리를 차지하지 않습니다.
-    // 배지가 차지하는 폭(58px 중 titleRow 안쪽 51px)만큼 비워, 제목과 추천도가
+    // 배지가 차지하는 폭(51px 중 titleRow 안쪽 44px)만큼 비워, 제목과 추천도가
     // 배지 아래로 들어가지 않게 합니다.
     '&[data-recommended="true"]': {
-      paddingRight: "56px",
+      paddingRight: "49px",
     },
   },
 });
@@ -244,29 +244,18 @@ export const detailButton = style([
   },
 ]);
 
-export const recommendBadge = style([
-  typo.body4,
-  {
-    position: "absolute",
-    top: "-12px",
-    right: "-7px",
+// 별 모양과 "추천" 글자가 모두 들어 있는 recommendBadge.svg 를 그대로 씁니다.
+export const recommendBadge = style({
+  position: "absolute",
+  top: "-12px",
+  right: "-7px",
 
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+  display: "block",
 
-    width: "58px",
-    height: "58px",
-
-    color: "#000000",
-    backgroundColor: vars.color.secondary500,
-
-    clipPath:
-      "polygon(50% 0%, 61% 17%, 79% 8%, 82% 29%, 100% 34%, 87% 50%, 100% 66%, 81% 71%, 78% 92%, 60% 82%, 50% 100%, 39% 82%, 21% 92%, 18% 71%, 0% 66%, 13% 50%, 0% 34%, 18% 29%, 21% 8%, 39% 17%)",
-
-    filter: "drop-shadow(2px 2px 0 #000000)",
-  },
-]);
+  width: "51px",
+  height: "41px",
+  marginTop: "12px",
+});
 
 export const deleteIcon = style({
   width: "20px",

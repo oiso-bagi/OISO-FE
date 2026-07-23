@@ -11,11 +11,11 @@ export const stopSection = style({
   gap: "4px",
 
   width: "100%",
-  marginTop: "8px",
+  marginTop: "12px",
 });
 
 export const stopSectionTitle = style([
-  typo.largeBody3,
+  typo.largeBody2,
   {
     margin: 0,
 
@@ -26,7 +26,7 @@ export const stopSectionTitle = style([
 export const stopList = style({
   display: "flex",
   flexDirection: "column",
-  gap: "4px",
+  gap: "2px",
 
   width: "100%",
   margin: 0,
@@ -48,11 +48,11 @@ export const stopBox = style({
   gap: "8px",
 
   width: "100%",
-  padding: "16px 8px",
+  padding: "8px 8px",
 
   backgroundColor: vars.color.white,
 
-  border: `1px solid ${vars.color.black}`,
+  border: `1.5px solid ${vars.color.black}`,
   boxShadow: `2px 2px 0 0 ${vars.color.black}`,
 
   boxSizing: "border-box",
@@ -146,6 +146,7 @@ export const saveButton = style([
     alignSelf: "center",
     alignItems: "center",
     justifyContent: "center",
+    margin: "4px 0 0 0",
     gap: "4px",
 
     width: "63px",
@@ -156,7 +157,7 @@ export const saveButton = style([
     color: vars.color.white,
     backgroundColor: vars.color.secondary500,
 
-    border: `1px solid ${vars.color.black}`,
+    border: `1.5px solid ${vars.color.black}`,
     boxShadow: `1px 1px 0 0 ${vars.color.black}`,
 
     cursor: "pointer",
