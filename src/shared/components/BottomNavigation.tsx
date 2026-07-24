@@ -35,8 +35,9 @@ const navigationItems: NavigationItem[] = [
   },
   {
     label: "저장",
+    // 지도 상세(/map)는 저장 루트에서 진입하므로 저장 탭을 활성화
     path: "/saved",
-    activePaths: ["/saved"],
+    activePaths: ["/saved", "/map"],
     icon: saveIcon,
   },
 ];
