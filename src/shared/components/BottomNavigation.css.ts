@@ -12,7 +12,9 @@ export const navigation = style({
 
   width: "100%",
   maxWidth: "430px",
-  height: "72px",
+  // 아이콘 영역 72px 유지 + 홈 인디케이터 영역만큼 아래로 확장 (border-box)
+  height: "calc(72px + env(safe-area-inset-bottom, 0px))",
+  paddingBottom: "env(safe-area-inset-bottom, 0px)",
 
   display: "grid",
   gridTemplateColumns: "repeat(4, 1fr)",
