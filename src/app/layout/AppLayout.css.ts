@@ -19,7 +19,8 @@ export const appContainer = style({
 
 export const contentWithBottomNavigation = style({
   minHeight: "100vh",
-  paddingBottom: "72px",
+  // 하단 네비(72px) + 홈 인디케이터 영역만큼 비워, 마지막 콘텐츠가 안 가리게
+  paddingBottom: "calc(72px + env(safe-area-inset-bottom, 0px))",
 });
 
 export const content = style({

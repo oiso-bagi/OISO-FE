@@ -1,6 +1,12 @@
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 
 import backIcon from "@/shared/assets/svg/back.svg";
+import { Skeleton } from "@/shared/components/Skeleton/Skeleton";
 
 import { RouteMap } from "./components/RouteMap";
 import { RouteStopList } from "./components/RouteStopList";
@@ -16,8 +22,18 @@ import * as styles from "./MapDetailPage.css";
  */
 export function MapDetailPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams();
   const [searchParams] = useSearchParams();
+
+  // 딥링크로 직접 진입(뒤로 갈 히스토리 없음)하면 저장 페이지로 보냅니다.
+  const handleBack = () => {
+    if (location.key === "default") {
+      navigate("/saved");
+    } else {
+      navigate(-1);
+    }
+  };
 
   const routeId = Number(id) || null;
   // source 미지정/기타 값은 저장 루트로 간주 (현재 진입점이 저장 루트뿐)
@@ -36,7 +52,7 @@ export function MapDetailPage() {
         <button
           type="button"
           className={styles.backButton}
-          onClick={() => navigate(-1)}
+          onClick={handleBack}
           aria-label="이전 페이지로 이동"
         >
           <img src={backIcon} alt="" className={styles.backIcon} />
@@ -51,7 +67,12 @@ export function MapDetailPage() {
 
       <div className={styles.listArea}>
         {!isInvalid && isPending && (
-          <p className={styles.statusText}>루트를 불러오는 중…</p>
+          <div className={styles.listSkeleton}>
+            <Skeleton width="30%" height="18px" />
+            <Skeleton width="100%" height="44px" />
+            <Skeleton width="100%" height="44px" />
+            <Skeleton width="100%" height="44px" />
+          </div>
         )}
 
         {(isInvalid || isError) && (

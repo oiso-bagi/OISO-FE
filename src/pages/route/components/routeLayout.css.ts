@@ -8,8 +8,8 @@ export const page = style({
   display: "flex",
   flexDirection: "column",
 
-  // 하단 네비게이션(72px) 제외한 높이
-  height: "calc(100dvh - 72px)",
+  // 하단 네비(72px) + 홈 인디케이터 영역 제외한 높이
+  height: "calc(100dvh - 72px - env(safe-area-inset-bottom, 0px))",
 });
 
 export const mapArea = style({

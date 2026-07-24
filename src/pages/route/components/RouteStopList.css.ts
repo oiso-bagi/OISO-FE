@@ -174,6 +174,13 @@ export const saveButton = style([
 
     cursor: "pointer",
     boxSizing: "border-box",
+
+    selectors: {
+      "&:disabled": {
+        opacity: 0.5,
+        cursor: "default",
+      },
+    },
   },
 ]);
 

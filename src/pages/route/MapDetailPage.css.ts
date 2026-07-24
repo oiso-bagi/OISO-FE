@@ -3,24 +3,20 @@ import { style } from "@vanilla-extract/css";
 import { vars } from "@/shared/styles/theme.css";
 import * as typo from "@/shared/styles/typography.css";
 
-/** 하단 네비 없는 풀스크린 (모바일 프레임 유지) */
+/** 상단 바 + 지도 + 하단 리스트. 하단 네비(72px) 위 영역을 채웁니다. */
 export const page = style({
   display: "flex",
   flexDirection: "column",
 
-  width: "100%",
-  minWidth: "375px",
-  maxWidth: "430px",
-  height: "100dvh",
-
-  margin: "0 auto",
-
   backgroundColor: vars.color.bg,
-
-  boxSizing: "border-box",
 });
 
 export const topBar = style({
+  // 스크롤해도 뒤로가기 버튼이 항상 보이게 상단 고정
+  position: "sticky",
+  top: 0,
+  zIndex: 10,
+
   display: "flex",
   flexShrink: 0,
   alignItems: "center",
@@ -29,6 +25,7 @@ export const topBar = style({
   height: "56px",
   paddingInline: vars.space.md,
 
+  backgroundColor: vars.color.bg,
   borderBottom: `2.5px solid ${vars.color.black}`,
 });
 
@@ -69,21 +66,18 @@ export const title = style([
   },
 ]);
 
-/** 지도: 남는 공간을 채워 크게 */
+/** 지도: 상단 고정 높이 (페이지 전체가 스크롤됨) */
 export const mapArea = style({
-  flex: "1 1 auto",
+  flexShrink: 0,
+
+  height: "46dvh",
   minHeight: "280px",
 
   borderBottom: `2.5px solid ${vars.color.black}`,
 });
 
-/** 경유지 리스트: 하단 고정 영역, 자체 스크롤 */
+/** 경유지 리스트: 지도 아래로 흐르며 페이지와 함께 스크롤 */
 export const listArea = style({
-  flex: "0 0 auto",
-  maxHeight: "42dvh",
-
-  overflowY: "auto",
-
   paddingInline: vars.space.md,
   paddingBottom: vars.space.md,
 });
@@ -97,3 +91,11 @@ export const statusText = style([
     textAlign: "center",
   },
 ]);
+
+export const listSkeleton = style({
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px",
+
+  paddingTop: "10px",
+});

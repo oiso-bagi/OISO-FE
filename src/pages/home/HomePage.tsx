@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 
 import DownIcon from "@/shared/assets/svg/down.svg?react";
+import { Skeleton } from "@/shared/components/Skeleton/Skeleton";
+import { MiniCardListSkeleton } from "@/shared/components/Skeleton/MiniCardSkeleton";
 import { formatPrice } from "@/pages/route/utils/routeFormat";
 
 import { SavedRouteSummaryCard } from "./components/SavedRouteSummaryCard";
@@ -58,9 +60,13 @@ export function HomePage() {
           </div>
         </div>
 
-        <strong className={styles.savingAmount}>
-          {formatPrice(data?.totalSavingAmount ?? null)}
-        </strong>
+        {isPending ? (
+          <Skeleton width="160px" height="34px" />
+        ) : (
+          <strong className={styles.savingAmount}>
+            {formatPrice(data?.totalSavingAmount ?? null)}
+          </strong>
+        )}
       </section>
 
       <section className={styles.savedSection}>
@@ -72,7 +78,7 @@ export function HomePage() {
           )}
         </div>
 
-        {isPending && <p className={styles.statusText}>루트를 불러오는 중…</p>}
+        {isPending && <MiniCardListSkeleton />}
 
         {isError && (
           <p className={styles.statusText}>
