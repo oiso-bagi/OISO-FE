@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { RouteBox } from "@/shared/components/RouteBox";
 import { Header } from "@/shared/components/header/Header";
+import { useToast } from "@/shared/components/Toast/toastContext";
 
 import { RouteMap } from "./components/RouteMap";
 import { RouteStopList } from "./components/RouteStopList";
@@ -28,13 +29,20 @@ export function RoutePage() {
   } = useRecommendedRouteDetail(expandedRouteId);
 
   const createSavedRoute = useCreateSavedRoute();
+  const showToast = useToast();
 
   const handleToggleExpanded = (routeId: number) => {
     setExpandedRouteId((prev) => (prev === routeId ? null : routeId));
   };
 
   const handleSave = (routeId: number) => {
-    createSavedRoute.mutate(routeId);
+    if (createSavedRoute.isPending) return;
+
+    createSavedRoute.mutate(routeId, {
+      onSuccess: () => showToast({ message: "저장되었습니다" }),
+      onError: () =>
+        showToast({ message: "저장하지 못했어요. 잠시 후 다시 시도해 주세요." }),
+    });
   };
 
   // 펼쳐진 코스의 경유지를 상단 지도에 표시 (없으면 부산 기본 지도)
@@ -102,6 +110,7 @@ export function RoutePage() {
                             ? undefined
                             : () => handleSave(route.id)
                         }
+                        isSaving={createSavedRoute.isPending}
                       />
                     )}
                   </>
