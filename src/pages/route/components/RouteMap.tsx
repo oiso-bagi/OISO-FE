@@ -44,11 +44,11 @@ export function RouteMap({ stops, path }: RouteMapProps) {
 
   // 1) 지도 1회 생성
   useEffect(() => {
-    let cancelled = false;
+    let isCancelled = false;
 
     loadKakaoMap()
       .then((kakao) => {
-        if (cancelled || !containerRef.current || mapRef.current) return;
+        if (isCancelled || !containerRef.current || mapRef.current) return;
 
         mapRef.current = new kakao.maps.Map(containerRef.current, {
           center: new kakao.maps.LatLng(
@@ -61,11 +61,11 @@ export function RouteMap({ stops, path }: RouteMapProps) {
         setStatus("ready");
       })
       .catch(() => {
-        if (!cancelled) setStatus("error");
+        if (!isCancelled) setStatus("error");
       });
 
     return () => {
-      cancelled = true;
+      isCancelled = true;
     };
   }, []);
 
