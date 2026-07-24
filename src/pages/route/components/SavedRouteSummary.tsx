@@ -10,11 +10,7 @@ export default function SavedRouteSummary({
   totalSavingAmount,
 }: SavedRouteSummaryProps) {
   const formattedAmount =
-    totalSavingAmount === null ? (
-      "-"
-    ) : (
-      <strong>{formatPrice(totalSavingAmount)}</strong>
-    );
+    totalSavingAmount === null ? "-" : formatPrice(totalSavingAmount);
 
   return (
     <section className={styles.container}>

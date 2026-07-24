@@ -11,7 +11,7 @@ export const container = style({
   width: "100%",
   minHeight: "44px",
 
-  padding: "10px 14px",
+  padding: "4px 16px",
 
   backgroundColor: vars.color.primary300,
   border: `2.5px solid ${vars.color.black}`,
