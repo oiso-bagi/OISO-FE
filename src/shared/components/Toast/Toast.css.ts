@@ -12,7 +12,8 @@ export const wrapper = style({
   position: "fixed",
   left: 0,
   right: 0,
-  bottom: "88px", // 하단 네비(72px) 위로 띄움
+  // 하단 네비(72px) + 홈 인디케이터 위로 16px 띄움
+  bottom: "calc(88px + env(safe-area-inset-bottom, 0px))",
 
   zIndex: 90,
 

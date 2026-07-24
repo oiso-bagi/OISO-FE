@@ -14,6 +14,8 @@ export const page = style({
   height: "100dvh",
 
   margin: "0 auto",
+  // 노치(상단) 만큼 콘텐츠를 내려 상단 바가 가리지 않게
+  paddingTop: "env(safe-area-inset-top, 0px)",
 
   backgroundColor: vars.color.bg,
 
@@ -85,7 +87,8 @@ export const listArea = style({
   overflowY: "auto",
 
   paddingInline: vars.space.md,
-  paddingBottom: vars.space.md,
+  // 하단 홈 인디케이터만큼 여백을 더해 마지막 경유지가 안 가리게
+  paddingBottom: "calc(16px + env(safe-area-inset-bottom, 0px))",
 });
 
 export const statusText = style([
