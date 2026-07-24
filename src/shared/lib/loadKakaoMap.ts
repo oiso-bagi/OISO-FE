@@ -35,7 +35,10 @@ export function loadKakaoMap(): Promise<typeof kakao> {
       // autoload=false 이므로 maps.load 로 실제 로딩을 기다립니다.
       window.kakao.maps.load(() => resolve(window.kakao));
     };
-    script.onerror = () => reject(new Error("카카오맵 SDK 로드에 실패했습니다."));
+    script.onerror = () => {
+      loadPromise = null;
+      reject(new Error("카카오맵 SDK 로드에 실패했습니다."));
+    };
 
     document.head.appendChild(script);
   });
