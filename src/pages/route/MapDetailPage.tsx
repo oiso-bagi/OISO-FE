@@ -1,6 +1,7 @@
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import backIcon from "@/shared/assets/svg/back.svg";
+import { Skeleton } from "@/shared/components/Skeleton/Skeleton";
 
 import { RouteMap } from "./components/RouteMap";
 import { RouteStopList } from "./components/RouteStopList";
@@ -51,7 +52,12 @@ export function MapDetailPage() {
 
       <div className={styles.listArea}>
         {!isInvalid && isPending && (
-          <p className={styles.statusText}>루트를 불러오는 중…</p>
+          <div className={styles.listSkeleton}>
+            <Skeleton width="30%" height="18px" />
+            <Skeleton width="100%" height="44px" />
+            <Skeleton width="100%" height="44px" />
+            <Skeleton width="100%" height="44px" />
+          </div>
         )}
 
         {(isInvalid || isError) && (

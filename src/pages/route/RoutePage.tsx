@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { RouteBox } from "@/shared/components/RouteBox";
 import { Header } from "@/shared/components/header/Header";
+import { RouteListSkeleton } from "@/shared/components/Skeleton/RouteCardSkeleton";
 import { useToast } from "@/shared/components/Toast/toastContext";
 
 import { RouteMap } from "./components/RouteMap";
@@ -60,7 +61,7 @@ export function RoutePage() {
       </div>
 
       <div className={styles.listArea}>
-        {isPending && <p className={styles.statusText}>루트를 불러오는 중…</p>}
+        {isPending && <RouteListSkeleton />}
 
         {isError && (
           <p className={styles.statusText}>

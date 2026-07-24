@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { RouteBox } from "@/shared/components/RouteBox";
 import { ConfirmDialog } from "@/shared/components/ConfirmDialog/ConfirmDialog";
 import { Header } from "@/shared/components/header/Header";
+import { RouteListSkeleton } from "@/shared/components/Skeleton/RouteCardSkeleton";
 import { useToast } from "@/shared/components/Toast/toastContext";
 import { pageContent } from "@/shared/styles/layout.css";
 
@@ -90,7 +91,7 @@ export function SavedRoutePage() {
           totalSavingAmount={isPending || isError ? null : totalSavingAmount}
         />
 
-        {isPending && <p className={styles.statusText}>루트를 불러오는 중…</p>}
+        {isPending && <RouteListSkeleton />}
         {isError && (
           <p className={styles.statusText}>
             루트를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.

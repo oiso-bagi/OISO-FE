@@ -100,3 +100,11 @@ export const statusText = style([
     textAlign: "center",
   },
 ]);
+
+export const listSkeleton = style({
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px",
+
+  paddingTop: "10px",
+});
