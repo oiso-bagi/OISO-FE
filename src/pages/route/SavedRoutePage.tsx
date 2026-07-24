@@ -33,7 +33,7 @@ export function SavedRoutePage() {
   const updateCompleted = useUpdateSavedRouteCompleted();
   const deleteRoute = useDeleteSavedRoute();
 
-  const routes = data?.routes;
+  const routes = data?.routes ?? [];
 
   const handleToggleExpanded = (routeId: number) => {
     setExpandedRouteId((prev) => (prev === routeId ? null : routeId));
@@ -52,7 +52,8 @@ export function SavedRoutePage() {
       <Header
         backTo="/"
         title="저장한 루트"
-        right={routes && <span>{routes.length}개</span>}
+        rightText={`${routes.length}개`}
+        rightVariant="count"
       />
 
       <div className={pageContent}>
