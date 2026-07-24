@@ -2,8 +2,12 @@ import { Skeleton } from "./Skeleton";
 
 import * as styles from "./MiniCardSkeleton.css";
 
+interface MiniCardListSkeletonProps {
+  count?: number;
+}
+
 /** 홈 저장 루트 요약 카드 모양의 로딩 스켈레톤 */
-function MiniCardSkeleton() {
+export function MiniCardSkeleton() {
   return (
     <div className={styles.card}>
       <div className={styles.headerRow}>
@@ -22,7 +26,9 @@ function MiniCardSkeleton() {
 }
 
 /** 미니 카드 목록 로딩 자리표시 */
-export function MiniCardListSkeleton({ count = 3 }: { count?: number }) {
+export function MiniCardListSkeleton({
+  count = 3,
+}: MiniCardListSkeletonProps) {
   return (
     <div className={styles.list}>
       {Array.from({ length: count }).map((_, index) => (

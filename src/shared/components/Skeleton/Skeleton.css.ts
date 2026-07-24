@@ -14,4 +14,11 @@ export const skeleton = style({
   backgroundColor: vars.color.neutral100,
 
   animation: `${pulse} 1.2s ease-in-out infinite`,
+
+  // 모션 민감 사용자에겐 애니메이션 비활성화
+  "@media": {
+    "(prefers-reduced-motion: reduce)": {
+      animation: "none",
+    },
+  },
 });
