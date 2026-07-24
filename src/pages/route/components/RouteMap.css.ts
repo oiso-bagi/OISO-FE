@@ -36,22 +36,21 @@ export const overlayText = style([
 ]);
 
 /** 지도 위 경유지 순번 마커 — 리스트 순번 배지와 톤 통일 */
-export const marker = style({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
+export const marker = style([
+  typo.detail2,
+  {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
 
-  width: "24px",
-  height: "24px",
+    width: "24px",
+    height: "24px",
 
-  color: vars.color.black,
-  backgroundColor: vars.color.primary500,
+    color: vars.color.black,
+    backgroundColor: vars.color.primary500,
 
-  border: `2px solid ${vars.color.black}`,
+    border: `2px solid ${vars.color.black}`,
 
-  fontSize: "12px",
-  fontWeight: 700,
-  lineHeight: 1,
-
-  boxSizing: "border-box",
-});
+    boxSizing: "border-box",
+  },
+]);
