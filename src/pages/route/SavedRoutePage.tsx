@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import { RouteBox } from "@/shared/components/RouteBox";
 import { Header } from "@/shared/components/header/Header";
@@ -22,7 +23,13 @@ import {
 import { SavedRouteSummary } from "./components/SavedRouteSummary";
 
 export function SavedRoutePage() {
-  const [expandedRouteId, setExpandedRouteId] = useState<number | null>(null);
+  // 홈에서 "저장한 루트" 카드를 눌러 들어오면 해당 루트를 펼친 상태로 시작합니다.
+  const [searchParams] = useSearchParams();
+  const initialExpandedRouteId = Number(searchParams.get("routeId")) || null;
+
+  const [expandedRouteId, setExpandedRouteId] = useState<number | null>(
+    initialExpandedRouteId,
+  );
 
   const { data, isPending, isError } = useSavedRoutes();
   // 카드를 펼쳤을 때만 이 쿼리가 켜지므로, isPending 은 "아직 결과 없음"과 같습니다.
