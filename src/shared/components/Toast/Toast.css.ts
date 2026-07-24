@@ -51,6 +51,10 @@ export const toast = style({
 export const message = style([
   typo.body5,
   {
+    // 긴 메시지가 토스트 너비를 밀어내지 않고 줄바꿈되게
+    minWidth: 0,
+    overflowWrap: "anywhere",
+
     color: vars.color.black,
   },
 ]);
