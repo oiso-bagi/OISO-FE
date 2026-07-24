@@ -23,7 +23,7 @@ export interface SavedRouteListItem {
 }
 
 export interface SavedRouteListResponse {
-  totalSavingAmount: number;
+  totalSavingAmount?: number | null; // 백엔드에서 누적 금액 직접 내려줄지 미확인
   routes: SavedRouteListItem[];
 }
 

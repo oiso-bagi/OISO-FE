@@ -5,8 +5,10 @@ import { Header } from "@/shared/components/header/Header";
 import { pageContent } from "@/shared/styles/layout.css";
 
 import { RouteStopList } from "./components/RouteStopList";
-import * as styles from "./components/routeLayout.css";
 import { useSavedRouteDetail } from "./hooks/useSavedRouteDetail";
+
+import * as styles from "./components/routeLayout.css";
+
 import {
   useDeleteSavedRoute,
   useSavedRoutes,
@@ -17,6 +19,7 @@ import {
   formatTransportation,
   toRouteSummaryItems,
 } from "./utils/routeFormat";
+import { SavedRouteSummary } from "./components/SavedRouteSummary";
 
 export function SavedRoutePage() {
   const [expandedRouteId, setExpandedRouteId] = useState<number | null>(null);
@@ -33,7 +36,14 @@ export function SavedRoutePage() {
   const updateCompleted = useUpdateSavedRouteCompleted();
   const deleteRoute = useDeleteSavedRoute();
 
-  const routes = data?.routes;
+  const routes = data?.routes ?? [];
+
+  const calculatedSavingAmount = routes.reduce(
+    (total, route) => total + (route.savingAmount ?? 0),
+    0,
+  );
+
+  const totalSavingAmount = data?.totalSavingAmount ?? calculatedSavingAmount;
 
   const handleToggleExpanded = (routeId: number) => {
     setExpandedRouteId((prev) => (prev === routeId ? null : routeId));
@@ -52,22 +62,24 @@ export function SavedRoutePage() {
       <Header
         backTo="/"
         title="저장한 루트"
-        right={routes && <span>{routes.length}개</span>}
+        rightText={`${routes.length}개`}
+        rightVariant="count"
       />
 
       <div className={pageContent}>
-        {isPending && <p className={styles.statusText}>루트를 불러오는 중…</p>}
+        <SavedRouteSummary
+          totalSavingAmount={isPending || isError ? null : totalSavingAmount}
+        />
 
+        {isPending && <p className={styles.statusText}>루트를 불러오는 중…</p>}
         {isError && (
           <p className={styles.statusText}>
             루트를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
           </p>
         )}
-
         {routes && routes.length === 0 && (
           <p className={styles.statusText}>아직 저장한 루트가 없어요.</p>
         )}
-
         {routes && routes.length > 0 && (
           <div className={styles.routeList}>
             {routes.map((route) => (

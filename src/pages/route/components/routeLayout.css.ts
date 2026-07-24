@@ -7,9 +7,9 @@ import * as typo from "@/shared/styles/typography.css";
 export const routeList = style({
   display: "flex",
   flexDirection: "column",
-  gap: "24px",
+  gap: "10px",
 
-  paddingBlock: "20px",
+  paddingBlock: "10px",
 });
 
 export const statusText = style([

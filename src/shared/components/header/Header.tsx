@@ -4,13 +4,18 @@
  * 사용 예시)
  * <Header
  *   backTo="/"
- *   title="저장한 루트"
- *   right={<Badge>3개</Badge>}
+ *   rightText="3개"
+ *   rightVariant="count"
  * />
  *
  * - backTo : 뒤로가기 경로 (생략 시 뒤로가기 버튼 미표시)
  * - title  : 헤더 제목
- * - right  : 오른쪽 영역에 표시할 컴포넌트(버튼, Badge, 아이콘 등)
+ * - rightText: 오른쪽 또는 제목 옆에 표시할 내용
+ * - rightVariant:
+ *   - count: 제목 바로 옆에 표시
+ *   - outline: 헤더 오른쪽 끝에 표시
+ *   - accent: 헤더 오른쪽 끝에 표시
+ * - onClickRight: 전달 시 rightText를 button으로 렌더링
  */
 
 import type { ReactNode } from "react";
@@ -20,13 +25,51 @@ import backIcon from "../../assets/svg/back.svg";
 import * as typo from "@/shared/styles/typography.css";
 import * as styles from "./Header.css";
 
+type HeaderRightVariant = "count" | "outline" | "accent";
+// "count"     // 저장한 루트 3개
+// "outline"   // 다시하기
+// "accent"    // 로그아웃
+
 type HeaderProps = {
   title?: string;
   backTo?: string;
-  right?: ReactNode;
+
+  rightText?: ReactNode;
+  rightVariant?: HeaderRightVariant;
+  onClickRight?: () => void;
 };
 
-export function Header({ title, backTo, right }: HeaderProps) {
+export function Header({
+  title,
+  backTo,
+  rightText,
+  rightVariant = "outline",
+  onClickRight,
+}: HeaderProps) {
+  const isCountVariant = rightVariant === "count";
+
+  const rightContent =
+    rightText &&
+    (onClickRight ? (
+      <button
+        type="button"
+        className={styles.rightArea({
+          variant: rightVariant,
+        })}
+        onClick={onClickRight}
+      >
+        {rightText}
+      </button>
+    ) : (
+      <span
+        className={styles.rightArea({
+          variant: rightVariant,
+        })}
+      >
+        {rightText}
+      </span>
+    ));
+
   return (
     <header className={styles.header}>
       <div className={styles.left}>
@@ -41,9 +84,11 @@ export function Header({ title, backTo, right }: HeaderProps) {
         )}
 
         {title && <h1 className={`${typo.title2} ${styles.title}`}>{title}</h1>}
+
+        {isCountVariant && rightContent}
       </div>
 
-      {right && <div className={styles.right}>{right}</div>}
+      {!isCountVariant && rightContent}
     </header>
   );
 }
