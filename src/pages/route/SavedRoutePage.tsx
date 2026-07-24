@@ -123,7 +123,7 @@ export function SavedRoutePage() {
                 transportation={formatTransportation(route.transportationTypes)}
                 summaryItems={toRouteSummaryItems(route, "editable")}
                 isCompleted={route.isCompleted}
-                disabled={updateCompleted.isPending || deleteRoute.isPending}
+                isDisabled={updateCompleted.isPending || deleteRoute.isPending}
                 onToggleExpanded={() => handleOpenMap(route.id)}
                 onToggleCompleted={() =>
                   handleToggleCompleted(route.id, route.isCompleted)
