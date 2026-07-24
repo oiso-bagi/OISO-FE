@@ -17,6 +17,7 @@ import {
   formatTransportation,
   toRouteSummaryItems,
 } from "./utils/routeFormat";
+import SavedRouteSummary from "./components/SavedRouteSummary";
 
 export function SavedRoutePage() {
   const [expandedRouteId, setExpandedRouteId] = useState<number | null>(null);
@@ -34,6 +35,13 @@ export function SavedRoutePage() {
   const deleteRoute = useDeleteSavedRoute();
 
   const routes = data?.routes ?? [];
+
+  const calculatedSavingAmount = routes.reduce(
+    (total, route) => total + (route.savingAmount ?? 0),
+    0,
+  );
+
+  const totalSavingAmount = data?.totalSavingAmount ?? calculatedSavingAmount;
 
   const handleToggleExpanded = (routeId: number) => {
     setExpandedRouteId((prev) => (prev === routeId ? null : routeId));
@@ -57,18 +65,19 @@ export function SavedRoutePage() {
       />
 
       <div className={pageContent}>
-        {isPending && <p className={styles.statusText}>루트를 불러오는 중…</p>}
+        <SavedRouteSummary
+          totalSavingAmount={isPending || isError ? null : totalSavingAmount}
+        />
 
+        {isPending && <p className={styles.statusText}>루트를 불러오는 중…</p>}
         {isError && (
           <p className={styles.statusText}>
             루트를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
           </p>
         )}
-
         {routes && routes.length === 0 && (
           <p className={styles.statusText}>아직 저장한 루트가 없어요.</p>
         )}
-
         {routes && routes.length > 0 && (
           <div className={styles.routeList}>
             {routes.map((route) => (
