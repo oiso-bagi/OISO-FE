@@ -38,8 +38,9 @@ export function SavedRoutePage() {
 
   const deleteTarget = routes.find((route) => route.id === deleteTargetId);
 
+  // 서버가 총액을 안 줄 때의 폴백. 절약액은 음수라 절댓값으로 합산합니다.
   const calculatedSavingAmount = routes.reduce(
-    (total, route) => total + (route.savingAmount ?? 0),
+    (total, route) => total + Math.abs(route.savingAmount ?? 0),
     0,
   );
 

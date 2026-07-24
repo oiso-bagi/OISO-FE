@@ -285,9 +285,16 @@ const mockSavedRouteList: SavedRouteListResponse = {
   ],
 };
 
-/** 목 뮤테이션 결과가 화면에 반영되도록 매번 새 객체로 반환합니다. */
+/**
+ * 목 뮤테이션 결과가 화면에 반영되도록 매번 새 객체로 반환합니다.
+ * 누적 절약은 현재 routes 에서 다시 계산해, 삭제/추가 시 값이 바뀝니다.
+ * (실제 API 는 서버가 총액을 계산해 내려줍니다)
+ */
 export const getMockSavedRouteList = (): SavedRouteListResponse => ({
-  ...mockSavedRouteList,
+  totalSavingAmount: mockSavedRouteList.routes.reduce(
+    (sum, route) => sum + Math.abs(route.savingAmount ?? 0),
+    0,
+  ),
   routes: [...mockSavedRouteList.routes],
 });
 
