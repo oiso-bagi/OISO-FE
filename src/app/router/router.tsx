@@ -39,6 +39,14 @@ export const router = createBrowserRouter([
     ],
   },
   {
+    // 하단 네비 없는 풀스크린 지도 상세 (AppLayout 밖). 지도 SDK가 무거워 code-split.
+    path: "/map/:id",
+    lazy: async () => {
+      const { MapDetailPage } = await import("@/pages/route/MapDetailPage");
+      return { Component: MapDetailPage };
+    },
+  },
+  {
     element: <AuthLayout />,
     children: [
       {

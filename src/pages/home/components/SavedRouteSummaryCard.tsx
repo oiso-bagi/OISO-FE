@@ -17,9 +17,9 @@ interface SavedRouteSummaryCardProps {
 export function SavedRouteSummaryCard({ route }: SavedRouteSummaryCardProps) {
   return (
     <Link
-      to={`/saved?routeId=${route.id}`}
+      to={`/map/${route.id}?source=saved`}
       className={styles.card}
-      aria-label={`${route.name} 상세 보기`}
+      aria-label={`${route.name} 지도 보기`}
     >
       <div className={styles.header}>
         <strong className={styles.name}>{route.name}</strong>

@@ -53,17 +53,25 @@ export const formatStopTransportation = (value: TransportationType): string =>
 interface RouteSummarySource {
   totalCost: number | null;
   totalDurationMinutes: number | null;
-  distanceKm: number;
   congestionLevel: CongestionLevel;
   savingAmount: number | null;
+  savedAt?: string;
 }
+
+/** 저장일 짧은 표기. "2026-05-18" → "26.05.18" */
+const formatSavedDateShort = (isoDate: string): string => {
+  const [year, month, day] = isoDate.split("-");
+
+  return `${year.slice(2)}.${month}.${day}`;
+};
 
 /**
  * RouteBox 의 summaryItems(4칸 고정)로 변환합니다.
  * 세 번째 칸이 variant 에 따라 달라집니다.
  *
  * - default  : 비용 / 시간 / 혼잡도(primary100) / 절약(secondary100)
- * - editable : 비용 / 시간 / 거리              / 절약(secondary100)
+ * - editable : 비용 / 시간 / 저장일            / 절약(secondary100)
+ *   (거리는 상단 정보 라인과 중복이라 저장일로 대체)
  */
 export const toRouteSummaryItems = (
   route: RouteSummarySource,
@@ -71,7 +79,10 @@ export const toRouteSummaryItems = (
 ): RouteBoxProps["summaryItems"] => {
   const thirdItem: RouteSummaryItem =
     variant === "editable"
-      ? { label: "거리", value: formatDistance(route.distanceKm) }
+      ? {
+          label: "저장일",
+          value: route.savedAt ? formatSavedDateShort(route.savedAt) : "-",
+        }
       : {
           label: "혼잡도",
           value: formatCongestion(route.congestionLevel),

@@ -1,12 +1,8 @@
-import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { RouteBox } from "@/shared/components/RouteBox";
 import { Header } from "@/shared/components/header/Header";
 import { pageContent } from "@/shared/styles/layout.css";
-
-import { RouteStopList } from "./components/RouteStopList";
-import { useSavedRouteDetail } from "./hooks/useSavedRouteDetail";
 
 import * as styles from "./components/routeLayout.css";
 
@@ -23,22 +19,9 @@ import {
 import { SavedRouteSummary } from "./components/SavedRouteSummary";
 
 export function SavedRoutePage() {
-  // 홈에서 "저장한 루트" 카드를 눌러 들어오면 해당 루트를 펼친 상태로 시작합니다.
-  const [searchParams] = useSearchParams();
-  const initialExpandedRouteId = Number(searchParams.get("routeId")) || null;
-
-  const [expandedRouteId, setExpandedRouteId] = useState<number | null>(
-    initialExpandedRouteId,
-  );
+  const navigate = useNavigate();
 
   const { data, isPending, isError } = useSavedRoutes();
-  // 카드를 펼쳤을 때만 이 쿼리가 켜지므로, isPending 은 "아직 결과 없음"과 같습니다.
-  // isLoading 은 재시도 대기 중 false 가 되어 빈 화면이 생깁니다.
-  const {
-    data: routeDetail,
-    isPending: isDetailPending,
-    isError: isDetailError,
-  } = useSavedRouteDetail(expandedRouteId);
 
   const updateCompleted = useUpdateSavedRouteCompleted();
   const deleteRoute = useDeleteSavedRoute();
@@ -52,8 +35,9 @@ export function SavedRoutePage() {
 
   const totalSavingAmount = data?.totalSavingAmount ?? calculatedSavingAmount;
 
-  const handleToggleExpanded = (routeId: number) => {
-    setExpandedRouteId((prev) => (prev === routeId ? null : routeId));
+  // 상세보기 → 지도 상세 페이지로 이동
+  const handleOpenMap = (routeId: number) => {
+    navigate(`/map/${routeId}?source=saved`);
   };
 
   const handleToggleCompleted = (routeId: number, isCompleted: boolean) => {
@@ -99,33 +83,12 @@ export function SavedRoutePage() {
                 transportation={formatTransportation(route.transportationTypes)}
                 summaryItems={toRouteSummaryItems(route, "editable")}
                 isCompleted={route.isCompleted}
-                isExpanded={expandedRouteId === route.id}
-                onToggleExpanded={() => handleToggleExpanded(route.id)}
+                onToggleExpanded={() => handleOpenMap(route.id)}
                 onToggleCompleted={() =>
                   handleToggleCompleted(route.id, route.isCompleted)
                 }
                 onDelete={() => handleDelete(route.id)}
-              >
-                {expandedRouteId === route.id && (
-                  <>
-                    {isDetailPending && (
-                      <p className={styles.detailStatusText}>
-                        경유지를 불러오는 중…
-                      </p>
-                    )}
-
-                    {isDetailError && (
-                      <p className={styles.detailStatusText}>
-                        경유지를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
-                      </p>
-                    )}
-
-                    {routeDetail?.id === route.id && (
-                      <RouteStopList stops={routeDetail.stops} />
-                    )}
-                  </>
-                )}
-              </RouteBox>
+              />
             ))}
           </div>
         )}
