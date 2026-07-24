@@ -6,7 +6,7 @@ interface SavedRouteSummaryProps {
   totalSavingAmount: number | null;
 }
 
-export default function SavedRouteSummary({
+export function SavedRouteSummary({
   totalSavingAmount,
 }: SavedRouteSummaryProps) {
   const formattedAmount =

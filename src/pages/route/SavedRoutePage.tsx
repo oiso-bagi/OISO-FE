@@ -17,7 +17,7 @@ import {
   formatTransportation,
   toRouteSummaryItems,
 } from "./utils/routeFormat";
-import SavedRouteSummary from "./components/SavedRouteSummary";
+import { SavedRouteSummary } from "./components/SavedRouteSummary";
 
 export function SavedRoutePage() {
   const [expandedRouteId, setExpandedRouteId] = useState<number | null>(null);
