@@ -2,8 +2,8 @@ import { useState } from "react";
 
 import { RouteBox } from "@/shared/components/RouteBox";
 import { Header } from "@/shared/components/header/Header";
-import { pageContent } from "@/shared/styles/layout.css";
 
+import { RouteMap } from "./components/RouteMap";
 import { RouteStopList } from "./components/RouteStopList";
 import * as styles from "./components/routeLayout.css";
 import { useRecommendedRouteDetail } from "./hooks/useRecommendedRouteDetail";
@@ -37,11 +37,21 @@ export function RoutePage() {
     createSavedRoute.mutate(routeId);
   };
 
+  // 펼쳐진 코스의 경유지를 상단 지도에 표시 (없으면 부산 기본 지도)
+  const mapStops =
+    expandedRouteId !== null && routeDetail?.id === expandedRouteId
+      ? routeDetail.stops
+      : [];
+
   return (
-    <div>
+    <div className={styles.page}>
       <Header backTo="/" title="추천 루트" />
 
-      <div className={pageContent}>
+      <div className={styles.mapArea}>
+        <RouteMap stops={mapStops} />
+      </div>
+
+      <div className={styles.listArea}>
         {isPending && <p className={styles.statusText}>루트를 불러오는 중…</p>}
 
         {isError && (
