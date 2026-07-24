@@ -34,6 +34,9 @@ export interface RouteBoxProps {
   isCompleted?: boolean;
   isExpanded?: boolean;
 
+  /** 완료 토글·삭제 진행 중이면 해당 버튼을 비활성화합니다. */
+  disabled?: boolean;
+
   // 펼쳐진 상태에서 표시할 경유지 목록 등을 전달
   // 사용하는 페이지에 넣기
   children?: ReactNode;
@@ -54,6 +57,7 @@ export function RouteBox({
   isRecommended = false,
   isCompleted = false,
   isExpanded = false,
+  disabled = false,
   children,
   onToggleExpanded,
   onToggleCompleted,
@@ -77,6 +81,7 @@ export function RouteBox({
             aria-label={
               isCompleted ? "여행 완료 상태 취소" : "여행 완료 상태로 변경"
             }
+            disabled={disabled}
             onClick={onToggleCompleted}
           >
             <span className={styles.toggleThumb} data-checked={isCompleted} />
@@ -86,6 +91,7 @@ export function RouteBox({
             type="button"
             className={styles.deleteButton}
             aria-label={`${title} 루트 삭제`}
+            disabled={disabled}
             onClick={onDelete}
           >
             <TrashcanIcon className={styles.deleteIcon} aria-hidden />

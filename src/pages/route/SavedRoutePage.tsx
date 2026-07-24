@@ -52,6 +52,9 @@ export function SavedRoutePage() {
   };
 
   const handleToggleCompleted = (routeId: number, isCompleted: boolean) => {
+    // 진행 중이면 중복 요청을 막습니다.
+    if (updateCompleted.isPending) return;
+
     updateCompleted.mutate(
       { routeId, isCompleted: !isCompleted },
       {
@@ -69,6 +72,9 @@ export function SavedRoutePage() {
   };
 
   const handleConfirmDelete = () => {
+    // 진행 중이면 중복 삭제를 막습니다.
+    if (deleteRoute.isPending) return;
+
     if (deleteTargetId !== null) {
       // 삭제 성공 토스트는 띄우지 않습니다(확인 다이얼로그로 이미 피드백을 줬음).
       // 실패했을 때만 알립니다.
@@ -117,6 +123,7 @@ export function SavedRoutePage() {
                 transportation={formatTransportation(route.transportationTypes)}
                 summaryItems={toRouteSummaryItems(route, "editable")}
                 isCompleted={route.isCompleted}
+                disabled={updateCompleted.isPending || deleteRoute.isPending}
                 onToggleExpanded={() => handleOpenMap(route.id)}
                 onToggleCompleted={() =>
                   handleToggleCompleted(route.id, route.isCompleted)
