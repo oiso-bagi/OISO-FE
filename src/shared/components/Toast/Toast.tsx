@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import * as styles from "./Toast.css";
 
 interface ToastProps {
-  open: boolean;
+  isOpen: boolean;
   message: string;
   duration?: number;
   onClose: () => void;
@@ -18,7 +18,7 @@ interface ToastProps {
  * 저장 성공 같은 알림, 또는 실행취소 액션이 있는 알림에 재사용.
  */
 export function Toast({
-  open,
+  isOpen,
   message,
   duration = 4000,
   onClose,
@@ -26,14 +26,14 @@ export function Toast({
   onAction,
 }: ToastProps) {
   useEffect(() => {
-    if (!open) return;
+    if (!isOpen) return;
 
     const timer = window.setTimeout(onClose, duration);
 
     return () => window.clearTimeout(timer);
-  }, [open, duration, onClose]);
+  }, [isOpen, duration, onClose]);
 
-  if (!open) return null;
+  if (!isOpen) return null;
 
   return (
     <div className={styles.wrapper}>

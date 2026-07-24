@@ -32,7 +32,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {toast && (
         <Toast
           key={keyRef.current}
-          open
+          isOpen
           message={toast.message}
           duration={toast.duration}
           actionLabel={toast.actionLabel}

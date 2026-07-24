@@ -1,7 +1,7 @@
 import * as styles from "./ConfirmDialog.css";
 
 interface ConfirmDialogProps {
-  open: boolean;
+  isOpen: boolean;
   title: string;
   description?: string;
   confirmLabel?: string;
@@ -12,7 +12,7 @@ interface ConfirmDialogProps {
 
 /** 삭제처럼 되돌리기 어려운 행동 전에 한 번 확인받는 다이얼로그 */
 export function ConfirmDialog({
-  open,
+  isOpen,
   title,
   description,
   confirmLabel = "삭제",
@@ -20,7 +20,7 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
-  if (!open) return null;
+  if (!isOpen) return null;
 
   return (
     <div

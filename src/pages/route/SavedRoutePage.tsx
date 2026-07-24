@@ -56,7 +56,9 @@ export function SavedRoutePage() {
       { routeId, isCompleted: !isCompleted },
       {
         onError: () =>
-          showToast({ message: "상태를 변경하지 못했어요. 다시 시도해 주세요." }),
+          showToast({
+            message: "상태를 변경하지 못했어요. 다시 시도해 주세요.",
+          }),
       },
     );
   };
@@ -72,7 +74,9 @@ export function SavedRoutePage() {
       // 실패했을 때만 알립니다.
       deleteRoute.mutate(deleteTargetId, {
         onError: () =>
-          showToast({ message: "삭제하지 못했어요. 잠시 후 다시 시도해 주세요." }),
+          showToast({
+            message: "삭제하지 못했어요. 잠시 후 다시 시도해 주세요.",
+          }),
       });
     }
     setDeleteTargetId(null);
@@ -125,7 +129,7 @@ export function SavedRoutePage() {
       </div>
 
       <ConfirmDialog
-        open={deleteTarget !== undefined}
+        isOpen={deleteTarget !== undefined}
         title={
           deleteTarget
             ? `'${deleteTarget.name}'을(를) 삭제할까요?`
