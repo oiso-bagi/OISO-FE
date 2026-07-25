@@ -70,6 +70,7 @@ export const categoryAmount = style([
     margin: `${vars.space.xxs} 0 0`,
     overflow: "hidden",
     textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
   },
 ]);
 
