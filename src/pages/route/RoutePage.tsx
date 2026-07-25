@@ -42,7 +42,9 @@ export function RoutePage() {
     createSavedRoute.mutate(routeId, {
       onSuccess: () => showToast({ message: "저장되었습니다" }),
       onError: () =>
-        showToast({ message: "저장하지 못했어요. 잠시 후 다시 시도해 주세요." }),
+        showToast({
+          message: "저장하지 못했어요. 잠시 후 다시 시도해 주세요.",
+        }),
     });
   };
 

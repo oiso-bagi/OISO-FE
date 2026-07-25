@@ -26,9 +26,7 @@ export function MiniCardSkeleton() {
 }
 
 /** 미니 카드 목록 로딩 자리표시 */
-export function MiniCardListSkeleton({
-  count = 3,
-}: MiniCardListSkeletonProps) {
+export function MiniCardListSkeleton({ count = 3 }: MiniCardListSkeletonProps) {
   return (
     <div className={styles.list}>
       {Array.from({ length: count }).map((_, index) => (
