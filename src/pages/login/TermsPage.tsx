@@ -2,7 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Card } from "@/shared/components/Card";
+import { Header } from "@/shared/components/header/Header";
 import CheckIcon from "@/shared/icons/check.svg?react";
+import { pageContent } from "@/shared/styles/layout.css";
 
 import * as styles from "./TermsPage.css";
 
@@ -63,12 +65,17 @@ export function TermsPage() {
     if (!isRequiredChecked) return;
 
     // TODO: 약관 동의 API 연동 후 다음 온보딩 경로로 이동해 주세요.
-    navigate("/survey");
+    navigate("/");
   };
 
   return (
     <main className={styles.page}>
-      <section className={styles.content} aria-label="서비스 이용 약관">
+      <Header backTo="/login" title="약관 동의" />
+
+      <section
+        className={`${pageContent} ${styles.content}`}
+        aria-label="서비스 이용 약관"
+      >
         <Card className={styles.allAgreement}>
           <label className={styles.allAgreementLabel}>
             <input
@@ -130,14 +137,16 @@ export function TermsPage() {
         </Card>
       </section>
 
-      <button
-        type="button"
-        className={styles.submitButton}
-        disabled={!isRequiredChecked}
-        onClick={handleSubmit}
-      >
-        동의하고 시작하기
-      </button>
+      <div className={`${pageContent} ${styles.submitArea}`}>
+        <button
+          type="button"
+          className={styles.submitButton}
+          disabled={!isRequiredChecked}
+          onClick={handleSubmit}
+        >
+          동의하고 시작하기
+        </button>
+      </div>
     </main>
   );
 }

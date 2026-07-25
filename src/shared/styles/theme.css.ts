@@ -8,6 +8,7 @@ export const vars = createGlobalTheme(":root", {
 
     primary500: "#81EA14",
     primary400: "#9EF04A",
+    primary350: "#B3EF74",
     primary300: "#D5FAB0",
     primary100: "#E8FFC4",
 
