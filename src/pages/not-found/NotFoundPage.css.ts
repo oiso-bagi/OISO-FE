@@ -4,19 +4,17 @@ import { vars } from "@/shared/styles/theme.css";
 import { typographyStyles } from "@/shared/styles/typography";
 
 export const page = style({
-  width: "100%",
-  minWidth: "375px",
   maxWidth: "430px",
   minHeight: "100vh",
   margin: "0 auto",
-  padding: "24px 16px",
+  paddingBlock: vars.space.lg,
   display: "grid",
   placeItems: "center",
   background: `linear-gradient(
     to bottom,
-    #F0F4E8 0%,
+    ${vars.color.bg} 0%,
     ${vars.color.primary100} 48%,
-    #B3EF74 100%
+    ${vars.color.primary350} 100%
   )`,
 });
 
@@ -33,7 +31,7 @@ export const statusBadge = style([
   typographyStyles.largeTitleR32,
   {
     minWidth: "90px",
-    padding: "10px 8px",
+    padding: vars.space.xs,
     border: `2.5px solid ${vars.color.black}`,
     boxShadow: `4px 4px 0 ${vars.color.black}`,
     backgroundColor: vars.color.secondary500,
@@ -45,14 +43,14 @@ export const statusBadge = style([
 export const title = style([
   typographyStyles.title1,
   {
-    marginTop: "16px",
+    marginTop: vars.space.md,
   },
 ]);
 
 export const description = style([
   typographyStyles.body3,
   {
-    marginTop: "16px",
+    marginTop: vars.space.md,
     color: vars.color.neutral500,
   },
 ]);
@@ -62,8 +60,8 @@ export const homeLink = style([
   {
     minWidth: "149px",
     minHeight: "56px",
-    marginTop: "16px",
-    padding: "15px 16px",
+    marginTop: vars.space.md,
+    padding: vars.space.md,
     border: `2.5px solid ${vars.color.black}`,
     boxShadow: `4px 4px 0 ${vars.color.black}`,
     display: "inline-flex",

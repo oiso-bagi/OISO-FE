@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
 
+import { pageContent } from "@/shared/styles/layout.css";
+
 import * as styles from "./NotFoundPage.css";
 
 export function NotFoundPage() {
   return (
-    <main className={styles.page}>
+    <main className={`${pageContent} ${styles.page}`}>
       <section className={styles.content} aria-labelledby="not-found-title">
         <div className={styles.statusBadge} aria-hidden="true">
           404

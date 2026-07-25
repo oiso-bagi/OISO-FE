@@ -6,16 +6,14 @@ import { body2, body6, body7, body9 } from "@/shared/styles/typography.css";
 export const page = style({
   width: "100%",
   minHeight: "100vh",
-  padding: "0 0 20px",
+  paddingBottom: vars.space.lg,
   display: "flex",
   flexDirection: "column",
   backgroundColor: vars.color.bg,
 });
 
 export const content = style({
-  width: "100%",
-  marginTop: "16px",
-  paddingInline: vars.space.md,
+  marginTop: vars.space.md,
 });
 
 export const allAgreement = style([
@@ -30,10 +28,10 @@ export const allAgreementLabel = style([
   body2,
   {
     minHeight: "78px",
-    padding: "16px 16px",
+    padding: vars.space.md,
     display: "flex",
     alignItems: "center",
-    gap: "10px",
+    gap: vars.space.xs,
     cursor: "pointer",
   },
 ]);
@@ -75,8 +73,8 @@ export const checkIcon = style({
 
 export const agreementBox = style([
   {
-    marginTop: "24px",
-    padding: "17px 17px 15px",
+    marginTop: vars.space.lg,
+    padding: vars.space.md,
   },
 ]);
 
@@ -85,12 +83,12 @@ export const agreementRow = style({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  gap: "10px",
+  gap: vars.space.xs,
 });
 
 export const optionalDivider = style({
-  marginTop: "8px",
-  paddingTop: "20px",
+  marginTop: vars.space.xs,
+  paddingTop: vars.space.md,
   borderTop: `2.5px solid ${vars.color.neutral100}`,
 });
 
@@ -100,7 +98,7 @@ export const agreementLabel = style([
     minWidth: 0,
     display: "flex",
     alignItems: "center",
-    gap: "10px",
+    gap: vars.space.xs,
     cursor: "pointer",
     whiteSpace: "nowrap",
   },
@@ -110,7 +108,7 @@ export const agreementActions = style({
   flexShrink: 0,
   display: "flex",
   alignItems: "center",
-  gap: "13px",
+  gap: vars.space.sm,
 });
 
 export const typeBadge = style([
@@ -147,9 +145,8 @@ export const viewButton = style([
 export const submitButton = style([
   body2,
   {
-    width: "calc(100% - 32px)",
+    width: "100%",
     minHeight: "82px",
-    margin: "auto 16px 0",
     border: "2.5px solid #111111",
     borderRadius: 0,
     backgroundColor: vars.color.primary500,
@@ -172,3 +169,7 @@ export const submitButton = style([
     },
   },
 ]);
+
+export const submitArea = style({
+  marginTop: "auto",
+});

@@ -4,16 +4,16 @@ import { vars } from "@/shared/styles/theme.css";
 import { typographyStyles } from "@/shared/styles/typography";
 
 export const page = style({
-  paddingBottom: "32px",
+  paddingBottom: vars.space.xl,
 });
 
 export const content = style({
-  paddingTop: "0px",
+  paddingTop: 0,
 });
 
 export const summaryCard = style({
-  marginTop: "8px",
-  padding: "16px",
+  marginTop: vars.space.xs,
+  padding: vars.space.md,
   backgroundColor: vars.color.primary500,
 });
 
@@ -23,8 +23,7 @@ export const totalSaving = style([
   typographyStyles.largeBody1,
   {
     display: "block",
-    marginTop: "4px",
-    fontSize: "42px",
+    marginTop: vars.space.xxs,
     lineHeight: 1,
   },
 ]);
@@ -32,27 +31,27 @@ export const totalSaving = style([
 export const summaryDescription = style([
   typographyStyles.body7,
   {
-    marginTop: "4px",
+    marginTop: vars.space.xxs,
   },
 ]);
 
 export const section = style({
-  marginTop: "24px",
+  marginTop: vars.space.lg,
 });
 
 export const sectionTitle = style([typographyStyles.largeBody2]);
 
 export const categoryGrid = style({
-  marginTop: "12px",
+  marginTop: vars.space.sm,
   display: "grid",
   gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-  gap: "12px",
+  gap: vars.space.sm,
 });
 
 export const categoryCard = style({
   minWidth: 0,
   minHeight: "70px",
-  padding: "12px 12px",
+  padding: vars.space.sm,
   border: `2.5px solid ${vars.color.black}`,
   boxShadow: `4px 4px 0 ${vars.color.black}`,
   backgroundColor: vars.color.white,
@@ -68,15 +67,15 @@ export const categoryLabel = style([
 export const categoryAmount = style([
   typographyStyles.largeBody2,
   {
-    margin: "4px 0 0",
+    margin: `${vars.space.xxs} 0 0`,
     overflow: "hidden",
     textOverflow: "ellipsis",
   },
 ]);
 
 export const contributionCard = style({
-  marginTop: "12px",
-  padding: "16px",
+  marginTop: vars.space.sm,
+  padding: vars.space.md,
   backgroundColor: vars.color.primary100,
 });
 
@@ -85,7 +84,7 @@ export const contributionTitle = style([typographyStyles.body4]);
 export const progressTrack = style({
   width: "100%",
   height: "20px",
-  marginTop: "8px",
+  marginTop: vars.space.xs,
   overflow: "hidden",
   border: `2.5px solid ${vars.color.black}`,
   backgroundColor: vars.color.white,
@@ -100,7 +99,7 @@ export const progressValue = style({
 export const contributionInfo = style([
   typographyStyles.body9,
   {
-    marginTop: "12px",
+    marginTop: vars.space.sm,
     color: vars.color.neutral500,
   },
 ]);
@@ -121,12 +120,12 @@ export const contributionPercent = style([
 ]);
 
 export const contributionDescription = style({
-  marginTop: "4px",
+  marginTop: vars.space.xxs,
 });
 
 export const historyCard = style({
-  marginTop: "12px",
-  padding: "16px 12px",
+  marginTop: vars.space.sm,
+  padding: `${vars.space.md} ${vars.space.sm}`,
 });
 
 export const historyItem = style({
@@ -137,7 +136,7 @@ export const historyItem = style({
 
   selectors: {
     "& + &": {
-      marginTop: "14px",
+      marginTop: vars.space.xs,
     },
   },
 });

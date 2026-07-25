@@ -16,24 +16,26 @@ const SAVING_HISTORY = [
   {
     id: 1,
     title: "영도 반나절 가성비 코스",
-    date: "2026.06.28",
+    date: "2026-06-28",
     amount: "-18,000원",
   },
   {
     id: 2,
     title: "서면·전포 카페 코스",
-    date: "2026.06.15",
+    date: "2026-06-15",
     amount: "-12,000원",
   },
   {
     id: 3,
     title: "기장 해안 드라이브",
-    date: "2026.05.30",
+    date: "2026-05-30",
     amount: "-17,000원",
   },
 ] as const;
 
 const LOCAL_CONTRIBUTION_PERCENT = 65;
+
+const formatDisplayDate = (date: string) => date.replaceAll("-", ".");
 
 export function DashboardPage() {
   const navigate = useNavigate();
@@ -111,7 +113,7 @@ export function DashboardPage() {
                 <div>
                   <h3 className={styles.historyTitle}>{title}</h3>
                   <time className={styles.historyDate} dateTime={date}>
-                    {date}
+                    {formatDisplayDate(date)}
                   </time>
                 </div>
                 <strong className={styles.historyAmount}>{amount}</strong>
