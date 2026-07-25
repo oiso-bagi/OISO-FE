@@ -11,6 +11,7 @@ import { TermsPage } from "@/pages/login/TermsPage";
 import { AuthCallbackPage } from "@/pages/login/AuthCallbackPage";
 import { SurveyPage } from "@/pages/survey/SurveyPage";
 import { DashboardPage } from "@/pages/dashboard/DashboardPage";
+import { NotFoundPage } from "@/pages/not-found/NotFoundPage";
 
 export const router = createBrowserRouter([
   {
@@ -62,5 +63,9 @@ export const router = createBrowserRouter([
         element: <AuthCallbackPage />,
       },
     ],
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
   },
 ]);

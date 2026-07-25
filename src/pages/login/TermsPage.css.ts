@@ -6,7 +6,7 @@ import { body2, body6, body7, body9 } from "@/shared/styles/typography.css";
 export const page = style({
   width: "100%",
   minHeight: "100vh",
-  padding: "24px 22px 20px",
+  padding: "0 0 20px",
   display: "flex",
   flexDirection: "column",
   backgroundColor: vars.color.bg,
@@ -14,7 +14,8 @@ export const page = style({
 
 export const content = style({
   width: "100%",
-  marginTop: "46px",
+  marginTop: "16px",
+  paddingInline: vars.space.md,
 });
 
 export const allAgreement = style([
@@ -146,9 +147,9 @@ export const viewButton = style([
 export const submitButton = style([
   body2,
   {
-    width: "100%",
+    width: "calc(100% - 32px)",
     minHeight: "82px",
-    marginTop: "auto",
+    margin: "auto 16px 0",
     border: "2.5px solid #111111",
     borderRadius: 0,
     backgroundColor: vars.color.primary500,

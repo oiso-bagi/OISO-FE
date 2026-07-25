@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Card } from "@/shared/components/Card";
+import { Header } from "@/shared/components/header/Header";
 import CheckIcon from "@/shared/icons/check.svg?react";
 
 import * as styles from "./TermsPage.css";
@@ -63,11 +64,13 @@ export function TermsPage() {
     if (!isRequiredChecked) return;
 
     // TODO: 약관 동의 API 연동 후 다음 온보딩 경로로 이동해 주세요.
-    navigate("/survey");
+    navigate("/");
   };
 
   return (
     <main className={styles.page}>
+      <Header backTo="/login" title="약관 동의" />
+
       <section className={styles.content} aria-label="서비스 이용 약관">
         <Card className={styles.allAgreement}>
           <label className={styles.allAgreementLabel}>
