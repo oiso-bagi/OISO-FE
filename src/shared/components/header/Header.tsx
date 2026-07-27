@@ -53,18 +53,14 @@ export function Header({
     (onClickRight ? (
       <button
         type="button"
-        className={styles.rightArea({
-          variant: rightVariant,
-        })}
+        className={`${styles.rightArea} ${styles.rightAreaVariant[rightVariant]}`}
         onClick={onClickRight}
       >
         {rightText}
       </button>
     ) : (
       <span
-        className={styles.rightArea({
-          variant: rightVariant,
-        })}
+        className={`${styles.rightArea} ${styles.rightAreaVariant[rightVariant]}`}
       >
         {rightText}
       </span>

@@ -132,9 +132,9 @@ export function RouteBox({
         {summaryItems.map((item, index) => (
           <div
             key={`${item.label}-${index}`}
-            className={styles.summaryItem({
-              variant: item.variant ?? "default",
-            })}
+            className={`${styles.summaryItem} ${
+              styles.summaryItemVariant[item.variant ?? "default"]
+            }`}
           >
             <span className={styles.summaryLabel}>{item.label}</span>
 
