@@ -62,9 +62,6 @@ export function LoginPage() {
 
       <footer className={styles.footer}>
         <p>2026 관광데이터 활용 공모전 · 개발 부문</p>
-        <p>
-          계정이 없으신가요? <span className={styles.signupText}>회원가입</span>
-        </p>
       </footer>
     </div>
   );

@@ -163,11 +163,3 @@ export const footer = style([
     gap: "12px",
   },
 ]);
-
-export const signupText = style([
-  body7,
-  {
-    marginLeft: "4px",
-    color: vars.color.secondary500,
-  },
-]);
