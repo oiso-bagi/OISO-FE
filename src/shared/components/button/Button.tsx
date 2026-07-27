@@ -1,11 +1,38 @@
-import type { ButtonHTMLAttributes, PropsWithChildren } from "react";
+import type {
+  ButtonHTMLAttributes,
+  CSSProperties,
+  PropsWithChildren,
+} from "react";
 import * as styles from "./Button.css";
 
-type ButtonProps = PropsWithChildren<ButtonHTMLAttributes<HTMLButtonElement>>;
+type ButtonVariant = "primary" | "secondary";
 
-export function Button({ children, ...props }: ButtonProps) {
+type ButtonProps = PropsWithChildren<
+  ButtonHTMLAttributes<HTMLButtonElement> & {
+    variant?: ButtonVariant;
+    width?: string;
+  }
+>;
+
+export function Button({
+  children,
+  className,
+  style,
+  variant = "primary",
+  width,
+  ...props
+}: ButtonProps) {
+  const buttonStyle = {
+    "--button-width": width,
+    ...style,
+  } as CSSProperties;
+
   return (
-    <button className={styles.button} {...props}>
+    <button
+      className={`${styles.button} ${styles.variant[variant]} ${className ?? ""}`}
+      style={buttonStyle}
+      {...props}
+    >
       {children}
     </button>
   );
