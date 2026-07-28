@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
+import { completeSurvey } from "@/shared/lib/onboardingFlow";
+
 import { SurveyHeader } from "./components/SurveyHeader";
 import { SurveyProgress } from "./components/SurveyProgress";
 import { useBudgetSelection } from "./hooks/useBudgetSelection";
@@ -46,7 +48,8 @@ export function SurveyPage() {
 
   const handleNext = () => {
     if (currentStep >= totalStep) {
-      navigate("/route");
+      completeSurvey();
+      navigate("/");
       return;
     }
 
