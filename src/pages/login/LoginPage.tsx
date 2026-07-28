@@ -6,7 +6,6 @@ import BestRoute from "@/shared/icons/best_route.svg?react";
 import LocalBalance from "@/shared/icons/local.svg?react";
 import KakaoLogo from "@/shared/icons/kakao.svg?react";
 import GoogleLogo from "@/shared/icons/google.svg?react";
-import { completeLogin } from "@/shared/lib/onboardingFlow";
 
 import * as styles from "./LoginPage.css";
 
@@ -20,7 +19,6 @@ export function LoginPage() {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    completeLogin();
     navigate("/survey");
   };
 

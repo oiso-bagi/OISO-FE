@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import XIcon from "@/shared/icons/x.svg?react";
-import { completeLogin } from "@/shared/lib/onboardingFlow";
+import { isLoginCompleted } from "@/shared/lib/onboardingFlow";
 
 import * as styles from "./AuthCallbackPage.css";
 
@@ -15,8 +15,7 @@ export function AuthCallbackPage() {
 
   useEffect(() => {
     if (!isError) {
-      completeLogin();
-      navigate("/survey", { replace: true });
+      navigate(isLoginCompleted() ? "/survey" : "/terms", { replace: true });
     }
   }, [isError, navigate]);
 

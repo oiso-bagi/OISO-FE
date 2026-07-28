@@ -4,20 +4,44 @@ const surveyCompletedKey = "oiso:survey-completed";
 const canUseStorage = () => typeof window !== "undefined";
 
 export const isLoginCompleted = () =>
-  canUseStorage() && window.localStorage.getItem(loginCompletedKey) === "true";
+  canUseStorage() && getStorageItem(loginCompletedKey) === "true";
 
 export const isSurveyCompleted = () =>
-  canUseStorage() && window.localStorage.getItem(surveyCompletedKey) === "true";
+  canUseStorage() && getStorageItem(surveyCompletedKey) === "true";
 
 export const completeLogin = () => {
   if (!canUseStorage()) return;
 
-  window.localStorage.setItem(loginCompletedKey, "true");
-  window.localStorage.removeItem(surveyCompletedKey);
+  setStorageItem(loginCompletedKey, "true");
+  removeStorageItem(surveyCompletedKey);
 };
 
 export const completeSurvey = () => {
   if (!canUseStorage()) return;
 
-  window.localStorage.setItem(surveyCompletedKey, "true");
+  setStorageItem(surveyCompletedKey, "true");
+};
+
+const getStorageItem = (key: string) => {
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+};
+
+const setStorageItem = (key: string, value: string) => {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    // Storage can be unavailable in private modes or restricted browsers.
+  }
+};
+
+const removeStorageItem = (key: string) => {
+  try {
+    window.localStorage.removeItem(key);
+  } catch {
+    // Storage can be unavailable in private modes or restricted browsers.
+  }
 };
