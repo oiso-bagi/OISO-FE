@@ -30,10 +30,6 @@ export const router = createBrowserRouter([
         element: <SavedRoutePage />,
       },
       {
-        path: "/survey",
-        element: <SurveyPage />,
-      },
-      {
         path: "/dashboard",
         element: <DashboardPage />,
       },
@@ -61,6 +57,10 @@ export const router = createBrowserRouter([
       {
         path: "/auth/callback",
         element: <AuthCallbackPage />,
+      },
+      {
+        path: "/survey",
+        element: <SurveyPage />,
       },
     ],
   },

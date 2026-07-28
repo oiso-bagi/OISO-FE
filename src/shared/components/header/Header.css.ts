@@ -1,5 +1,4 @@
-import { style } from "@vanilla-extract/css";
-import { recipe } from "@vanilla-extract/recipes";
+import { style, styleVariants } from "@vanilla-extract/css";
 
 import { vars } from "@/shared/styles/theme.css";
 import * as typo from "@/shared/styles/typography.css";
@@ -51,65 +50,57 @@ export const title = style({
   whiteSpace: "nowrap",
 });
 
-export const rightArea = recipe({
-  base: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
+export const rightArea = style({
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
 
-    flexShrink: 0,
+  flexShrink: 0,
 
-    fontFamily: "inherit",
-    color: vars.color.black,
+  fontFamily: "inherit",
+  color: vars.color.black,
 
-    boxSizing: "border-box",
-    whiteSpace: "nowrap",
+  boxSizing: "border-box",
+  whiteSpace: "nowrap",
 
-    appearance: "none",
-  },
+  appearance: "none",
+});
 
-  variants: {
-    variant: {
-      count: [
-        typo.detail3,
-        {
-          height: "20px",
-          padding: "4px 8px",
-          marginLeft: "0",
+export const rightAreaVariant = styleVariants({
+  count: [
+    typo.detail3,
+    {
+      height: "20px",
+      padding: "4px 8px",
+      marginLeft: "0",
 
-          backgroundColor: vars.color.white,
-          border: `2px solid ${vars.color.black}`,
-          cursor: "default",
-        },
-      ],
-
-      outline: [
-        typo.body9,
-        {
-          minHeight: "24px",
-          padding: "4px 10px",
-
-          backgroundColor: vars.color.white,
-          border: `2.5px solid ${vars.color.black}`,
-          cursor: "pointer",
-        },
-      ],
-
-      accent: [
-        typo.body9,
-        {
-          minHeight: "24px",
-          padding: "4px 10px",
-
-          backgroundColor: vars.color.secondary100,
-          border: `2.5px solid ${vars.color.black}`,
-          cursor: "pointer",
-        },
-      ],
+      backgroundColor: vars.color.white,
+      border: `2px solid ${vars.color.black}`,
+      cursor: "default",
     },
-  },
+  ],
 
-  defaultVariants: {
-    variant: "outline",
-  },
+  outline: [
+    typo.body9,
+    {
+      minHeight: "24px",
+      padding: "4px 10px",
+
+      backgroundColor: vars.color.white,
+      border: `2.5px solid ${vars.color.black}`,
+      cursor: "pointer",
+    },
+  ],
+
+  accent: [
+    typo.body9,
+    {
+      minHeight: "24px",
+      padding: "4px 10px",
+
+      backgroundColor: vars.color.secondary100,
+      border: `2.5px solid ${vars.color.black}`,
+      cursor: "pointer",
+    },
+  ],
 });

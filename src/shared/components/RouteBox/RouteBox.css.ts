@@ -1,5 +1,4 @@
-import { recipe } from "@vanilla-extract/recipes";
-import { style } from "@vanilla-extract/css";
+import { style, styleVariants } from "@vanilla-extract/css";
 
 import { vars } from "@/shared/styles/theme.css";
 import * as typo from "@/shared/styles/typography.css";
@@ -165,42 +164,34 @@ export const summaryList = style({
   marginTop: "6px",
 });
 
-export const summaryItem = recipe({
-  base: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
+export const summaryItem = style({
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between",
 
-    minWidth: 0,
-    height: "42px",
+  minWidth: 0,
+  height: "42px",
 
-    padding: "4px 6px",
+  padding: "4px 6px",
 
-    backgroundColor: "#FFFFFF",
+  backgroundColor: vars.color.white,
 
-    border: "2px solid #000000",
+  border: `2px solid ${vars.color.black}`,
 
-    boxSizing: "border-box",
+  boxSizing: "border-box",
+});
+
+export const summaryItemVariant = styleVariants({
+  default: {
+    backgroundColor: vars.color.white,
   },
 
-  variants: {
-    variant: {
-      default: {
-        backgroundColor: "#FFFFFF",
-      },
-
-      primary: {
-        backgroundColor: vars.color.primary100,
-      },
-
-      secondary: {
-        backgroundColor: vars.color.secondary100,
-      },
-    },
+  primary: {
+    backgroundColor: vars.color.primary100,
   },
 
-  defaultVariants: {
-    variant: "default",
+  secondary: {
+    backgroundColor: vars.color.secondary100,
   },
 });
 
