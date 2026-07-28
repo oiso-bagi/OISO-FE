@@ -24,7 +24,6 @@ jobs:
           script: |
             const author = context.payload.pull_request.user.login
             const pullNumber = context.payload.pull_request.number
-            const isBestEffortError = (error) => [403, 404].includes(error.status)
 
             try {
               await github.rest.issues.checkUserCanBeAssigned({
@@ -39,13 +38,20 @@ jobs:
                 issue_number: pullNumber,
                 assignees: [author],
               })
+
+              const { data: issue } = await github.rest.issues.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pullNumber,
+              })
+
+              const isAssigned = issue.assignees.some((assignee) => assignee.login === author)
+              if (!isAssigned) {
+                core.setFailed(`Assignee was not applied to PR #${pullNumber}: ${author}`)
+              }
             } catch (error) {
               const message = `Failed to add assignee: ${error.message}`
-              if (isBestEffortError(error)) {
-                core.warning(message)
-              } else {
-                core.setFailed(message)
-              }
+              core.setFailed(message)
             }
 
   request-reviewers:
