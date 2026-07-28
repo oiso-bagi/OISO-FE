@@ -15,7 +15,9 @@ jobs:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       issues: write
+      pull-requests: write
     steps:
       - name: Assign PR to author
         uses: actions/github-script@373c709c69115d41ff229c7e5df9f8788daa9553
