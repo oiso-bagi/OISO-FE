@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
+import { useToast } from "@/shared/components/Toast/toastContext";
 import { completeSurvey } from "@/shared/lib/onboardingFlow";
 
 import { SurveyHeader } from "./components/SurveyHeader";
@@ -14,6 +15,7 @@ import * as styles from "./SurveyPage.css";
 
 export function SurveyPage() {
   const navigate = useNavigate();
+  const showToast = useToast();
   const totalStep = 2;
   const { currentStep, isFirstStep, goNextStep, goPreviousStep, resetStep } =
     useSurveyStep();
@@ -48,7 +50,13 @@ export function SurveyPage() {
 
   const handleNext = () => {
     if (currentStep >= totalStep) {
-      completeSurvey();
+      if (!completeSurvey()) {
+        showToast({
+          message: "설문 완료 상태를 저장하지 못했어요. 다시 시도해 주세요.",
+        });
+        return;
+      }
+
       navigate("/");
       return;
     }

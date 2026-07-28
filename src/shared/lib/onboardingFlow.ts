@@ -10,16 +10,18 @@ export const isSurveyCompleted = () =>
   canUseStorage() && getStorageItem(surveyCompletedKey) === "true";
 
 export const completeLogin = () => {
-  if (!canUseStorage()) return;
+  if (!canUseStorage()) return false;
 
-  setStorageItem(loginCompletedKey, "true");
-  removeStorageItem(surveyCompletedKey);
+  return (
+    setStorageItem(loginCompletedKey, "true") &&
+    removeStorageItem(surveyCompletedKey)
+  );
 };
 
 export const completeSurvey = () => {
-  if (!canUseStorage()) return;
+  if (!canUseStorage()) return false;
 
-  setStorageItem(surveyCompletedKey, "true");
+  return setStorageItem(surveyCompletedKey, "true");
 };
 
 const getStorageItem = (key: string) => {
@@ -33,15 +35,19 @@ const getStorageItem = (key: string) => {
 const setStorageItem = (key: string, value: string) => {
   try {
     window.localStorage.setItem(key, value);
+    return true;
   } catch {
     // Storage can be unavailable in private modes or restricted browsers.
+    return false;
   }
 };
 
 const removeStorageItem = (key: string) => {
   try {
     window.localStorage.removeItem(key);
+    return true;
   } catch {
     // Storage can be unavailable in private modes or restricted browsers.
+    return false;
   }
 };
