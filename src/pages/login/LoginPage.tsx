@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 import OisoLogo from "@/shared/icons/oiso_logo.svg?react";
 import Cost from "@/shared/icons/cost.svg?react";
 import BestRoute from "@/shared/icons/best_route.svg?react";
@@ -14,6 +16,12 @@ const benefits = [
 ] as const;
 
 export function LoginPage() {
+  const navigate = useNavigate();
+
+  const handleLogin = () => {
+    navigate("/survey");
+  };
+
   return (
     <div className={styles.page}>
       <section className={styles.intro} aria-labelledby="login-title">
@@ -48,12 +56,20 @@ export function LoginPage() {
       </section>
 
       <section className={styles.actions} aria-label="로그인 방법">
-        <button type="button" className={styles.kakaoButton}>
+        <button
+          type="button"
+          className={styles.kakaoButton}
+          onClick={handleLogin}
+        >
           {/* TODO: 카카오 SVG 로고를 logoSlot 안에 넣어 주세요. */}
           <KakaoLogo className={styles.logoSlot} aria-hidden="true" />
           카카오로 시작하기
         </button>
-        <button type="button" className={styles.googleButton}>
+        <button
+          type="button"
+          className={styles.googleButton}
+          onClick={handleLogin}
+        >
           {/* TODO: 구글 SVG 로고를 logoSlot 안에 넣어 주세요. */}
           <GoogleLogo className={styles.logoSlot} aria-hidden="true" />
           Google로 계속하기

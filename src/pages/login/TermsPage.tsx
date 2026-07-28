@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 
 import { Card } from "@/shared/components/Card";
 import { Header } from "@/shared/components/header/Header";
+import { useToast } from "@/shared/components/Toast/toastContext";
 import CheckIcon from "@/shared/icons/check.svg?react";
+import { completeLogin } from "@/shared/lib/onboardingFlow";
 import { pageContent } from "@/shared/styles/layout.css";
 
 import * as styles from "./TermsPage.css";
@@ -35,6 +37,7 @@ const initialAgreementState: Record<AgreementKey, boolean> = {
 
 export function TermsPage() {
   const navigate = useNavigate();
+  const showToast = useToast();
   const [checked, setChecked] = useState(initialAgreementState);
 
   const isAllchecked = agreements.every(({ key }) => checked[key]);
@@ -65,7 +68,14 @@ export function TermsPage() {
     if (!isRequiredChecked) return;
 
     // TODO: 약관 동의 API 연동 후 다음 온보딩 경로로 이동해 주세요.
-    navigate("/");
+    if (!completeLogin()) {
+      showToast({
+        message: "동의 상태를 저장하지 못했어요. 다시 시도해 주세요.",
+      });
+      return;
+    }
+
+    navigate("/survey");
   };
 
   return (
