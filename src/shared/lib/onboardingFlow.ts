@@ -13,8 +13,8 @@ export const completeLogin = () => {
   if (!canUseStorage()) return false;
 
   return (
-    setStorageItem(loginCompletedKey, "true") &&
-    removeStorageItem(surveyCompletedKey)
+    removeStorageItem(surveyCompletedKey) &&
+    setStorageItem(loginCompletedKey, "true")
   );
 };
 
