@@ -6,7 +6,7 @@ import { typographyStyles } from "@/shared/styles/typography";
 export const questionSection = style({
   display: "flex",
   flexDirection: "column",
-  gap: "0.375rem",
+  gap: vars.space.xs,
 });
 
 export const questionIndex = style({

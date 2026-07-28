@@ -12,8 +12,8 @@ export const page = style({
 export const content = style({
   flex: "1 1 auto",
   minHeight: 0,
-  padding: "1rem",
+  padding: vars.space.md,
   display: "flex",
   flexDirection: "column",
-  gap: "1rem",
+  gap: vars.space.md,
 });

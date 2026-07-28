@@ -174,16 +174,16 @@ export const summaryItem = style({
 
   padding: "4px 6px",
 
-  backgroundColor: "#FFFFFF",
+  backgroundColor: vars.color.white,
 
-  border: "2px solid #000000",
+  border: `2px solid ${vars.color.black}`,
 
   boxSizing: "border-box",
 });
 
 export const summaryItemVariant = styleVariants({
   default: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: vars.color.white,
   },
 
   primary: {

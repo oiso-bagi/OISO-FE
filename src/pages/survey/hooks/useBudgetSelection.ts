@@ -2,8 +2,8 @@ import { useMemo, useState } from "react";
 
 import { budgetAllocations } from "../mocks/budgetOptions";
 
-const initialTripDays = 2;
-const initialBudget = 60000;
+const initialTripDays = 0;
+const initialBudget = 0;
 
 export function useBudgetSelection() {
   const [tripDays, setTripDays] = useState(initialTripDays);

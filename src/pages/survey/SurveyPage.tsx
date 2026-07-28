@@ -12,6 +12,7 @@ import * as styles from "./SurveyPage.css";
 
 export function SurveyPage() {
   const navigate = useNavigate();
+  const totalStep = 2;
   const { currentStep, isFirstStep, goNextStep, goPreviousStep, resetStep } =
     useSurveyStep();
   const { selectedStyleIdSet, selectedCount, toggleStyle, resetSelection } =
@@ -28,7 +29,7 @@ export function SurveyPage() {
     resetBudget,
   } = useBudgetSelection();
 
-  const goBack = () => {
+  const handleBack = () => {
     if (!isFirstStep) {
       goPreviousStep();
       return;
@@ -37,18 +38,27 @@ export function SurveyPage() {
     navigate(-1);
   };
 
-  const resetSurvey = () => {
+  const handleResetSurvey = () => {
     resetSelection();
     resetBudget();
     resetStep();
   };
 
+  const handleNext = () => {
+    if (currentStep >= totalStep) {
+      navigate("/route");
+      return;
+    }
+
+    goNextStep();
+  };
+
   return (
     <div className={styles.page}>
-      <SurveyHeader onBack={goBack} onReset={resetSurvey} />
+      <SurveyHeader onBack={handleBack} onReset={handleResetSurvey} />
 
       <main className={styles.content}>
-        <SurveyProgress currentStep={currentStep} totalStep={2} />
+        <SurveyProgress currentStep={currentStep} totalStep={totalStep} />
 
         {currentStep === 1 ? (
           <TravelStyleSection
@@ -70,7 +80,7 @@ export function SurveyPage() {
         )}
       </main>
 
-      <SurveyFooter onPrevious={goBack} onNext={goNextStep} />
+      <SurveyFooter onPrevious={handleBack} onNext={handleNext} />
     </div>
   );
 }

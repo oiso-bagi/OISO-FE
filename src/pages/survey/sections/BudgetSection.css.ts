@@ -6,13 +6,13 @@ import { typographyStyles } from "@/shared/styles/typography";
 export const budgetInputSection = style({
   display: "flex",
   flexDirection: "column",
-  gap: "0.5rem",
+  gap: vars.space.xs,
 });
 
 export const fieldGroup = style({
   display: "flex",
   flexDirection: "column",
-  gap: "0.5rem",
+  gap: vars.space.xs,
 });
 
 export const fieldLabel = style({
@@ -23,7 +23,7 @@ export const fieldLabel = style({
 export const dayOptionGrid = style({
   display: "grid",
   gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
-  gap: "0.5rem",
+  gap: vars.space.xs,
 });
 
 export const dayOption = style({
@@ -44,13 +44,13 @@ export const dayOption = style({
 
 export const budgetInputCard = style({
   minHeight: "4.75rem",
-  padding: "1rem",
+  padding: vars.space.md,
   border: `0.15625rem solid ${vars.color.black}`,
   backgroundColor: vars.color.white,
   boxShadow: `0.25rem 0.25rem 0 ${vars.color.black}`,
   display: "flex",
   alignItems: "center",
-  gap: "0.5rem",
+  gap: vars.space.xs,
 });
 
 export const currencySymbol = style({
@@ -69,8 +69,12 @@ export const budgetInput = style({
   border: 0,
   backgroundColor: "transparent",
   color: vars.color.black,
-  outline: "none",
   ...typographyStyles.largeTitleR32,
+
+  ":focus-visible": {
+    outline: `0.125rem solid ${vars.color.black}`,
+    outlineOffset: vars.space.xxs,
+  },
 });
 
 export const currencyUnit = style({
@@ -87,7 +91,7 @@ export const fieldHint = style({
 export const presetSection = style({
   display: "flex",
   flexDirection: "column",
-  gap: "0.5rem",
+  gap: vars.space.xs,
 });
 
 export const presetTitle = style({
@@ -98,7 +102,7 @@ export const presetTitle = style({
 export const presetGrid = style({
   display: "grid",
   gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-  gap: "0.5rem",
+  gap: vars.space.xs,
 });
 
 export const presetButton = style({
@@ -108,7 +112,8 @@ export const presetButton = style({
   backgroundColor: vars.color.white,
   color: vars.color.black,
   cursor: "pointer",
-  whiteSpace: "nowrap",
+  overflowWrap: "anywhere",
+  wordBreak: "keep-all",
   ...typographyStyles.body7,
 });
 
@@ -118,7 +123,7 @@ export const allocationCard = style({
   backgroundColor: vars.color.primary400,
   display: "flex",
   flexDirection: "column",
-  gap: "0.5rem",
+  gap: vars.space.xs,
 });
 
 export const allocationTitle = style({
@@ -129,20 +134,20 @@ export const allocationTitle = style({
 export const allocationList = style({
   display: "flex",
   flexDirection: "column",
-  gap: "0.5rem",
+  gap: vars.space.xs,
 });
 
 export const allocationItem = style({
   display: "flex",
   flexDirection: "column",
-  gap: "0.25rem",
+  gap: vars.space.xxs,
 });
 
 export const allocationRow = style({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  gap: "0.75rem",
+  gap: vars.space.sm,
   color: vars.color.black,
   ...typographyStyles.body3,
 });
@@ -151,7 +156,7 @@ export const allocationLabel = style({
   minWidth: 0,
   display: "inline-flex",
   alignItems: "center",
-  gap: "0.375rem",
+  gap: vars.space.xs,
   whiteSpace: "nowrap",
 });
 
@@ -171,7 +176,7 @@ export const allocationTrack = style({
   height: "1rem",
   overflow: "hidden",
   borderRadius: vars.radius.sm,
-  backgroundColor: "rgba(46, 40, 54, 0.1)",
+  backgroundColor: vars.color.neutral100,
 });
 
 export const allocationFill = style({

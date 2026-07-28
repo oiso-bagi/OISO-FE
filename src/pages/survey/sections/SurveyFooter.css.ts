@@ -1,9 +1,11 @@
 import { style } from "@vanilla-extract/css";
 
+import { vars } from "@/shared/styles/theme.css";
+
 export const footer = style({
-  padding: "1rem",
+  padding: vars.space.md,
   display: "grid",
   gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-  gap: "0.5rem",
+  gap: vars.space.xs,
   flexShrink: 0,
 });

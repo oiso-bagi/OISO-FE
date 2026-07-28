@@ -6,7 +6,7 @@ import { typographyStyles } from "@/shared/styles/typography";
 export const progressSection = style({
   display: "flex",
   flexDirection: "column",
-  gap: "0.5rem",
+  gap: vars.space.xs,
 });
 
 export const progressText = style({
@@ -16,8 +16,8 @@ export const progressText = style({
 
 export const progressBars = style({
   display: "grid",
-  gridTemplateColumns: "repeat(var(--survey-total-step, 2), minmax(0, 1fr))",
-  gap: "0.25rem",
+  gridTemplateColumns: "repeat(var(--survey-total-step), minmax(0, 1fr))",
+  gap: vars.space.xxs,
 });
 
 const progressBar = style({

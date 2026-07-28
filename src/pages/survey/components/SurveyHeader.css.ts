@@ -5,7 +5,7 @@ import { typographyStyles } from "@/shared/styles/typography";
 
 export const header = style({
   height: "3.375rem",
-  padding: "0 1rem",
+  padding: `0 ${vars.space.md}`,
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
@@ -27,7 +27,7 @@ export const backIcon = style({
 
 export const resetButton = style({
   height: "1.5rem",
-  padding: "0.25rem 0.625rem",
+  padding: `${vars.space.xxs} 0.625rem`,
   border: `0.15625rem solid ${vars.color.black}`,
   backgroundColor: vars.color.white,
   color: vars.color.black,

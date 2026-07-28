@@ -10,7 +10,7 @@ export const button = style({
   color: vars.color.black,
   cursor: "pointer",
   fontFamily: vars.font.body,
-  fontSize: "1rem",
+  fontSize: vars.fontSize.md,
   fontWeight: vars.fontWeight.bold,
   lineHeight: "1.5rem",
 

@@ -6,7 +6,7 @@ import { typographyStyles } from "@/shared/styles/typography";
 export const optionGrid = style({
   display: "grid",
   gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-  gap: "0.75rem",
+  gap: vars.space.sm,
 });
 
 export const optionCard = style({
@@ -19,7 +19,7 @@ export const optionCard = style({
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  gap: "0.25rem",
+  gap: vars.space.xxs,
   color: vars.color.black,
   cursor: "pointer",
 
@@ -55,14 +55,14 @@ export const selectionNotice = style({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  gap: "0.25rem",
+  gap: vars.space.xxs,
   color: vars.color.black,
   ...typographyStyles.body3,
 });
 
 export const selectionCount = style({
   minWidth: "2.5rem",
-  padding: "0.125rem 0.25rem",
+  padding: `0.125rem ${vars.space.xxs}`,
   border: `0.15625rem solid ${vars.color.black}`,
   backgroundColor: vars.color.secondary500,
   color: vars.color.white,
