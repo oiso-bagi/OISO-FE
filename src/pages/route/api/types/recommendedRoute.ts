@@ -36,9 +36,12 @@ export interface RecommendedRouteListResponse {
 // 2. 추천 루트 상세
 export interface RecommendedRouteStop {
   id: number;
-  order: number;
+  /** 전체 여행 코스 기준 누적 순서 (0, 1, 2, 3...) */
+  sequence: number;
+  /** 몇 일차 일정에 포함되는 경유지인지 (1~5). 다일 코스 지도 색상 구분에 사용합니다. */
+  dayNumber: number;
 
-  name: string;
+  placeName: string;
   category: string;
   operatingHours: string | null;
 
