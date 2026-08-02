@@ -163,7 +163,7 @@ export function RouteBox({
           onClick={onToggleExpanded}
           aria-expanded={false}
         >
-          상세 보기
+          {isEditable ? "지도 보기" : "상세 보기"}
           <span aria-hidden>→</span>
         </button>
       )}
