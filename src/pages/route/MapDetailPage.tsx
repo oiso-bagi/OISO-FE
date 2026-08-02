@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import {
   useLocation,
   useNavigate,
@@ -46,6 +47,24 @@ export function MapDetailPage() {
 
   const isInvalid = routeId === null;
 
+  // 다일 코스일 때만 일차 선택 탭을 노출합니다. 기본값은 전체(All) 표시.
+  const dayNumbers = useMemo(
+    () =>
+      Array.from(new Set((route?.stops ?? []).map((stop) => stop.dayNumber))).sort(
+        (a, b) => a - b,
+      ),
+    [route?.stops],
+  );
+  const isMultiDay = dayNumbers.length > 1;
+
+  const [selectedDay, setSelectedDay] = useState<number | "all">("all");
+
+  // 일차 탭에서 특정 일차를 선택하면 지도뿐 아니라 하단 경유지 리스트도 해당 일차만 표시합니다.
+  const visibleStops =
+    selectedDay === "all"
+      ? (route?.stops ?? [])
+      : (route?.stops ?? []).filter((stop) => stop.dayNumber === selectedDay);
+
   return (
     <div className={styles.page}>
       <header className={styles.topBar}>
@@ -61,8 +80,40 @@ export function MapDetailPage() {
         <h1 className={styles.title}>{route?.name ?? "루트 지도"}</h1>
       </header>
 
+      {isMultiDay && (
+        <div className={styles.dayTabs} role="tablist" aria-label="일차 선택">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={selectedDay === "all"}
+            className={styles.dayTab}
+            data-active={selectedDay === "all"}
+            onClick={() => setSelectedDay("all")}
+          >
+            전체
+          </button>
+
+          {dayNumbers.map((day) => (
+            <button
+              key={day}
+              type="button"
+              role="tab"
+              aria-selected={selectedDay === day}
+              className={styles.dayTab}
+              data-active={selectedDay === day}
+              onClick={() => setSelectedDay(day)}
+            >
+              {day}일차
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className={styles.mapArea}>
-        <RouteMap stops={route?.stops ?? []} />
+        <RouteMap
+          stops={route?.stops ?? []}
+          selectedDay={selectedDay === "all" ? undefined : selectedDay}
+        />
       </div>
 
       <div className={styles.listArea}>
@@ -81,7 +132,7 @@ export function MapDetailPage() {
           </p>
         )}
 
-        {route && <RouteStopList stops={route.stops} />}
+        {route && <RouteStopList stops={visibleStops} />}
       </div>
     </div>
   );
