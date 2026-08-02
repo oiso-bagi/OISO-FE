@@ -35,6 +35,28 @@ export const stopEmptyText = style([
   },
 ]);
 
+export const dayGroup = style({
+  display: "flex",
+  flexDirection: "column",
+  gap: "4px",
+
+  width: "100%",
+});
+
+export const dayLabel = style([
+  typo.body4,
+  {
+    margin: 0,
+
+    color: vars.color.black,
+  },
+]);
+
+/** "경유지" 제목 바로 아래 첫 일차는 원래대로 여백 없이, 이후 일차만 위쪽 여백을 둡니다. */
+export const dayLabelSpaced = style({
+  marginTop: "12px",
+});
+
 export const stopList = style({
   display: "flex",
   flexDirection: "column",

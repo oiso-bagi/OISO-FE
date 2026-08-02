@@ -14,7 +14,22 @@ interface RouteStopListProps {
   isSaving?: boolean;
 }
 
+/** 다일 코스일 때만 일차별로 묶습니다. 단일 일차는 기존처럼 평면 리스트로 표시합니다. */
+const groupStopsByDay = (stops: RecommendedRouteStop[]) => {
+  const dayNumbers = Array.from(new Set(stops.map((stop) => stop.dayNumber)));
+  if (dayNumbers.length <= 1) return [{ dayNumber: null, stops }];
+
+  return dayNumbers
+    .sort((a, b) => a - b)
+    .map((dayNumber) => ({
+      dayNumber,
+      stops: stops.filter((stop) => stop.dayNumber === dayNumber),
+    }));
+};
+
 export function RouteStopList({ stops, onSave, isSaving }: RouteStopListProps) {
+  const dayGroups = groupStopsByDay(stops);
+
   return (
     <section className={styles.stopSection}>
       <h4 className={styles.stopSectionTitle}>경유지</h4>
@@ -23,38 +38,54 @@ export function RouteStopList({ stops, onSave, isSaving }: RouteStopListProps) {
         <p className={styles.stopEmptyText}>등록된 경유지가 없어요.</p>
       )}
 
-      <ol className={styles.stopList}>
-        {stops.map((stop, index) => (
-          <li key={stop.id} className={styles.stopListItem}>
-            <div className={styles.stopBox}>
-              <span className={styles.stopOrder}>{stop.order}</span>
+      {dayGroups.map((group, groupIndex) => (
+        <div key={group.dayNumber ?? "single"} className={styles.dayGroup}>
+          {group.dayNumber !== null && (
+            <p
+              className={
+                groupIndex === 0
+                  ? styles.dayLabel
+                  : `${styles.dayLabel} ${styles.dayLabelSpaced}`
+              }
+            >
+              {group.dayNumber}일차
+            </p>
+          )}
 
-              <div className={styles.stopContent}>
-                <strong className={styles.stopName}>{stop.name}</strong>
+          <ol className={styles.stopList}>
+            {group.stops.map((stop, index) => (
+              <li key={stop.id} className={styles.stopListItem}>
+                <div className={styles.stopBox}>
+                  <span className={styles.stopOrder}>{stop.sequence}</span>
 
-                <div className={styles.stopTagList}>
-                  <span className={styles.stopTag}>{stop.category}</span>
+                  <div className={styles.stopContent}>
+                    <strong className={styles.stopName}>{stop.placeName}</strong>
 
-                  <span className={styles.stopTag}>
-                    {stop.operatingHours ?? "운영시간 정보 없음"}
-                  </span>
+                    <div className={styles.stopTagList}>
+                      <span className={styles.stopTag}>{stop.category}</span>
+
+                      <span className={styles.stopTag}>
+                        {stop.operatingHours ?? "운영시간 정보 없음"}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            {index < stops.length - 1 && stop.transportationToNext && (
-              <div className={styles.stopConnection}>
-                <span aria-hidden>↓</span>
+                {index < group.stops.length - 1 && stop.transportationToNext && (
+                  <div className={styles.stopConnection}>
+                    <span aria-hidden>↓</span>
 
-                <span>
-                  {formatStopTransportation(stop.transportationToNext)}{" "}
-                  {formatDuration(stop.durationToNextMinutes)}
-                </span>
-              </div>
-            )}
-          </li>
-        ))}
-      </ol>
+                    <span>
+                      {formatStopTransportation(stop.transportationToNext)}{" "}
+                      {formatDuration(stop.durationToNextMinutes)}
+                    </span>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ol>
+        </div>
+      ))}
 
       {onSave && (
         <button
