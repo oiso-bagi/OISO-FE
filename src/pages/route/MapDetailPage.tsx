@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   useLocation,
   useNavigate,
@@ -50,14 +50,19 @@ export function MapDetailPage() {
   // 다일 코스일 때만 일차 선택 탭을 노출합니다. 기본값은 전체(All) 표시.
   const dayNumbers = useMemo(
     () =>
-      Array.from(new Set((route?.stops ?? []).map((stop) => stop.dayNumber))).sort(
-        (a, b) => a - b,
-      ),
+      Array.from(
+        new Set((route?.stops ?? []).map((stop) => stop.dayNumber)),
+      ).sort((a, b) => a - b),
     [route?.stops],
   );
   const isMultiDay = dayNumbers.length > 1;
 
   const [selectedDay, setSelectedDay] = useState<number | "all">("all");
+
+  // 다른 루트로 이동하거나 조회 대상이 변경되면 일차 선택을 전체로 초기화합니다.
+  useEffect(() => {
+    setSelectedDay("all");
+  }, [routeId, isSaved]);
 
   // 일차 탭에서 특정 일차를 선택하면 지도뿐 아니라 하단 경유지 리스트도 해당 일차만 표시합니다.
   const visibleStops =
