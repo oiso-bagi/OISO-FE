@@ -19,7 +19,7 @@ export function LoginPage() {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    navigate("/survey");
+    navigate("/auth/callback");
   };
 
   return (
