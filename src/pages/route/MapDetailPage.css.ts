@@ -90,8 +90,8 @@ export const dayTab = style([
     color: vars.color.black,
     backgroundColor: vars.color.white,
 
-    border: "2px solid ${vars.color.black}",
-    boxShadow: "1.5px 2px 0 ${vars.color.black}",
+    border: `2px solid ${vars.color.black}`,
+    boxShadow: `1.5px 2px 0 ${vars.color.black}`,
 
     cursor: "pointer",
 
