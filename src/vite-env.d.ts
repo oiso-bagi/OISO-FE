@@ -8,11 +8,11 @@
  * 환경변수는 `@/shared/config/env` 를 거쳐서만 읽어 주세요.
  */
 interface ImportMetaEnv {
-  /** 카카오 지도 JavaScript 키 */
-  readonly VITE_KAKAO_MAP_KEY: string;
+  /** 카카오 지도 JavaScript 키. 없으면 지도 로딩 시 에러로 처리합니다. */
+  readonly VITE_KAKAO_MAP_KEY?: string;
 
   /** API base URL. 백엔드 `/api/v1` prefix 까지 포함합니다. */
-  readonly VITE_API_BASE_URL: string;
+  readonly VITE_API_BASE_URL?: string;
 
   /** mock 사용 여부. 미설정 시 base URL 유무로 판단합니다. */
   readonly VITE_USE_MOCK?: string;

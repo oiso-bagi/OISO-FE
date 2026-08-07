@@ -27,3 +27,19 @@ const rawUseMock = normalize(import.meta.env.VITE_USE_MOCK);
  */
 export const USE_MOCK =
   rawUseMock === "" ? !API_BASE_URL : rawUseMock === "true";
+
+/**
+ * mock 을 끈 채로 base URL 이 비어 있으면 즉시 실패시킵니다.
+ *
+ * 이 조합에서는 axios 가 baseURL 없이 `/home` 같은 상대 경로로 요청하게 되어
+ * 프론트엔드 origin 으로 요청이 나갑니다. 배포 환경에는 SPA rewrite(vercel.json)
+ * 가 걸려 있어 그 경로들이 200 과 함께 index.html 을 돌려주므로, 요청이 실패가
+ * 아니라 "성공"으로 처리되고 HTML 이 응답 데이터로 캐시됩니다. 에러 처리에도
+ * 걸리지 않아 원인을 찾기 어려우므로, 시작 시점에 끊는 편이 낫습니다.
+ */
+if (!USE_MOCK && !API_BASE_URL) {
+  throw new Error(
+    "VITE_USE_MOCK 이 false 인데 VITE_API_BASE_URL 이 비어 있습니다. " +
+      ".env 또는 배포 환경변수를 확인해 주세요.",
+  );
+}
