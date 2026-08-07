@@ -3,6 +3,8 @@
  * - VITE_KAKAO_MAP_KEY 로 스크립트를 주입하고 kakao 네임스페이스를 반환합니다.
  * - 여러 번 호출해도 스크립트는 한 번만 로드됩니다.
  */
+import { KAKAO_MAP_KEY } from "@/shared/config/env";
+
 const KAKAO_SDK_URL = "https://dapi.kakao.com/v2/maps/sdk.js";
 
 let loadPromise: Promise<typeof kakao> | null = null;
@@ -11,7 +13,7 @@ export function loadKakaoMap(): Promise<typeof kakao> {
   if (loadPromise) return loadPromise;
 
   loadPromise = new Promise((resolve, reject) => {
-    const appKey = import.meta.env.VITE_KAKAO_MAP_KEY;
+    const appKey = KAKAO_MAP_KEY;
 
     if (!appKey) {
       reject(
