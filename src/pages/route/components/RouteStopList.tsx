@@ -59,7 +59,9 @@ export function RouteStopList({ stops, onSave, isSaving }: RouteStopListProps) {
                   <span className={styles.stopOrder}>{stop.sequence}</span>
 
                   <div className={styles.stopContent}>
-                    <strong className={styles.stopName}>{stop.placeName}</strong>
+                    <strong className={styles.stopName}>
+                      {stop.placeName}
+                    </strong>
 
                     <div className={styles.stopTagList}>
                       <span className={styles.stopTag}>{stop.category}</span>
@@ -71,16 +73,17 @@ export function RouteStopList({ stops, onSave, isSaving }: RouteStopListProps) {
                   </div>
                 </div>
 
-                {index < group.stops.length - 1 && stop.transportationToNext && (
-                  <div className={styles.stopConnection}>
-                    <span aria-hidden>↓</span>
+                {index < group.stops.length - 1 &&
+                  stop.transportationToNext && (
+                    <div className={styles.stopConnection}>
+                      <span aria-hidden>↓</span>
 
-                    <span>
-                      {formatStopTransportation(stop.transportationToNext)}{" "}
-                      {formatDuration(stop.durationToNextMinutes)}
-                    </span>
-                  </div>
-                )}
+                      <span>
+                        {formatStopTransportation(stop.transportationToNext)}{" "}
+                        {formatDuration(stop.durationToNextMinutes)}
+                      </span>
+                    </div>
+                  )}
               </li>
             ))}
           </ol>
