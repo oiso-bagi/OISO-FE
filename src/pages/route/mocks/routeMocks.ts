@@ -1,10 +1,11 @@
 /**
  * 개발용 목 데이터
  *
- * VITE_API_BASE_URL 이 비어 있을 때만 사용됩니다.
- * .env 에 API 주소를 채우면 자동으로 실제 API 요청으로 전환되므로,
- * 이 파일을 지우거나 훅을 되돌릴 필요는 없습니다.
+ * .env 의 VITE_USE_MOCK 으로 켜고 끕니다. false 로 바꾸면 실제 API 요청으로
+ * 전환되므로, 이 파일을 지우거나 훅을 되돌릴 필요는 없습니다.
  */
+
+import { USE_MOCK } from "@/shared/config/env";
 
 import type {
   RecommendedRouteDetailResponse,
@@ -16,7 +17,7 @@ import type {
   SavedRouteListResponse,
 } from "../api/types/savedRoute";
 
-export const USE_MOCK_DATA = !import.meta.env.VITE_API_BASE_URL;
+export const USE_MOCK_DATA = USE_MOCK;
 
 const stopsByRouteId: Record<number, RecommendedRouteStop[]> = {
   1: [
