@@ -2,6 +2,9 @@ export const queryKeys = {
   user: {
     me: ["user", "me"],
   },
+  consent: {
+    status: ["consent", "status"],
+  },
   route: {
     all: ["route"],
     detail: (routeId: number) => ["route", routeId],

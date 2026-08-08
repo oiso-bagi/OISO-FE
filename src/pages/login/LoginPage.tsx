@@ -1,5 +1,4 @@
-import { useNavigate } from "react-router-dom";
-
+import { API_BASE_URL } from "@/shared/config/env";
 import OisoLogo from "@/shared/icons/oiso_logo.svg?react";
 import Cost from "@/shared/icons/cost.svg?react";
 import BestRoute from "@/shared/icons/best_route.svg?react";
@@ -15,11 +14,11 @@ const benefits = [
   { icon: <LocalBalance />, label: "지역 균형", isHighlighted: false },
 ] as const;
 
-export function LoginPage() {
-  const navigate = useNavigate();
+type OAuthProvider = "kakao" | "google";
 
-  const handleLogin = () => {
-    navigate("/auth/callback");
+export function LoginPage() {
+  const handleLogin = (provider: OAuthProvider) => {
+    window.location.assign(`${API_BASE_URL}/auth/${provider}/login`);
   };
 
   return (
@@ -59,7 +58,7 @@ export function LoginPage() {
         <button
           type="button"
           className={styles.kakaoButton}
-          onClick={handleLogin}
+          onClick={() => handleLogin("kakao")}
         >
           {/* TODO: 카카오 SVG 로고를 logoSlot 안에 넣어 주세요. */}
           <KakaoLogo className={styles.logoSlot} aria-hidden="true" />
@@ -68,7 +67,7 @@ export function LoginPage() {
         <button
           type="button"
           className={styles.googleButton}
-          onClick={handleLogin}
+          onClick={() => handleLogin("google")}
         >
           {/* TODO: 구글 SVG 로고를 logoSlot 안에 넣어 주세요. */}
           <GoogleLogo className={styles.logoSlot} aria-hidden="true" />

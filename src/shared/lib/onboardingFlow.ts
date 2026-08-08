@@ -24,6 +24,15 @@ export const completeSurvey = () => {
   return setStorageItem(surveyCompletedKey, "true");
 };
 
+export const resetOnboardingFlow = () => {
+  if (!canUseStorage()) return false;
+
+  return (
+    removeStorageItem(loginCompletedKey) &&
+    removeStorageItem(surveyCompletedKey)
+  );
+};
+
 const getStorageItem = (key: string) => {
   try {
     return window.localStorage.getItem(key);

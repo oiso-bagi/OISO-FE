@@ -55,7 +55,15 @@ export const router = createBrowserRouter([
         element: <TermsPage />,
       },
       {
+        path: "/consents",
+        element: <TermsPage />,
+      },
+      {
         path: "/auth/callback",
+        element: <AuthCallbackPage />,
+      },
+      {
+        path: "/auth/success",
         element: <AuthCallbackPage />,
       },
       {

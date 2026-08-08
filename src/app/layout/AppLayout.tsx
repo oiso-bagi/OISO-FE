@@ -1,14 +1,24 @@
 import { Navigate, Outlet, ScrollRestoration } from "react-router-dom";
 import { BottomNavigation } from "@/shared/components/BottomNavigation";
-import {
-  isLoginCompleted,
-  isSurveyCompleted,
-} from "@/shared/lib/onboardingFlow";
+import { useAuthStatus } from "@/shared/auth/authContext";
+import { isSurveyCompleted } from "@/shared/lib/onboardingFlow";
 
 import * as styles from "./AppLayout.css";
 
 export function AppLayout() {
-  if (!isLoginCompleted()) {
+  const authStatus = useAuthStatus();
+
+  if (authStatus === "checking") {
+    return (
+      <div className={styles.appContainer}>
+        <main className={styles.authStatus} role="status" aria-live="polite">
+          로그인 상태를 확인하고 있어요...
+        </main>
+      </div>
+    );
+  }
+
+  if (authStatus === "unauthenticated") {
     return <Navigate to="/login" replace />;
   }
 

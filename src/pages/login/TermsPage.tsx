@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { CURRENT_CONSENT_VERSION } from "@/shared/api/consentApi";
+import type { ConsentItemResponse } from "@/shared/api/generated/types";
+import { useAuthStatus } from "@/shared/auth/authContext";
 import { Card } from "@/shared/components/Card";
 import { Header } from "@/shared/components/header/Header";
 import { useToast } from "@/shared/components/Toast/toastContext";
@@ -8,6 +11,7 @@ import CheckIcon from "@/shared/icons/check.svg?react";
 import { completeLogin } from "@/shared/lib/onboardingFlow";
 import { pageContent } from "@/shared/styles/layout.css";
 
+import { useConsentStatus, useSubmitConsents } from "./hooks/useConsents";
 import * as styles from "./TermsPage.css";
 
 type AgreementKey =
@@ -35,10 +39,53 @@ const initialAgreementState: Record<AgreementKey, boolean> = {
   location: false,
 };
 
+const consentTypeToAgreementKey: Record<
+  ConsentItemResponse["type"],
+  AgreementKey
+> = {
+  TERMS: "termsOfService",
+  PRIVACY: "privacy",
+  AGE: "overFourteen",
+  MARKETING: "marketing",
+  LOCATION: "location",
+};
+
 export function TermsPage() {
   const navigate = useNavigate();
   const showToast = useToast();
+  const authStatus = useAuthStatus();
   const [checked, setChecked] = useState(initialAgreementState);
+  const consentStatusQuery = useConsentStatus(authStatus === "authenticated");
+  const submitConsentsMutation = useSubmitConsents();
+
+  useEffect(() => {
+    if (authStatus === "unauthenticated") {
+      showToast({
+        message: "로그인 정보를 확인하지 못했어요. 다시 로그인해 주세요.",
+      });
+      navigate("/login", { replace: true });
+    }
+  }, [authStatus, navigate, showToast]);
+
+  useEffect(() => {
+    if (!consentStatusQuery.data) return;
+
+    const nextChecked = { ...initialAgreementState };
+
+    consentStatusQuery.data.consents.forEach((consent) => {
+      nextChecked[consentTypeToAgreementKey[consent.type]] = consent.isAgreed;
+    });
+
+    setChecked(nextChecked);
+  }, [consentStatusQuery.data]);
+
+  useEffect(() => {
+    if (!consentStatusQuery.isError) return;
+
+    showToast({
+      message: "약관 동의 상태를 불러오지 못했어요. 다시 시도해 주세요.",
+    });
+  }, [consentStatusQuery.isError, showToast]);
 
   const isAllchecked = agreements.every(({ key }) => checked[key]);
   const isRequiredChecked = agreements
@@ -67,16 +114,40 @@ export function TermsPage() {
   const handleSubmit = () => {
     if (!isRequiredChecked) return;
 
-    // TODO: 약관 동의 API 연동 후 다음 온보딩 경로로 이동해 주세요.
-    if (!completeLogin()) {
-      showToast({
-        message: "동의 상태를 저장하지 못했어요. 다시 시도해 주세요.",
-      });
-      return;
-    }
+    submitConsentsMutation.mutate(
+      {
+        version: CURRENT_CONSENT_VERSION,
+        terms: checked.termsOfService,
+        privacy: checked.privacy,
+        age: checked.overFourteen,
+        marketing: checked.marketing,
+        location: checked.location,
+      },
+      {
+        onSuccess: () => {
+          if (!completeLogin()) {
+            showToast({
+              message: "로그인 상태를 저장하지 못했어요. 다시 시도해 주세요.",
+            });
+            return;
+          }
 
-    navigate("/survey");
+          navigate("/survey");
+        },
+        onError: () => {
+          showToast({
+            message: "약관 동의를 저장하지 못했어요. 다시 시도해 주세요.",
+          });
+        },
+      },
+    );
   };
+
+  const isInteractionDisabled =
+    authStatus !== "authenticated" ||
+    consentStatusQuery.isPending ||
+    consentStatusQuery.isError ||
+    submitConsentsMutation.isPending;
 
   return (
     <main className={styles.page}>
@@ -92,6 +163,7 @@ export function TermsPage() {
               className={styles.hiddenCheckbox}
               type="checkbox"
               checked={isAllchecked}
+              disabled={isInteractionDisabled}
               onChange={handleAllChange}
             />
             <span className={styles.checkbox} aria-hidden="true">
@@ -116,6 +188,7 @@ export function TermsPage() {
                   className={styles.hiddenCheckbox}
                   type="checkbox"
                   checked={checked[key]}
+                  disabled={isInteractionDisabled}
                   onChange={() => handleAgreementChange(key)}
                 />
                 <span className={styles.checkbox} aria-hidden="true">
@@ -151,10 +224,12 @@ export function TermsPage() {
         <button
           type="button"
           className={styles.submitButton}
-          disabled={!isRequiredChecked}
+          disabled={isInteractionDisabled || !isRequiredChecked}
           onClick={handleSubmit}
         >
-          동의하고 시작하기
+          {submitConsentsMutation.isPending
+            ? "저장 중..."
+            : "동의하고 시작하기"}
         </button>
       </div>
     </main>

@@ -1,23 +1,30 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
+import { useAuthStatus } from "@/shared/auth/authContext";
 import XIcon from "@/shared/icons/x.svg?react";
-import { isLoginCompleted } from "@/shared/lib/onboardingFlow";
+import { isSurveyCompleted } from "@/shared/lib/onboardingFlow";
 
 import * as styles from "./AuthCallbackPage.css";
 
 export function AuthCallbackPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const authStatus = useAuthStatus();
 
-  const isError =
-    searchParams.get("status") === "error" || searchParams.has("error");
+  const hasRedirectError =
+    searchParams.get("status") === "error" ||
+    searchParams.has("error") ||
+    searchParams.has("reason");
+  const isError = hasRedirectError || authStatus === "unauthenticated";
 
   useEffect(() => {
-    if (!isError) {
-      navigate(isLoginCompleted() ? "/survey" : "/terms", { replace: true });
-    }
-  }, [isError, navigate]);
+    if (hasRedirectError || authStatus !== "authenticated") return;
+
+    navigate(isSurveyCompleted() ? "/" : "/survey", {
+      replace: true,
+    });
+  }, [authStatus, hasRedirectError, navigate]);
 
   if (isError) {
     return (

@@ -26,3 +26,11 @@ export const contentWithBottomNavigation = style({
 export const content = style({
   minHeight: "100vh",
 });
+
+export const authStatus = style({
+  minHeight: "100vh",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  color: vars.color.neutral500,
+});

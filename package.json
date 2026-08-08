@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "api:generate-types": "swagger-typescript-api generate --path http://localhost:3000/api-docs/json --output ./src/shared/api/generated --name types.ts --no-client",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "format": "prettier --write .",

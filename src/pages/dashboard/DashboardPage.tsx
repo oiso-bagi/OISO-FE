@@ -1,9 +1,12 @@
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 import { Card } from "@/shared/components/Card";
 import { Header } from "@/shared/components/header/Header";
+import { useToast } from "@/shared/components/Toast/toastContext";
 import { pageContent } from "@/shared/styles/layout.css";
 
+import { useCurrentUser } from "./hooks/useCurrentUser";
+import { useLogout } from "./hooks/useLogout";
 import * as styles from "./DashboardPage.css";
 
 const SAVING_CATEGORIES = [
@@ -38,15 +41,39 @@ const LOCAL_CONTRIBUTION_PERCENT = 65;
 const formatDisplayDate = (date: string) => date.replaceAll("-", ".");
 
 export function DashboardPage() {
-  const navigate = useNavigate();
+  const showToast = useToast();
+  const currentUserQuery = useCurrentUser();
+  const logoutMutation = useLogout();
+
+  useEffect(() => {
+    if (!currentUserQuery.isError) return;
+
+    showToast({
+      message: "사용자 정보를 불러오지 못했어요.",
+    });
+  }, [currentUserQuery.isError, showToast]);
+
+  const handleLogout = () => {
+    logoutMutation.mutate(undefined, {
+      onError: () => {
+        showToast({
+          message: "로그아웃하지 못했어요. 다시 시도해 주세요.",
+        });
+      },
+    });
+  };
+
+  const dashboardTitle = currentUserQuery.data
+    ? `${currentUserQuery.data.nickname}님의 절약 기록`
+    : "여행자님의 절약 기록";
 
   return (
     <main className={styles.page}>
       <Header
-        title="여행자님의 절약 기록"
-        rightText="로그아웃"
+        title={dashboardTitle}
+        rightText={logoutMutation.isPending ? "로그아웃 중..." : "로그아웃"}
         rightVariant="accent"
-        onClickRight={() => navigate("/login")}
+        onClickRight={logoutMutation.isPending ? undefined : handleLogout}
       />
 
       <div className={`${pageContent} ${styles.content}`}>
