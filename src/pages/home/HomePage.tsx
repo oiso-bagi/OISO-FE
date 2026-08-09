@@ -4,6 +4,7 @@ import DownIcon from "@/shared/assets/svg/down.svg?react";
 import { Skeleton } from "@/shared/components/Skeleton/Skeleton";
 import { MiniCardListSkeleton } from "@/shared/components/Skeleton/MiniCardSkeleton";
 import { formatPrice } from "@/pages/route/utils/routeFormat";
+import { toErrorMessage } from "@/shared/api/apiError";
 
 import { SavedRouteSummaryCard } from "./components/SavedRouteSummaryCard";
 import { useHomeSummary } from "./hooks/useHomeSummary";
@@ -13,7 +14,7 @@ import * as styles from "./HomePage.css";
 export function HomePage() {
   const navigate = useNavigate();
 
-  const { data, isPending, isError } = useHomeSummary();
+  const { data, isPending, isError, error } = useHomeSummary();
 
   const savedRoutes = data?.savedRoutes;
 
@@ -84,7 +85,10 @@ export function HomePage() {
 
         {isError && (
           <p className={styles.statusText}>
-            루트를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
+            {toErrorMessage(
+              error,
+              "루트를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
+            )}
           </p>
         )}
 

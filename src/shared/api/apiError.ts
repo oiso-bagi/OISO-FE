@@ -42,3 +42,16 @@ export const toApiError = (error: unknown): ApiError => {
 
   return { status, message: MESSAGE_BY_STATUS[status] ?? DEFAULT_MESSAGE };
 };
+
+/**
+ * 화면에 띄울 문구를 고릅니다.
+ *
+ * 원인이 특정되는 에러(401·403·404·네트워크 등)는 그 문구가 훨씬 도움이 되고,
+ * 원인을 모르거나 서버 오류(5xx)일 때는 "저장하지 못했어요" 처럼 화면 맥락이
+ * 담긴 문구가 낫습니다. 그래서 후자는 호출부가 준 fallback 을 씁니다.
+ */
+export const toErrorMessage = (error: unknown, fallback: string): string => {
+  const { message } = toApiError(error);
+
+  return message === DEFAULT_MESSAGE ? fallback : message;
+};

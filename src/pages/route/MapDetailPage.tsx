@@ -8,6 +8,7 @@ import {
 
 import backIcon from "@/shared/assets/svg/back.svg";
 import { Skeleton } from "@/shared/components/Skeleton/Skeleton";
+import { toErrorMessage } from "@/shared/api/apiError";
 
 import { RouteMap } from "./components/RouteMap";
 import { RouteStopList } from "./components/RouteStopList";
@@ -44,7 +45,12 @@ export function MapDetailPage() {
   // 두 훅 모두 호출하되 source 에 맞는 쪽만 enabled
   const recommended = useRecommendedRouteDetail(isSaved ? null : routeId);
   const saved = useSavedRouteDetail(isSaved ? routeId : null);
-  const { data: route, isPending, isError } = isSaved ? saved : recommended;
+  const {
+    data: route,
+    isPending,
+    isError,
+    error,
+  } = isSaved ? saved : recommended;
 
   const isInvalid = routeId === null;
 
@@ -134,7 +140,12 @@ export function MapDetailPage() {
 
         {(isInvalid || isError) && (
           <p className={styles.statusText}>
-            루트를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
+            {isInvalid
+              ? "루트를 찾을 수 없어요."
+              : toErrorMessage(
+                  error,
+                  "루트를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
+                )}
           </p>
         )}
 

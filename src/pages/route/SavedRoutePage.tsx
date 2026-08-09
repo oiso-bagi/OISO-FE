@@ -6,6 +6,7 @@ import { ConfirmDialog } from "@/shared/components/ConfirmDialog/ConfirmDialog";
 import { Header } from "@/shared/components/header/Header";
 import { RouteListSkeleton } from "@/shared/components/Skeleton/RouteCardSkeleton";
 import { useToast } from "@/shared/components/Toast/toastContext";
+import { toErrorMessage } from "@/shared/api/apiError";
 import { pageContent } from "@/shared/styles/layout.css";
 
 import * as styles from "./components/routeLayout.css";
@@ -25,7 +26,7 @@ import { SavedRouteSummary } from "./components/SavedRouteSummary";
 export function SavedRoutePage() {
   const navigate = useNavigate();
 
-  const { data, isPending, isError } = useSavedRoutes();
+  const { data, isPending, isError, error } = useSavedRoutes();
 
   const updateCompleted = useUpdateSavedRouteCompleted();
   const deleteRoute = useDeleteSavedRoute();
@@ -58,9 +59,12 @@ export function SavedRoutePage() {
     updateCompleted.mutate(
       { routeId, isCompleted: !isCompleted },
       {
-        onError: () =>
+        onError: (toggleError) =>
           showToast({
-            message: "상태를 변경하지 못했어요. 다시 시도해 주세요.",
+            message: toErrorMessage(
+              toggleError,
+              "상태를 변경하지 못했어요. 다시 시도해 주세요.",
+            ),
           }),
       },
     );
@@ -79,9 +83,12 @@ export function SavedRoutePage() {
       // 삭제 성공 토스트는 띄우지 않습니다(확인 다이얼로그로 이미 피드백을 줬음).
       // 실패했을 때만 알립니다.
       deleteRoute.mutate(deleteTargetId, {
-        onError: () =>
+        onError: (removeError) =>
           showToast({
-            message: "삭제하지 못했어요. 잠시 후 다시 시도해 주세요.",
+            message: toErrorMessage(
+              removeError,
+              "삭제하지 못했어요. 잠시 후 다시 시도해 주세요.",
+            ),
           }),
       });
     }
@@ -105,7 +112,10 @@ export function SavedRoutePage() {
         {isPending && <RouteListSkeleton />}
         {isError && (
           <p className={styles.statusText}>
-            루트를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
+            {toErrorMessage(
+              error,
+              "루트를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
+            )}
           </p>
         )}
         {routes && routes.length === 0 && (

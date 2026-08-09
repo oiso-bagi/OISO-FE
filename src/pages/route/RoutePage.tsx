@@ -4,6 +4,7 @@ import { RouteBox } from "@/shared/components/RouteBox";
 import { Header } from "@/shared/components/header/Header";
 import { RouteListSkeleton } from "@/shared/components/Skeleton/RouteCardSkeleton";
 import { useToast } from "@/shared/components/Toast/toastContext";
+import { toErrorMessage } from "@/shared/api/apiError";
 
 import { RouteMap } from "./components/RouteMap";
 import { RouteStopList } from "./components/RouteStopList";
@@ -20,13 +21,14 @@ import {
 export function RoutePage() {
   const [expandedRouteId, setExpandedRouteId] = useState<string | null>(null);
 
-  const { data: routes, isPending, isError } = useRecommendedRoutes();
+  const { data: routes, isPending, isError, error } = useRecommendedRoutes();
   // 카드를 펼쳤을 때만 이 쿼리가 켜지므로, isPending 은 "아직 결과 없음"과 같습니다.
   // isLoading 은 재시도 대기 중 false 가 되어 빈 화면이 생깁니다.
   const {
     data: routeDetail,
     isPending: isDetailPending,
     isError: isDetailError,
+    error: detailError,
   } = useRecommendedRouteDetail(expandedRouteId);
 
   const createSavedRoute = useCreateSavedRoute();
@@ -41,9 +43,12 @@ export function RoutePage() {
 
     createSavedRoute.mutate(routeId, {
       onSuccess: () => showToast({ message: "저장되었습니다" }),
-      onError: () =>
+      onError: (saveError) =>
         showToast({
-          message: "저장하지 못했어요. 잠시 후 다시 시도해 주세요.",
+          message: toErrorMessage(
+            saveError,
+            "저장하지 못했어요. 잠시 후 다시 시도해 주세요.",
+          ),
         }),
     });
   };
@@ -67,7 +72,10 @@ export function RoutePage() {
 
         {isError && (
           <p className={styles.statusText}>
-            루트를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
+            {toErrorMessage(
+              error,
+              "루트를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
+            )}
           </p>
         )}
 
@@ -101,7 +109,10 @@ export function RoutePage() {
 
                     {isDetailError && (
                       <p className={styles.detailStatusText}>
-                        경유지를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.
+                        {toErrorMessage(
+                          detailError,
+                          "경유지를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.",
+                        )}
                       </p>
                     )}
 
