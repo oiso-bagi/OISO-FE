@@ -32,7 +32,7 @@ export function SavedRoutePage() {
   const showToast = useToast();
 
   // 삭제 확인 다이얼로그 대상 (null 이면 닫힘)
-  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   const routes = data?.routes ?? [];
 
@@ -47,11 +47,11 @@ export function SavedRoutePage() {
   const totalSavingAmount = data?.totalSavingAmount ?? calculatedSavingAmount;
 
   // 상세보기 → 지도 상세 페이지로 이동
-  const handleOpenMap = (routeId: number) => {
+  const handleOpenMap = (routeId: string) => {
     navigate(`/map/${routeId}?source=saved`);
   };
 
-  const handleToggleCompleted = (routeId: number, isCompleted: boolean) => {
+  const handleToggleCompleted = (routeId: string, isCompleted: boolean) => {
     // 진행 중이면 중복 요청을 막습니다.
     if (updateCompleted.isPending) return;
 
@@ -67,7 +67,7 @@ export function SavedRoutePage() {
   };
 
   // 삭제는 되돌리기 어려우니 확인 다이얼로그를 거칩니다.
-  const handleRequestDelete = (routeId: number) => {
+  const handleRequestDelete = (routeId: string) => {
     setDeleteTargetId(routeId);
   };
 

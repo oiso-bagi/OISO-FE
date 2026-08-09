@@ -8,13 +8,13 @@ import { routeQueryKeys } from "./queryKeys";
  * 저장한 루트 카드가 펼쳐졌을 때만 상세를 조회합니다.
  * routeId 가 null 이면 요청하지 않습니다.
  */
-export const useSavedRouteDetail = (routeId: number | null) => {
+export const useSavedRouteDetail = (routeId: string | null) => {
   return useQuery({
-    queryKey: routeQueryKeys.savedRouteDetail(routeId ?? -1),
+    queryKey: routeQueryKeys.savedRouteDetail(routeId ?? ""),
     queryFn: () =>
       USE_MOCK_DATA
-        ? getMockSavedRouteDetail(routeId as number)
-        : getSavedRouteDetail(routeId as number),
+        ? getMockSavedRouteDetail(routeId as string)
+        : getSavedRouteDetail(routeId as string),
     select: (data) => data.route,
     enabled: routeId !== null,
   });

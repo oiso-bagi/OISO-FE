@@ -11,21 +11,21 @@ export const getSavedRoutes = async () => {
 };
 
 // TODO: 저장 엔드포인트 명세 확인 필요 (POST /saved-routes 로 가정)
-export const createSavedRoute = async (routeId: number) => {
+export const createSavedRoute = async (routeId: string) => {
   return http.post("/saved-routes", { routeId });
 };
 
-export const getSavedRouteDetail = async (routeId: number) => {
+export const getSavedRouteDetail = async (routeId: string) => {
   return http.get<SavedRouteDetailResponse>(`/saved-routes/${routeId}`);
 };
 
 export const updateSavedRouteCompleted = async (
-  routeId: number,
+  routeId: string,
   body: UpdateSavedRouteCompletedRequest,
 ) => {
   return http.patch(`/saved-routes/${routeId}/completed`, body);
 };
 
-export const deleteSavedRoute = async (routeId: number) => {
+export const deleteSavedRoute = async (routeId: string) => {
   return http.delete(`/saved-routes/${routeId}`);
 };

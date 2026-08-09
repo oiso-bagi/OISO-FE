@@ -1,8 +1,8 @@
 export const routeQueryKeys = {
   recommendedRoutes: () => ["recommendedRoutes"] as const,
-  recommendedRouteDetail: (routeId: number) =>
+  recommendedRouteDetail: (routeId: string) =>
     ["recommendedRoutes", routeId] as const,
 
   savedRoutes: () => ["savedRoutes"] as const,
-  savedRouteDetail: (routeId: number) => ["savedRoutes", routeId] as const,
+  savedRouteDetail: (routeId: string) => ["savedRoutes", routeId] as const,
 };

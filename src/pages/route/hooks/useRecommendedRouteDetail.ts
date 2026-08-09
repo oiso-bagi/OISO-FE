@@ -11,13 +11,13 @@ import { routeQueryKeys } from "./queryKeys";
  * 루트 카드가 펼쳐졌을 때만 상세를 조회합니다.
  * routeId 가 null 이면 요청하지 않습니다.
  */
-export const useRecommendedRouteDetail = (routeId: number | null) => {
+export const useRecommendedRouteDetail = (routeId: string | null) => {
   return useQuery({
-    queryKey: routeQueryKeys.recommendedRouteDetail(routeId ?? -1),
+    queryKey: routeQueryKeys.recommendedRouteDetail(routeId ?? ""),
     queryFn: () =>
       USE_MOCK_DATA
-        ? getMockRecommendedRouteDetail(routeId as number)
-        : getRecommendedRouteDetail(routeId as number),
+        ? getMockRecommendedRouteDetail(routeId as string)
+        : getRecommendedRouteDetail(routeId as string),
     select: (data) => data.route,
     enabled: routeId !== null,
   });

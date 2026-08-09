@@ -17,21 +17,21 @@ export const mockHomeSummary: HomeSummaryResponse = {
   totalSavingAmount: 55000,
   savedRoutes: [
     {
-      id: 1,
+      id: "route_001",
       name: "원도심 로컬 체험 코스",
       savedAt: "2026-05-18",
       savingAmount: -25000,
       distanceKm: 3.2,
     },
     {
-      id: 2,
+      id: "route_002",
       name: "해운대 바다 산책 코스",
       savedAt: "2026-05-02",
       savingAmount: -12000,
       distanceKm: 4.8,
     },
     {
-      id: 4,
+      id: "route_004",
       name: "광안리 야경 코스",
       savedAt: "2026-04-21",
       savingAmount: null,

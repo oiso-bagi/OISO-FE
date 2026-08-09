@@ -19,8 +19,8 @@ import type {
 
 export const USE_MOCK_DATA = USE_MOCK;
 
-const stopsByRouteId: Record<number, RecommendedRouteStop[]> = {
-  1: [
+const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
+  route_001: [
     {
       id: 101,
       sequence: 1,
@@ -71,7 +71,7 @@ const stopsByRouteId: Record<number, RecommendedRouteStop[]> = {
     },
   ],
 
-  2: [
+  route_002: [
     {
       id: 201,
       sequence: 1,
@@ -110,7 +110,7 @@ const stopsByRouteId: Record<number, RecommendedRouteStop[]> = {
     },
   ],
 
-  3: [
+  route_003: [
     {
       id: 301,
       sequence: 1,
@@ -161,7 +161,7 @@ const stopsByRouteId: Record<number, RecommendedRouteStop[]> = {
     },
   ],
 
-  4: [
+  route_004: [
     {
       id: 401,
       sequence: 1,
@@ -189,7 +189,7 @@ const stopsByRouteId: Record<number, RecommendedRouteStop[]> = {
   ],
 
   // 다일(2박 3일) 코스 목 — 일차별 지도 색상 구분/탭 UI 확인용
-  5: [
+  route_005: [
     {
       id: 501,
       sequence: 1,
@@ -265,7 +265,7 @@ const stopsByRouteId: Record<number, RecommendedRouteStop[]> = {
   ],
 
   // 다일(1박 2일) 코스 목 — 2일차까지만 있는 케이스 확인용
-  6: [
+  route_006: [
     {
       id: 601,
       sequence: 1,
@@ -320,7 +320,7 @@ const stopsByRouteId: Record<number, RecommendedRouteStop[]> = {
 export const mockRecommendedRouteList: RecommendedRouteListResponse = {
   routes: [
     {
-      id: 1,
+      id: "route_001",
       name: "원도심 로컬 체험 코스",
       stopCount: 4,
       distanceKm: 3.2,
@@ -334,7 +334,7 @@ export const mockRecommendedRouteList: RecommendedRouteListResponse = {
       isRecommended: true,
     },
     {
-      id: 2,
+      id: "route_002",
       name: "해운대 바다 산책 코스",
       stopCount: 3,
       distanceKm: 4.8,
@@ -348,7 +348,7 @@ export const mockRecommendedRouteList: RecommendedRouteListResponse = {
       isRecommended: false,
     },
     {
-      id: 3,
+      id: "route_003",
       name: "감천문화마을 골목 코스",
       stopCount: 4,
       distanceKm: 2.6,
@@ -362,7 +362,7 @@ export const mockRecommendedRouteList: RecommendedRouteListResponse = {
       isRecommended: false,
     },
     {
-      id: 5,
+      id: "route_005",
       name: "부산 2박 3일 알짜배기 코스",
       stopCount: 6,
       distanceKm: 18.4,
@@ -376,7 +376,7 @@ export const mockRecommendedRouteList: RecommendedRouteListResponse = {
       isRecommended: false,
     },
     {
-      id: 6,
+      id: "route_006",
       name: "해운대·광안리 1박 2일 코스",
       stopCount: 4,
       distanceKm: 9.6,
@@ -393,7 +393,7 @@ export const mockRecommendedRouteList: RecommendedRouteListResponse = {
 };
 
 export const getMockRecommendedRouteDetail = (
-  routeId: number,
+  routeId: string,
 ): RecommendedRouteDetailResponse => {
   const listItem =
     mockRecommendedRouteList.routes.find((route) => route.id === routeId) ??
@@ -413,7 +413,7 @@ const mockSavedRouteList: SavedRouteListResponse = {
   totalSavingAmount: 47000,
   routes: [
     {
-      id: 1,
+      id: "route_001",
       name: "원도심 로컬 체험 코스",
       savedAt: "2026-05-18",
       stopCount: 4,
@@ -426,7 +426,7 @@ const mockSavedRouteList: SavedRouteListResponse = {
       isCompleted: false,
     },
     {
-      id: 2,
+      id: "route_002",
       name: "해운대 바다 산책 코스",
       savedAt: "2026-05-02",
       stopCount: 3,
@@ -440,7 +440,7 @@ const mockSavedRouteList: SavedRouteListResponse = {
     },
     // 추천 목록에 없는 루트. 추천 루트를 저장하면 4번째 카드로 추가됩니다.
     {
-      id: 4,
+      id: "route_004",
       name: "광안리 야경 코스",
       savedAt: "2026-04-21",
       stopCount: 2,
@@ -469,7 +469,7 @@ export const getMockSavedRouteList = (): SavedRouteListResponse => ({
 });
 
 export const getMockSavedRouteDetail = (
-  routeId: number,
+  routeId: string,
 ): SavedRouteDetailResponse => {
   const listItem =
     mockSavedRouteList.routes.find((route) => route.id === routeId) ??
@@ -488,7 +488,7 @@ export const getMockSavedRouteDetail = (
 // 위의 getMockSavedRouteList 가 바뀐 값을 새 객체로 돌려줘 화면이 갱신됩니다.
 
 export const mockUpdateSavedRouteCompleted = (
-  routeId: number,
+  routeId: string,
   isCompleted: boolean,
 ) => {
   mockSavedRouteList.routes = mockSavedRouteList.routes.map((route) =>
@@ -496,13 +496,13 @@ export const mockUpdateSavedRouteCompleted = (
   );
 };
 
-export const mockDeleteSavedRoute = (routeId: number) => {
+export const mockDeleteSavedRoute = (routeId: string) => {
   mockSavedRouteList.routes = mockSavedRouteList.routes.filter(
     (route) => route.id !== routeId,
   );
 };
 
-export const mockCreateSavedRoute = (routeId: number) => {
+export const mockCreateSavedRoute = (routeId: string) => {
   if (mockSavedRouteList.routes.some((route) => route.id === routeId)) return;
 
   const source = mockRecommendedRouteList.routes.find(

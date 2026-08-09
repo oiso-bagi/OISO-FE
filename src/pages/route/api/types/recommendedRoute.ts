@@ -11,7 +11,8 @@ export interface RouteLocation {
 
 // 1. 추천 루트 리스트
 export interface RecommendedRouteListItem {
-  id: number;
+  /** 서버가 내려주는 루트 식별자. 숫자가 아니라 "route_001" 형태입니다. */
+  id: string;
   name: string;
 
   stopCount: number;

@@ -36,7 +36,8 @@ export function MapDetailPage() {
     }
   };
 
-  const routeId = Number(id) || null;
+  // 루트 id 는 "route_001" 형태의 문자열입니다. 숫자로 변환하면 안 됩니다.
+  const routeId = id?.trim() ? id : null;
   // source 미지정/기타 값은 저장 루트로 간주 (현재 진입점이 저장 루트뿐)
   const isSaved = searchParams.get("source") !== "recommended";
 

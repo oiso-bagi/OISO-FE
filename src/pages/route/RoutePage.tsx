@@ -18,7 +18,7 @@ import {
 } from "./utils/routeFormat";
 
 export function RoutePage() {
-  const [expandedRouteId, setExpandedRouteId] = useState<number | null>(null);
+  const [expandedRouteId, setExpandedRouteId] = useState<string | null>(null);
 
   const { data: routes, isPending, isError } = useRecommendedRoutes();
   // 카드를 펼쳤을 때만 이 쿼리가 켜지므로, isPending 은 "아직 결과 없음"과 같습니다.
@@ -32,11 +32,11 @@ export function RoutePage() {
   const createSavedRoute = useCreateSavedRoute();
   const showToast = useToast();
 
-  const handleToggleExpanded = (routeId: number) => {
+  const handleToggleExpanded = (routeId: string) => {
     setExpandedRouteId((prev) => (prev === routeId ? null : routeId));
   };
 
-  const handleSave = (routeId: number) => {
+  const handleSave = (routeId: string) => {
     if (createSavedRoute.isPending) return;
 
     createSavedRoute.mutate(routeId, {

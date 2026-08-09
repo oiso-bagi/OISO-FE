@@ -4,7 +4,7 @@ export const queryKeys = {
   },
   route: {
     all: ["route"],
-    detail: (routeId: number) => ["route", routeId],
+    detail: (routeId: string) => ["route", routeId],
   },
   saved: {
     all: ["saved"],

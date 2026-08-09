@@ -9,7 +9,7 @@ export const getRecommendedRoutes = async () => {
   return http.get<RecommendedRouteListResponse>("/recommended-routes");
 };
 
-export const getRecommendedRouteDetail = async (routeId: number) => {
+export const getRecommendedRouteDetail = async (routeId: string) => {
   return http.get<RecommendedRouteDetailResponse>(
     `/recommended-routes/${routeId}`,
   );

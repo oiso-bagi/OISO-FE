@@ -6,7 +6,8 @@ import type {
 } from "./recommendedRoute";
 
 export interface SavedRouteListItem {
-  id: number;
+  /** 서버가 내려주는 루트 식별자. 숫자가 아니라 "route_001" 형태입니다. */
+  id: string;
   name: string;
   savedAt: string;
 

@@ -28,7 +28,7 @@ export const useCreateSavedRoute = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (routeId: number) => {
+    mutationFn: async (routeId: string) => {
       if (USE_MOCK_DATA) return mockCreateSavedRoute(routeId);
 
       return createSavedRoute(routeId);
@@ -51,7 +51,7 @@ export const useUpdateSavedRouteCompleted = () => {
       routeId,
       isCompleted,
     }: {
-      routeId: number;
+      routeId: string;
       isCompleted: boolean;
     }) => {
       if (USE_MOCK_DATA) {
@@ -71,7 +71,7 @@ export const useDeleteSavedRoute = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (routeId: number) => {
+    mutationFn: async (routeId: string) => {
       if (USE_MOCK_DATA) return mockDeleteSavedRoute(routeId);
 
       return deleteSavedRoute(routeId);
