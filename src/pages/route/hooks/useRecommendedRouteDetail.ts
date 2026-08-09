@@ -18,7 +18,6 @@ export const useRecommendedRouteDetail = (routeId: string | null) => {
       USE_MOCK_DATA
         ? getMockRecommendedRouteDetail(routeId as string)
         : getRecommendedRouteDetail(routeId as string),
-    select: (data) => data.route,
     enabled: routeId !== null,
   });
 };

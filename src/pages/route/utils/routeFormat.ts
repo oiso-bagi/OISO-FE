@@ -34,11 +34,12 @@ export const formatCongestion = (value: CongestionLevel): string => {
 };
 
 const transportationMap: Record<TransportationType, string> = {
-  WALK: "도보",
+  WALKING: "도보",
   BUS: "버스",
   SUBWAY: "지하철",
-  BICYCLE: "자전거",
+  DRIVING: "자동차",
   TAXI: "택시",
+  BIKING: "자전거",
 };
 
 /** 루트 카드 상단 교통수단 표기. 예: "도보 + 지하철" */

@@ -10,6 +10,5 @@ export const useRecommendedRoutes = () => {
     queryFn: USE_MOCK_DATA
       ? async () => mockRecommendedRouteList
       : getRecommendedRoutes,
-    select: (data) => data.routes,
   });
 };

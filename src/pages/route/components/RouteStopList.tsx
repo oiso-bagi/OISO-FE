@@ -54,7 +54,7 @@ export function RouteStopList({ stops, onSave, isSaving }: RouteStopListProps) {
 
           <ol className={styles.stopList}>
             {group.stops.map((stop, index) => (
-              <li key={stop.id} className={styles.stopListItem}>
+              <li key={stop.sequence} className={styles.stopListItem}>
                 <div className={styles.stopBox}>
                   <span className={styles.stopOrder}>{stop.sequence}</span>
 

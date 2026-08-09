@@ -1,16 +1,27 @@
 import { http } from "@/shared/api/http";
 
+import {
+  toRecommendedRouteDetail,
+  toRecommendedRouteListItem,
+} from "./mappers/recommendedRoute";
 import type {
-  RecommendedRouteDetailResponse,
-  RecommendedRouteListResponse,
-} from "./types/recommendedRoute";
+  ServerRecommendedRouteDetail,
+  ServerRecommendedRouteListItem,
+} from "./types/server/recommendedRoute";
 
+/** 서버는 배열을 그대로 내려줍니다(래핑 없음). */
 export const getRecommendedRoutes = async () => {
-  return http.get<RecommendedRouteListResponse>("/recommended-routes");
+  const routes = await http.get<ServerRecommendedRouteListItem[]>(
+    "/recommended-routes",
+  );
+
+  return routes.map(toRecommendedRouteListItem);
 };
 
 export const getRecommendedRouteDetail = async (routeId: string) => {
-  return http.get<RecommendedRouteDetailResponse>(
+  const route = await http.get<ServerRecommendedRouteDetail>(
     `/recommended-routes/${routeId}`,
   );
+
+  return toRecommendedRouteDetail(route);
 };

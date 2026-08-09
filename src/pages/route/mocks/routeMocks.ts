@@ -8,8 +8,8 @@
 import { USE_MOCK } from "@/shared/config/env";
 
 import type {
-  RecommendedRouteDetailResponse,
-  RecommendedRouteListResponse,
+  RecommendedRouteDetail,
+  RecommendedRouteListItem,
   RecommendedRouteStop,
 } from "../api/types/recommendedRoute";
 import type {
@@ -22,7 +22,6 @@ export const USE_MOCK_DATA = USE_MOCK;
 const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
   route_001: [
     {
-      id: 101,
       sequence: 1,
       dayNumber: 1,
       placeName: "흰여울문화마을",
@@ -30,11 +29,10 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       operatingHours: "09:00-18:00",
       latitude: 35.0785,
       longitude: 129.0201,
-      transportationToNext: "WALK",
+      transportationToNext: "WALKING",
       durationToNextMinutes: 8,
     },
     {
-      id: 102,
       sequence: 2,
       dayNumber: 1,
       placeName: "깡깡이 예술마을",
@@ -46,7 +44,6 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       durationToNextMinutes: 12,
     },
     {
-      id: 103,
       sequence: 3,
       dayNumber: 1,
       placeName: "남항시장",
@@ -54,11 +51,10 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       operatingHours: "매일 영업",
       latitude: 35.0952,
       longitude: 129.0264,
-      transportationToNext: "WALK",
+      transportationToNext: "WALKING",
       durationToNextMinutes: 6,
     },
     {
-      id: 104,
       sequence: 4,
       dayNumber: 1,
       placeName: "태종대",
@@ -73,7 +69,6 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
 
   route_002: [
     {
-      id: 201,
       sequence: 1,
       dayNumber: 1,
       placeName: "해운대 해수욕장",
@@ -81,11 +76,10 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       operatingHours: "상시 개방",
       latitude: 35.1587,
       longitude: 129.1604,
-      transportationToNext: "WALK",
+      transportationToNext: "WALKING",
       durationToNextMinutes: 15,
     },
     {
-      id: 202,
       sequence: 2,
       dayNumber: 1,
       placeName: "동백섬 누리마루",
@@ -97,7 +91,6 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       durationToNextMinutes: 10,
     },
     {
-      id: 203,
       sequence: 3,
       dayNumber: 1,
       placeName: "청사포 다릿돌전망대",
@@ -112,7 +105,6 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
 
   route_003: [
     {
-      id: 301,
       sequence: 1,
       dayNumber: 1,
       placeName: "감천문화마을",
@@ -120,11 +112,10 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       operatingHours: "09:00-18:00",
       latitude: 35.0975,
       longitude: 129.0107,
-      transportationToNext: "WALK",
+      transportationToNext: "WALKING",
       durationToNextMinutes: 11,
     },
     {
-      id: 302,
       sequence: 2,
       dayNumber: 1,
       placeName: "아미산 전망대",
@@ -136,7 +127,6 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       durationToNextMinutes: 14,
     },
     {
-      id: 303,
       sequence: 3,
       dayNumber: 1,
       placeName: "자갈치시장",
@@ -144,11 +134,10 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       operatingHours: "05:00-22:00",
       latitude: 35.0966,
       longitude: 129.0306,
-      transportationToNext: "WALK",
+      transportationToNext: "WALKING",
       durationToNextMinutes: 7,
     },
     {
-      id: 304,
       sequence: 4,
       dayNumber: 1,
       placeName: "국제시장",
@@ -163,7 +152,6 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
 
   route_004: [
     {
-      id: 401,
       sequence: 1,
       dayNumber: 1,
       placeName: "광안리 해수욕장",
@@ -171,11 +159,10 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       operatingHours: "상시 개방",
       latitude: 35.1532,
       longitude: 129.1187,
-      transportationToNext: "WALK",
+      transportationToNext: "WALKING",
       durationToNextMinutes: 9,
     },
     {
-      id: 402,
       sequence: 2,
       dayNumber: 1,
       placeName: "민락수변공원",
@@ -191,7 +178,6 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
   // 다일(2박 3일) 코스 목 — 일차별 지도 색상 구분/탭 UI 확인용
   route_005: [
     {
-      id: 501,
       sequence: 1,
       dayNumber: 1,
       placeName: "해운대 해수욕장",
@@ -199,11 +185,10 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       operatingHours: "상시 개방",
       latitude: 35.1587,
       longitude: 129.1604,
-      transportationToNext: "WALK",
+      transportationToNext: "WALKING",
       durationToNextMinutes: 15,
     },
     {
-      id: 502,
       sequence: 2,
       dayNumber: 1,
       placeName: "동백섬 누리마루",
@@ -215,7 +200,6 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       durationToNextMinutes: null,
     },
     {
-      id: 503,
       sequence: 3,
       dayNumber: 2,
       placeName: "감천문화마을",
@@ -227,7 +211,6 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       durationToNextMinutes: 14,
     },
     {
-      id: 504,
       sequence: 4,
       dayNumber: 2,
       placeName: "자갈치시장",
@@ -239,7 +222,6 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       durationToNextMinutes: null,
     },
     {
-      id: 505,
       sequence: 5,
       dayNumber: 3,
       placeName: "태종대",
@@ -247,11 +229,10 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       operatingHours: "09:00-일몰",
       latitude: 35.0518,
       longitude: 129.0873,
-      transportationToNext: "WALK",
+      transportationToNext: "WALKING",
       durationToNextMinutes: 20,
     },
     {
-      id: 506,
       sequence: 6,
       dayNumber: 3,
       placeName: "흰여울문화마을",
@@ -267,7 +248,6 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
   // 다일(1박 2일) 코스 목 — 2일차까지만 있는 케이스 확인용
   route_006: [
     {
-      id: 601,
       sequence: 1,
       dayNumber: 1,
       placeName: "광안리 해수욕장",
@@ -275,11 +255,10 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       operatingHours: "상시 개방",
       latitude: 35.1532,
       longitude: 129.1187,
-      transportationToNext: "WALK",
+      transportationToNext: "WALKING",
       durationToNextMinutes: 9,
     },
     {
-      id: 602,
       sequence: 2,
       dayNumber: 1,
       placeName: "민락수변공원",
@@ -291,7 +270,6 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       durationToNextMinutes: null,
     },
     {
-      id: 603,
       sequence: 3,
       dayNumber: 2,
       placeName: "청사포 다릿돌전망대",
@@ -303,7 +281,6 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       durationToNextMinutes: 18,
     },
     {
-      id: 604,
       sequence: 4,
       dayNumber: 2,
       placeName: "동백섬 누리마루",
@@ -317,95 +294,91 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
   ],
 };
 
-export const mockRecommendedRouteList: RecommendedRouteListResponse = {
-  routes: [
-    {
-      id: "route_001",
-      name: "원도심 로컬 체험 코스",
-      stopCount: 4,
-      distanceKm: 3.2,
-      transportationTypes: ["WALK", "SUBWAY"],
-      totalCost: 45000,
-      totalDurationMinutes: 180,
-      congestionLevel: "LOW",
-      savingAmount: -25000,
-      locations: [],
-      recommendationScore: 92,
-      isRecommended: true,
-    },
-    {
-      id: "route_002",
-      name: "해운대 바다 산책 코스",
-      stopCount: 3,
-      distanceKm: 4.8,
-      transportationTypes: ["WALK", "BUS"],
-      totalCost: 32000,
-      totalDurationMinutes: 150,
-      congestionLevel: "HIGH",
-      savingAmount: -12000,
-      locations: [],
-      recommendationScore: 85,
-      isRecommended: false,
-    },
-    {
-      id: "route_003",
-      name: "감천문화마을 골목 코스",
-      stopCount: 4,
-      distanceKm: 2.6,
-      transportationTypes: ["WALK", "BUS"],
-      totalCost: null,
-      totalDurationMinutes: 210,
-      congestionLevel: "MEDIUM",
-      savingAmount: null,
-      locations: [],
-      recommendationScore: 78,
-      isRecommended: false,
-    },
-    {
-      id: "route_005",
-      name: "부산 2박 3일 알짜배기 코스",
-      stopCount: 6,
-      distanceKm: 18.4,
-      transportationTypes: ["WALK", "BUS"],
-      totalCost: 125000,
-      totalDurationMinutes: 540,
-      congestionLevel: "MEDIUM",
-      savingAmount: -30000,
-      locations: [],
-      recommendationScore: 90,
-      isRecommended: false,
-    },
-    {
-      id: "route_006",
-      name: "해운대·광안리 1박 2일 코스",
-      stopCount: 4,
-      distanceKm: 9.6,
-      transportationTypes: ["WALK", "BUS"],
-      totalCost: 68000,
-      totalDurationMinutes: 320,
-      congestionLevel: "MEDIUM",
-      savingAmount: -18000,
-      locations: [],
-      recommendationScore: 87,
-      isRecommended: false,
-    },
-  ],
-};
+export const mockRecommendedRouteList: RecommendedRouteListItem[] = [
+  {
+    id: "route_001",
+    name: "원도심 로컬 체험 코스",
+    stopCount: 4,
+    distanceKm: 3.2,
+    transportationTypes: ["WALKING", "SUBWAY"],
+    totalCost: 45000,
+    totalDurationMinutes: 180,
+    congestionLevel: "LOW",
+    savingAmount: -25000,
+    locations: [],
+    recommendationScore: 92,
+    isRecommended: true,
+  },
+  {
+    id: "route_002",
+    name: "해운대 바다 산책 코스",
+    stopCount: 3,
+    distanceKm: 4.8,
+    transportationTypes: ["WALKING", "BUS"],
+    totalCost: 32000,
+    totalDurationMinutes: 150,
+    congestionLevel: "HIGH",
+    savingAmount: -12000,
+    locations: [],
+    recommendationScore: 85,
+    isRecommended: false,
+  },
+  {
+    id: "route_003",
+    name: "감천문화마을 골목 코스",
+    stopCount: 4,
+    distanceKm: 2.6,
+    transportationTypes: ["WALKING", "BUS"],
+    totalCost: null,
+    totalDurationMinutes: 210,
+    congestionLevel: "MEDIUM",
+    savingAmount: null,
+    locations: [],
+    recommendationScore: 78,
+    isRecommended: false,
+  },
+  {
+    id: "route_005",
+    name: "부산 2박 3일 알짜배기 코스",
+    stopCount: 6,
+    distanceKm: 18.4,
+    transportationTypes: ["WALKING", "BUS"],
+    totalCost: 125000,
+    totalDurationMinutes: 540,
+    congestionLevel: "MEDIUM",
+    savingAmount: -30000,
+    locations: [],
+    recommendationScore: 90,
+    isRecommended: false,
+  },
+  {
+    id: "route_006",
+    name: "해운대·광안리 1박 2일 코스",
+    stopCount: 4,
+    distanceKm: 9.6,
+    transportationTypes: ["WALKING", "BUS"],
+    totalCost: 68000,
+    totalDurationMinutes: 320,
+    congestionLevel: "MEDIUM",
+    savingAmount: -18000,
+    locations: [],
+    recommendationScore: 87,
+    isRecommended: false,
+  },
+];
 
 export const getMockRecommendedRouteDetail = (
   routeId: string,
-): RecommendedRouteDetailResponse => {
+): RecommendedRouteDetail => {
   const listItem =
-    mockRecommendedRouteList.routes.find((route) => route.id === routeId) ??
-    mockRecommendedRouteList.routes[0];
+    mockRecommendedRouteList.find((route) => route.id === routeId) ??
+    mockRecommendedRouteList[0];
 
   return {
-    route: {
-      ...listItem,
-      // 목에서는 모든 추천 루트에 저장 버튼이 보이도록 항상 false 로 둡니다.
-      isSaved: false,
-      stops: stopsByRouteId[listItem.id] ?? [],
-    },
+    ...listItem,
+    // 목에서는 모든 추천 루트에 저장 버튼이 보이도록 항상 false 로 둡니다.
+    isSaved: false,
+    stops: stopsByRouteId[listItem.id] ?? [],
   };
 };
 
@@ -418,7 +391,7 @@ const mockSavedRouteList: SavedRouteListResponse = {
       savedAt: "2026-05-18",
       stopCount: 4,
       distanceKm: 3.2,
-      transportationTypes: ["WALK", "SUBWAY"],
+      transportationTypes: ["WALKING", "SUBWAY"],
       totalCost: 45000,
       totalDurationMinutes: 180,
       congestionLevel: "LOW",
@@ -431,7 +404,7 @@ const mockSavedRouteList: SavedRouteListResponse = {
       savedAt: "2026-05-02",
       stopCount: 3,
       distanceKm: 4.8,
-      transportationTypes: ["WALK", "BUS"],
+      transportationTypes: ["WALKING", "BUS"],
       totalCost: 32000,
       totalDurationMinutes: 150,
       congestionLevel: "HIGH",
@@ -445,7 +418,7 @@ const mockSavedRouteList: SavedRouteListResponse = {
       savedAt: "2026-04-21",
       stopCount: 2,
       distanceKm: 1.4,
-      transportationTypes: ["WALK"],
+      transportationTypes: ["WALKING"],
       totalCost: null,
       totalDurationMinutes: 90,
       congestionLevel: "MEDIUM",
@@ -505,9 +478,7 @@ export const mockDeleteSavedRoute = (routeId: string) => {
 export const mockCreateSavedRoute = (routeId: string) => {
   if (mockSavedRouteList.routes.some((route) => route.id === routeId)) return;
 
-  const source = mockRecommendedRouteList.routes.find(
-    (route) => route.id === routeId,
-  );
+  const source = mockRecommendedRouteList.find((route) => route.id === routeId);
   if (!source) return;
 
   mockSavedRouteList.routes = [
