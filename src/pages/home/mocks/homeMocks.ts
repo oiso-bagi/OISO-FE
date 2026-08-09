@@ -15,6 +15,7 @@ export const USE_MOCK_HOME_DATA = USE_MOCK;
 // 홈에서 카드를 눌렀을 때 저장 페이지에서 해당 루트가 펼쳐지도록 합니다.
 export const mockHomeSummary: HomeSummaryResponse = {
   totalSavingAmount: 55000,
+  savedRouteCount: 3,
   savedRoutes: [
     {
       id: "route_001",

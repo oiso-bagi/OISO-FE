@@ -14,5 +14,8 @@ export interface HomeSummaryResponse {
   // 관광지 프리미엄 대비 아낀 돈 총합 (저장된 루트 기준)
   totalSavingAmount: number;
 
+  /** 저장 루트 총 개수. savedRoutes 가 일부만 내려올 수 있어 별도로 받습니다. */
+  savedRouteCount: number;
+
   savedRoutes: HomeSavedRouteItem[];
 }

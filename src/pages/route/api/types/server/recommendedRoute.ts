@@ -12,6 +12,18 @@ export type ServerTransitType =
 
 export type ServerCongestionLevel = "LOW" | "MEDIUM" | "HIGH";
 
+/** POST /recommended-routes/recommend 요청 본문 */
+export interface ServerRecommendRouteRequest {
+  travelStyleSlugs: string[];
+  durationDays: number;
+  dailyBudgetWon: number;
+  ratios?: {
+    foodRatio: number;
+    experienceRatio: number;
+    transportRatio: number;
+  };
+}
+
 export interface ServerRouteStopLocation {
   sequence: number;
   dayNumber: number;

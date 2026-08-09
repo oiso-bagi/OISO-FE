@@ -74,7 +74,9 @@ export function HomePage() {
           <h2 className={styles.savedSectionTitle}>저장한 루트</h2>
 
           {savedRoutes && (
-            <span className={styles.countBadge}>{savedRoutes.length}개</span>
+            <span className={styles.countBadge}>
+              {data?.savedRouteCount ?? savedRoutes.length}개
+            </span>
           )}
         </div>
 
