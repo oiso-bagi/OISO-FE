@@ -4,7 +4,7 @@ import {
   createSavedRoute,
   deleteSavedRoute,
   getSavedRoutes,
-  updateSavedRouteCompleted,
+  updateSavedRouteCompletion,
 } from "../api/savedRouteApi";
 import {
   USE_MOCK_DATA,
@@ -58,7 +58,7 @@ export const useUpdateSavedRouteCompleted = () => {
         return mockUpdateSavedRouteCompleted(routeId, isCompleted);
       }
 
-      return updateSavedRouteCompleted(routeId, { isCompleted });
+      return updateSavedRouteCompletion(routeId, { isCompleted });
     },
 
     onSuccess: () => {

@@ -15,7 +15,6 @@ export const useSavedRouteDetail = (routeId: string | null) => {
       USE_MOCK_DATA
         ? getMockSavedRouteDetail(routeId as string)
         : getSavedRouteDetail(routeId as string),
-    select: (data) => data.route,
     enabled: routeId !== null,
   });
 };

@@ -13,7 +13,7 @@ import type {
   RecommendedRouteStop,
 } from "../api/types/recommendedRoute";
 import type {
-  SavedRouteDetailResponse,
+  SavedRouteDetail,
   SavedRouteListResponse,
 } from "../api/types/savedRoute";
 
@@ -388,7 +388,7 @@ const mockSavedRouteList: SavedRouteListResponse = {
     {
       id: "route_001",
       name: "원도심 로컬 체험 코스",
-      savedAt: "2026-05-18",
+      savedAt: "2026-05-18T00:00:00.000Z",
       stopCount: 4,
       distanceKm: 3.2,
       transportationTypes: ["WALKING", "SUBWAY"],
@@ -401,7 +401,7 @@ const mockSavedRouteList: SavedRouteListResponse = {
     {
       id: "route_002",
       name: "해운대 바다 산책 코스",
-      savedAt: "2026-05-02",
+      savedAt: "2026-05-02T00:00:00.000Z",
       stopCount: 3,
       distanceKm: 4.8,
       transportationTypes: ["WALKING", "BUS"],
@@ -415,7 +415,7 @@ const mockSavedRouteList: SavedRouteListResponse = {
     {
       id: "route_004",
       name: "광안리 야경 코스",
-      savedAt: "2026-04-21",
+      savedAt: "2026-04-21T00:00:00.000Z",
       stopCount: 2,
       distanceKm: 1.4,
       transportationTypes: ["WALKING"],
@@ -441,18 +441,14 @@ export const getMockSavedRouteList = (): SavedRouteListResponse => ({
   routes: [...mockSavedRouteList.routes],
 });
 
-export const getMockSavedRouteDetail = (
-  routeId: string,
-): SavedRouteDetailResponse => {
+export const getMockSavedRouteDetail = (routeId: string): SavedRouteDetail => {
   const listItem =
     mockSavedRouteList.routes.find((route) => route.id === routeId) ??
     mockSavedRouteList.routes[0];
 
   return {
-    route: {
-      ...listItem,
-      stops: stopsByRouteId[listItem.id] ?? [],
-    },
+    ...listItem,
+    stops: stopsByRouteId[listItem.id] ?? [],
   };
 };
 
@@ -486,7 +482,7 @@ export const mockCreateSavedRoute = (routeId: string) => {
     {
       id: source.id,
       name: source.name,
-      savedAt: "2026-07-23",
+      savedAt: "2026-07-23T00:00:00.000Z",
       stopCount: source.stopCount,
       distanceKm: source.distanceKm,
       transportationTypes: source.transportationTypes,
