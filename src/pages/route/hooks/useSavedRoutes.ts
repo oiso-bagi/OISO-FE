@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { queryKeys } from "@/shared/query/queryKeys";
+
 import {
   createSavedRoute,
   deleteSavedRoute,
@@ -13,19 +15,32 @@ import {
   mockDeleteSavedRoute,
   mockUpdateSavedRouteCompleted,
 } from "../mocks/routeMocks";
-import { routeQueryKeys } from "./queryKeys";
 
 export const useSavedRoutes = () => {
   return useQuery({
-    queryKey: routeQueryKeys.savedRoutes(),
+    queryKey: queryKeys.savedRoutes.list(),
     queryFn: USE_MOCK_DATA
       ? async () => getMockSavedRouteList()
       : getSavedRoutes,
   });
 };
 
+/**
+ * 저장 목록이 바뀌면 홈 요약(누적 절약액·저장 개수·카드 목록)도 함께
+ * 달라지므로 두 도메인을 같이 무효화합니다.
+ */
+const useInvalidateSavedRoutes = () => {
+  const queryClient = useQueryClient();
+
+  return () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.savedRoutes.all });
+    queryClient.invalidateQueries({ queryKey: queryKeys.home.all });
+  };
+};
+
 export const useCreateSavedRoute = () => {
   const queryClient = useQueryClient();
+  const invalidateSavedRoutes = useInvalidateSavedRoutes();
 
   return useMutation({
     mutationFn: async (routeId: string) => {
@@ -35,16 +50,17 @@ export const useCreateSavedRoute = () => {
     },
 
     onSuccess: (_, routeId) => {
-      queryClient.invalidateQueries({ queryKey: routeQueryKeys.savedRoutes() });
+      invalidateSavedRoutes();
+      // 추천 상세의 isSaved 가 바뀌므로 해당 항목만 다시 받습니다.
       queryClient.invalidateQueries({
-        queryKey: routeQueryKeys.recommendedRouteDetail(routeId),
+        queryKey: queryKeys.recommendedRoutes.detail(routeId),
       });
     },
   });
 };
 
 export const useUpdateSavedRouteCompleted = () => {
-  const queryClient = useQueryClient();
+  const invalidateSavedRoutes = useInvalidateSavedRoutes();
 
   return useMutation({
     mutationFn: async ({
@@ -61,14 +77,12 @@ export const useUpdateSavedRouteCompleted = () => {
       return updateSavedRouteCompletion(routeId, { isCompleted });
     },
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: routeQueryKeys.savedRoutes() });
-    },
+    onSuccess: invalidateSavedRoutes,
   });
 };
 
 export const useDeleteSavedRoute = () => {
-  const queryClient = useQueryClient();
+  const invalidateSavedRoutes = useInvalidateSavedRoutes();
 
   return useMutation({
     mutationFn: async (routeId: string) => {
@@ -77,8 +91,6 @@ export const useDeleteSavedRoute = () => {
       return deleteSavedRoute(routeId);
     },
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: routeQueryKeys.savedRoutes() });
-    },
+    onSuccess: invalidateSavedRoutes,
   });
 };

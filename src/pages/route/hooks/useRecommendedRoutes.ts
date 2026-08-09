@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { readRecommendationConditions } from "@/shared/lib/recommendationConditions";
+import { queryKeys } from "@/shared/query/queryKeys";
 
 import {
   getRecommendedRoutes,
   postRecommendedRoutes,
 } from "../api/recommendedRouteApi";
 import { USE_MOCK_DATA, mockRecommendedRouteList } from "../mocks/routeMocks";
-import { routeQueryKeys } from "./queryKeys";
 
 /**
  * 설문을 마친 사용자는 조건 기반 추천을, 조건이 없으면 전체 추천 목록을
@@ -17,7 +17,7 @@ export const useRecommendedRoutes = () => {
   const conditions = readRecommendationConditions();
 
   return useQuery({
-    queryKey: routeQueryKeys.recommendedRoutes(conditions),
+    queryKey: queryKeys.recommendedRoutes.list(conditions),
     queryFn: () => {
       if (USE_MOCK_DATA) return Promise.resolve(mockRecommendedRouteList);
 
