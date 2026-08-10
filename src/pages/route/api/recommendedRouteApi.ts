@@ -1,15 +1,15 @@
 import { http } from "@/shared/api/http";
 import type { RecommendationConditions } from "@/shared/lib/recommendationConditions";
-
-import {
-  toRecommendedRouteDetail,
-  toRecommendedRouteListItem,
-} from "./mappers/recommendedRoute";
 import type {
   RecommendRouteRequestDto,
   RecommendedRouteDetailResponseDto,
   RecommendedRouteListResponseDto,
 } from "@/shared/api/generated/schema";
+
+import {
+  toRecommendedRouteDetail,
+  toRecommendedRouteListItem,
+} from "./mappers/recommendedRoute";
 
 /** 서버는 배열을 그대로 내려줍니다(래핑 없음). */
 export const getRecommendedRoutes = async () => {

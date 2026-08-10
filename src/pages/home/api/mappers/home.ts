@@ -1,12 +1,12 @@
 /** 홈 요약 서버 응답 → 화면용 타입 변환. */
 
 import { toSavingAmount } from "@/pages/route/api/mappers/common";
-
-import type { HomeSavedRouteItem, HomeSummaryResponse } from "../types/home";
 import type {
   HomeSummaryResponseDto,
   SavedRouteSummaryItemDto,
 } from "@/shared/api/generated/schema";
+
+import type { HomeSavedRouteItem, HomeSummaryResponse } from "../types/home";
 
 const toHomeSavedRouteItem = (
   item: SavedRouteSummaryItemDto,

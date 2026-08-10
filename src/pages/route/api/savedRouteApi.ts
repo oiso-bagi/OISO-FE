@@ -1,7 +1,4 @@
 import { http } from "@/shared/api/http";
-
-import { toSavedRouteDetail, toSavedRouteList } from "./mappers/savedRoute";
-import type { UpdateSavedRouteCompletionRequest } from "./types/savedRoute";
 import type {
   CreateSavedRouteDto,
   SavedRouteCompletionResponseDto,
@@ -9,6 +6,9 @@ import type {
   SavedRouteListResponseDto,
   ToggleSavedRouteCompletionDto,
 } from "@/shared/api/generated/schema";
+
+import { toSavedRouteDetail, toSavedRouteList } from "./mappers/savedRoute";
+import type { UpdateSavedRouteCompletionRequest } from "./types/savedRoute";
 
 export const getSavedRoutes = async () => {
   const response = await http.get<SavedRouteListResponseDto>("/saved-routes");

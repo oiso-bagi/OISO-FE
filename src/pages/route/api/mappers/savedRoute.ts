@@ -1,5 +1,12 @@
 /** 저장 루트 서버 응답 → 화면용 타입 변환. */
 
+import type {
+  SavedRouteDetailResponseDto,
+  SavedRouteItemDto,
+  SavedRouteListResponseDto,
+  SavedRouteStopDetailDto,
+} from "@/shared/api/generated/schema";
+
 import {
   parseTransportType,
   toCategoryLabel,
@@ -13,12 +20,6 @@ import type {
   SavedRouteListItem,
   SavedRouteListResponse,
 } from "../types/savedRoute";
-import type {
-  SavedRouteDetailResponseDto,
-  SavedRouteItemDto,
-  SavedRouteListResponseDto,
-  SavedRouteStopDetailDto,
-} from "@/shared/api/generated/schema";
 
 /**
  * 저장 루트 경유지에는 서버가 `dayNumber` 를 내려주지 않습니다.

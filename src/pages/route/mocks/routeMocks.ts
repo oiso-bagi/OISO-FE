@@ -370,9 +370,14 @@ export const mockRecommendedRouteList: RecommendedRouteListItem[] = [
 export const getMockRecommendedRouteDetail = (
   routeId: string,
 ): RecommendedRouteDetail => {
-  const listItem =
-    mockRecommendedRouteList.find((route) => route.id === routeId) ??
-    mockRecommendedRouteList[0];
+  const listItem = mockRecommendedRouteList.find(
+    (route) => route.id === routeId,
+  );
+
+  // 저장 루트와 같은 이유로 첫 항목 대체 대신 실패시킵니다.
+  if (!listItem) {
+    throw new Error(`추천 루트를 찾을 수 없습니다: ${routeId}`);
+  }
 
   return {
     ...listItem,
@@ -442,9 +447,16 @@ export const getMockSavedRouteList = (): SavedRouteListResponse => ({
 });
 
 export const getMockSavedRouteDetail = (routeId: string): SavedRouteDetail => {
-  const listItem =
-    mockSavedRouteList.routes.find((route) => route.id === routeId) ??
-    mockSavedRouteList.routes[0];
+  const listItem = mockSavedRouteList.routes.find(
+    (route) => route.id === routeId,
+  );
+
+  // 서버는 없는 루트에 404 를 주므로 목도 실패시킵니다. 첫 항목으로 대체하면
+  // 다른 루트를 보여주게 되고, 저장 루트를 모두 지운 뒤에는 목록이 비어
+  // 접근 자체가 터집니다.
+  if (!listItem) {
+    throw new Error(`저장 루트를 찾을 수 없습니다: ${routeId}`);
+  }
 
   return {
     ...listItem,

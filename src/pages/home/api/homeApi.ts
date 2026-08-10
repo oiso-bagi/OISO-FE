@@ -1,7 +1,7 @@
 import { http } from "@/shared/api/http";
+import type { HomeSummaryResponseDto } from "@/shared/api/generated/schema";
 
 import { toHomeSummary } from "./mappers/home";
-import type { HomeSummaryResponseDto } from "@/shared/api/generated/schema";
 
 export const getHomeSummary = async () => {
   const response = await http.get<HomeSummaryResponseDto>("/home");

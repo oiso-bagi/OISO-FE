@@ -6,6 +6,13 @@
  * 때문에, 이 레이어가 없으면 화면이 두 형태를 모두 알아야 합니다.
  */
 
+import type {
+  RecommendedRouteDetailResponseDto,
+  RecommendedRouteListResponseDto,
+  RouteStopLocationDto,
+  RouteStopResponseDto,
+} from "@/shared/api/generated/schema";
+
 import {
   parseTransportType,
   toCategoryLabel,
@@ -19,12 +26,6 @@ import type {
   RecommendedRouteStop,
   RouteLocation,
 } from "../types/recommendedRoute";
-import type {
-  RecommendedRouteDetailResponseDto,
-  RecommendedRouteListResponseDto,
-  RouteStopLocationDto,
-  RouteStopResponseDto,
-} from "@/shared/api/generated/schema";
 
 /** 좌표가 없는 경유지는 지도에 찍을 수 없어 제외합니다. */
 const toRouteLocations = (
