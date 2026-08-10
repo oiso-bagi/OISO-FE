@@ -13,9 +13,16 @@ const CATEGORY_LABELS: Record<string, string> = {
   ETC: "기타",
 };
 
-/** 알 수 없는 코드는 그대로 노출해, 새 카테고리가 추가돼도 빈칸이 되지 않게 합니다. */
-export const toCategoryLabel = (category: string) =>
-  CATEGORY_LABELS[category] ?? category;
+/**
+ * 카테고리 코드를 화면 라벨로 바꿉니다.
+ *
+ * 서버가 분류하지 못한 장소는 null 을 내려주므로 그대로 통과시켜 화면에서
+ * 태그를 감춥니다. 여기서 "기타" 로 채우면 실제 `ETC` 와 구분되지 않습니다.
+ * 알 수 없는 코드는 그대로 노출해, 새 카테고리가 추가돼도 빈칸이 되지 않게
+ * 합니다.
+ */
+export const toCategoryLabel = (category: string | null) =>
+  category === null ? null : (CATEGORY_LABELS[category] ?? category);
 
 /** `openTime`/`closeTime` 을 화면이 쓰던 단일 문자열로 합칩니다. */
 export const toOperatingHours = (

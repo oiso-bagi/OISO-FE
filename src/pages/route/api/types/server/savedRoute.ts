@@ -40,7 +40,8 @@ export interface ServerSavedRouteStop {
   /** 0 부터 시작합니다. */
   sequence: number;
   placeName: string;
-  category: string;
+  /** 분류되지 않은 장소는 null 입니다. */
+  category: string | null;
   openTime: string | null;
   closeTime: string | null;
   nextTransportType: ServerTransitType | null;

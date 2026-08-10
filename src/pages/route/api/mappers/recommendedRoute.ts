@@ -81,7 +81,7 @@ export const toRecommendedRouteDetail = (
   totalCost: route.totalCost,
   totalDurationMinutes: route.totalTimeMinutes,
   congestionLevel: route.congestionLevel,
-  savingAmount: toSavingAmount(route.savedCost),
+  savingAmount: toSavingAmount(route.estimatedSavingsWon),
   // 상세 응답에는 목록의 stopLocations 가 없어 stops 좌표로 대신 채웁니다.
   locations: toRouteLocations(route.stops),
   recommendationScore: route.recommendScore,

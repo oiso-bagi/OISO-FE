@@ -64,7 +64,9 @@ export function RouteStopList({ stops, onSave, isSaving }: RouteStopListProps) {
                     </strong>
 
                     <div className={styles.stopTagList}>
-                      <span className={styles.stopTag}>{stop.category}</span>
+                      {stop.category && (
+                        <span className={styles.stopTag}>{stop.category}</span>
+                      )}
 
                       <span className={styles.stopTag}>
                         {stop.operatingHours ?? "운영시간 정보 없음"}

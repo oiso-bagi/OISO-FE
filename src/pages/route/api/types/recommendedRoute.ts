@@ -44,7 +44,8 @@ export interface RecommendedRouteStop {
   dayNumber: number;
 
   placeName: string;
-  category: string;
+  /** 분류되지 않은 장소는 null 이며, 화면에서 태그를 감춥니다. */
+  category: string | null;
   operatingHours: string | null;
 
   /** 좌표가 없는 장소가 있어 null 을 허용합니다. 지도에서는 제외됩니다. */

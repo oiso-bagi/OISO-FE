@@ -54,7 +54,8 @@ export interface ServerRouteStop {
   sequence: number;
   dayNumber: number;
   placeName: string;
-  category: string;
+  /** 분류되지 않은 장소는 null 입니다. */
+  category: string | null;
   openTime: string | null;
   closeTime: string | null;
   latitude: number | null;
@@ -72,7 +73,9 @@ export interface ServerRecommendedRouteDetail {
   /** 목록의 transitTypes 와 달리 `"WALKING + BUS"` 형태의 단일 문자열입니다. */
   transportType: string;
   congestionLevel: ServerCongestionLevel;
+  /** `estimatedSavingsWon` 과 같은 값입니다. 목록과 필드명을 맞추기 위해 후자를 씁니다. */
   savedCost: number;
+  estimatedSavingsWon: number;
   recommendScore: number;
   isRecommended: boolean;
   isSaved: boolean;
