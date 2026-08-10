@@ -14,11 +14,11 @@ import type {
   SavedRouteListResponse,
 } from "../types/savedRoute";
 import type {
-  ServerSavedRouteDetail,
-  ServerSavedRouteItem,
-  ServerSavedRouteList,
-  ServerSavedRouteStop,
-} from "../types/server/savedRoute";
+  SavedRouteDetailResponseDto,
+  SavedRouteItemDto,
+  SavedRouteListResponseDto,
+  SavedRouteStopDetailDto,
+} from "@/shared/api/generated/schema";
 
 /**
  * 저장 루트 경유지에는 서버가 `dayNumber` 를 내려주지 않습니다.
@@ -28,7 +28,7 @@ import type {
 const FALLBACK_DAY_NUMBER = 1;
 
 const toSavedRouteStop = (
-  stop: ServerSavedRouteStop,
+  stop: SavedRouteStopDetailDto,
 ): RecommendedRouteStop => ({
   sequence: toDisplaySequence(stop.sequence),
   dayNumber: FALLBACK_DAY_NUMBER,
@@ -42,7 +42,7 @@ const toSavedRouteStop = (
 });
 
 const toSavedRouteListItem = (
-  route: ServerSavedRouteItem,
+  route: SavedRouteItemDto,
 ): SavedRouteListItem => ({
   id: route.routeId,
   name: route.routeName,
@@ -59,14 +59,14 @@ const toSavedRouteListItem = (
 });
 
 export const toSavedRouteList = (
-  response: ServerSavedRouteList,
+  response: SavedRouteListResponseDto,
 ): SavedRouteListResponse => ({
   totalSavingAmount: response.totalSavedSavingsWon,
   routes: response.savedRoutes.map(toSavedRouteListItem),
 });
 
 export const toSavedRouteDetail = (
-  route: ServerSavedRouteDetail,
+  route: SavedRouteDetailResponseDto,
 ): SavedRouteDetail => ({
   id: route.routeId,
   name: route.routeName,

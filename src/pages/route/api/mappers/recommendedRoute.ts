@@ -20,15 +20,15 @@ import type {
   RouteLocation,
 } from "../types/recommendedRoute";
 import type {
-  ServerRecommendedRouteDetail,
-  ServerRecommendedRouteListItem,
-  ServerRouteStop,
-  ServerRouteStopLocation,
-} from "../types/server/recommendedRoute";
+  RecommendedRouteDetailResponseDto,
+  RecommendedRouteListResponseDto,
+  RouteStopLocationDto,
+  RouteStopResponseDto,
+} from "@/shared/api/generated/schema";
 
 /** 좌표가 없는 경유지는 지도에 찍을 수 없어 제외합니다. */
 const toRouteLocations = (
-  stopLocations: ServerRouteStopLocation[],
+  stopLocations: RouteStopLocationDto[],
 ): RouteLocation[] =>
   stopLocations
     .filter((stop) => stop.latitude !== null && stop.longitude !== null)
@@ -40,7 +40,7 @@ const toRouteLocations = (
       longitude: stop.longitude as number,
     }));
 
-const toRouteStop = (stop: ServerRouteStop): RecommendedRouteStop => ({
+const toRouteStop = (stop: RouteStopResponseDto): RecommendedRouteStop => ({
   // 서버 sequence 는 0 부터라 화면 표기(1 부터)에 맞춰 올립니다.
   sequence: toDisplaySequence(stop.sequence),
   dayNumber: stop.dayNumber,
@@ -54,7 +54,7 @@ const toRouteStop = (stop: ServerRouteStop): RecommendedRouteStop => ({
 });
 
 export const toRecommendedRouteListItem = (
-  route: ServerRecommendedRouteListItem,
+  route: RecommendedRouteListResponseDto,
 ): RecommendedRouteListItem => ({
   id: route.id,
   name: route.name,
@@ -71,7 +71,7 @@ export const toRecommendedRouteListItem = (
 });
 
 export const toRecommendedRouteDetail = (
-  route: ServerRecommendedRouteDetail,
+  route: RecommendedRouteDetailResponseDto,
 ): RecommendedRouteDetail => ({
   id: route.routeId,
   name: route.routeName,

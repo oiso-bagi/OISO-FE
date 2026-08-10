@@ -4,12 +4,12 @@ import { toSavingAmount } from "@/pages/route/api/mappers/common";
 
 import type { HomeSavedRouteItem, HomeSummaryResponse } from "../types/home";
 import type {
-  ServerHomeSavedRouteItem,
-  ServerHomeSummary,
-} from "../types/server/home";
+  HomeSummaryResponseDto,
+  SavedRouteSummaryItemDto,
+} from "@/shared/api/generated/schema";
 
 const toHomeSavedRouteItem = (
-  item: ServerHomeSavedRouteItem,
+  item: SavedRouteSummaryItemDto,
 ): HomeSavedRouteItem => ({
   // 저장 레코드 id(item.id)가 아니라 루트 id 를 씁니다. 카드를 누르면
   // /saved-routes/{routeId} 로 상세를 조회하기 때문입니다.
@@ -21,7 +21,7 @@ const toHomeSavedRouteItem = (
 });
 
 export const toHomeSummary = (
-  response: ServerHomeSummary,
+  response: HomeSummaryResponseDto,
 ): HomeSummaryResponse => ({
   totalSavingAmount: response.totalSavedSavingsWon,
   savedRouteCount: response.totalSavedCount,

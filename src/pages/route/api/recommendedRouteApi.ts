@@ -6,14 +6,14 @@ import {
   toRecommendedRouteListItem,
 } from "./mappers/recommendedRoute";
 import type {
-  ServerRecommendRouteRequest,
-  ServerRecommendedRouteDetail,
-  ServerRecommendedRouteListItem,
-} from "./types/server/recommendedRoute";
+  RecommendRouteRequestDto,
+  RecommendedRouteDetailResponseDto,
+  RecommendedRouteListResponseDto,
+} from "@/shared/api/generated/schema";
 
 /** 서버는 배열을 그대로 내려줍니다(래핑 없음). */
 export const getRecommendedRoutes = async () => {
-  const routes = await http.get<ServerRecommendedRouteListItem[]>(
+  const routes = await http.get<RecommendedRouteListResponseDto[]>(
     "/recommended-routes",
   );
 
@@ -27,13 +27,13 @@ export const getRecommendedRoutes = async () => {
 export const postRecommendedRoutes = async (
   conditions: RecommendationConditions,
 ) => {
-  const body: ServerRecommendRouteRequest = {
+  const body: RecommendRouteRequestDto = {
     travelStyleSlugs: conditions.travelStyleSlugs,
     durationDays: conditions.durationDays,
     dailyBudgetWon: conditions.dailyBudgetWon,
   };
 
-  const routes = await http.post<ServerRecommendedRouteListItem[]>(
+  const routes = await http.post<RecommendedRouteListResponseDto[]>(
     "/recommended-routes/recommend",
     body,
   );
@@ -42,7 +42,7 @@ export const postRecommendedRoutes = async (
 };
 
 export const getRecommendedRouteDetail = async (routeId: string) => {
-  const route = await http.get<ServerRecommendedRouteDetail>(
+  const route = await http.get<RecommendedRouteDetailResponseDto>(
     `/recommended-routes/${routeId}`,
   );
 

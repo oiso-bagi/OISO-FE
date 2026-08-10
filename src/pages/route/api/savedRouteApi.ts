@@ -3,27 +3,27 @@ import { http } from "@/shared/api/http";
 import { toSavedRouteDetail, toSavedRouteList } from "./mappers/savedRoute";
 import type { UpdateSavedRouteCompletionRequest } from "./types/savedRoute";
 import type {
-  ServerCreateSavedRouteRequest,
-  ServerSavedRouteCompletion,
-  ServerSavedRouteDetail,
-  ServerSavedRouteList,
-  ServerToggleCompletionRequest,
-} from "./types/server/savedRoute";
+  CreateSavedRouteDto,
+  SavedRouteCompletionResponseDto,
+  SavedRouteDetailResponseDto,
+  SavedRouteListResponseDto,
+  ToggleSavedRouteCompletionDto,
+} from "@/shared/api/generated/schema";
 
 export const getSavedRoutes = async () => {
-  const response = await http.get<ServerSavedRouteList>("/saved-routes");
+  const response = await http.get<SavedRouteListResponseDto>("/saved-routes");
 
   return toSavedRouteList(response);
 };
 
 export const createSavedRoute = async (routeId: string) => {
-  const body: ServerCreateSavedRouteRequest = { routeId };
+  const body: CreateSavedRouteDto = { routeId };
 
   return http.post("/saved-routes", body);
 };
 
 export const getSavedRouteDetail = async (routeId: string) => {
-  const route = await http.get<ServerSavedRouteDetail>(
+  const route = await http.get<SavedRouteDetailResponseDto>(
     `/saved-routes/${routeId}`,
   );
 
@@ -40,11 +40,11 @@ export const updateSavedRouteCompletion = async (
   routeId: string,
   body: UpdateSavedRouteCompletionRequest,
 ) => {
-  const request: ServerToggleCompletionRequest = {
+  const request: ToggleSavedRouteCompletionDto = {
     isCompleted: body.isCompleted,
   };
 
-  return http.patch<ServerSavedRouteCompletion>(
+  return http.patch<SavedRouteCompletionResponseDto>(
     `/saved-routes/${routeId}/completion`,
     request,
   );

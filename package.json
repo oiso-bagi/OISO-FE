@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
+    "api:generate": "swagger-typescript-api generate --no-client -p https://oiso-be-production.up.railway.app/api-docs/json -o src/shared/api/generated -n schema.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "preview": "vite preview"
