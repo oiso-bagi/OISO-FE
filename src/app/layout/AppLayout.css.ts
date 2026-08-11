@@ -26,3 +26,21 @@ export const contentWithBottomNavigation = style({
 export const content = style({
   minHeight: "100vh",
 });
+
+export const authStatus = style({
+  minHeight: "100vh",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: vars.space.sm,
+  color: vars.color.neutral500,
+});
+
+export const authRetryButton = style({
+  padding: `${vars.space.xs} ${vars.space.md}`,
+  border: `2px solid ${vars.color.black}`,
+  backgroundColor: vars.color.white,
+  color: vars.color.black,
+  cursor: "pointer",
+});

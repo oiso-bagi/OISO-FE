@@ -1,27 +1,36 @@
-const loginCompletedKey = "oiso:login-completed";
+const legacyLoginCompletedKey = "oiso:login-completed";
 const surveyCompletedKey = "oiso:survey-completed";
 
 const canUseStorage = () => typeof window !== "undefined";
 
-export const isLoginCompleted = () =>
-  canUseStorage() && getStorageItem(loginCompletedKey) === "true";
-
 export const isSurveyCompleted = () =>
   canUseStorage() && getStorageItem(surveyCompletedKey) === "true";
 
-export const completeLogin = () => {
+export const prepareSurveyOnboarding = () => {
   if (!canUseStorage()) return false;
 
-  return (
-    removeStorageItem(surveyCompletedKey) &&
-    setStorageItem(loginCompletedKey, "true")
+  const isLegacyLoginCompletedRemoved = removeStorageItem(
+    legacyLoginCompletedKey,
   );
+  const isSurveyCompletedRemoved = removeStorageItem(surveyCompletedKey);
+  return isLegacyLoginCompletedRemoved && isSurveyCompletedRemoved;
 };
 
 export const completeSurvey = () => {
   if (!canUseStorage()) return false;
 
   return setStorageItem(surveyCompletedKey, "true");
+};
+
+export const resetOnboardingFlow = () => {
+  if (!canUseStorage()) return false;
+
+  const isLegacyLoginCompletedRemoved = removeStorageItem(
+    legacyLoginCompletedKey,
+  );
+  const isSurveyCompletedRemoved = removeStorageItem(surveyCompletedKey);
+
+  return isLegacyLoginCompletedRemoved && isSurveyCompletedRemoved;
 };
 
 const getStorageItem = (key: string) => {
