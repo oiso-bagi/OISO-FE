@@ -8,7 +8,7 @@ import { Card } from "@/shared/components/Card";
 import { Header } from "@/shared/components/header/Header";
 import { useToast } from "@/shared/components/Toast/toastContext";
 import CheckIcon from "@/shared/icons/check.svg?react";
-import { completeLogin } from "@/shared/lib/onboardingFlow";
+import { prepareSurveyOnboarding } from "@/shared/lib/onboardingFlow";
 import { pageContent } from "@/shared/styles/layout.css";
 
 import { useConsentStatus, useSubmitConsents } from "./hooks/useConsents";
@@ -64,6 +64,14 @@ export function TermsPage() {
         message: "로그인 정보를 확인하지 못했어요. 다시 로그인해 주세요.",
       });
       navigate("/login", { replace: true });
+    }
+
+    if (authStatus === "error") {
+      showToast({
+        message: "로그인 상태를 확인하지 못했어요.",
+        actionLabel: "다시 시도",
+        onAction: () => window.location.reload(),
+      });
     }
   }, [authStatus, navigate, showToast]);
 
@@ -125,9 +133,9 @@ export function TermsPage() {
       },
       {
         onSuccess: () => {
-          if (!completeLogin()) {
+          if (!prepareSurveyOnboarding()) {
             showToast({
-              message: "로그인 상태를 저장하지 못했어요. 다시 시도해 주세요.",
+              message: "설문 상태를 준비하지 못했어요. 다시 시도해 주세요.",
             });
             return;
           }

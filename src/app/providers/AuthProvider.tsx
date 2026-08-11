@@ -17,7 +17,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         setAuthStatus(isAuthenticated ? "authenticated" : "unauthenticated");
       })
       .catch(() => {
-        if (isActive) setAuthStatus("unauthenticated");
+        if (isActive) setAuthStatus("error");
       });
 
     return () => {

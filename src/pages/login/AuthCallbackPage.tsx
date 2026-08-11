@@ -16,7 +16,10 @@ export function AuthCallbackPage() {
     searchParams.get("status") === "error" ||
     searchParams.has("error") ||
     searchParams.has("reason");
-  const isError = hasRedirectError || authStatus === "unauthenticated";
+  const isError =
+    hasRedirectError ||
+    authStatus === "unauthenticated" ||
+    authStatus === "error";
 
   useEffect(() => {
     if (hasRedirectError || authStatus !== "authenticated") return;

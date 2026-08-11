@@ -22,6 +22,23 @@ export function AppLayout() {
     return <Navigate to="/login" replace />;
   }
 
+  if (authStatus === "error") {
+    return (
+      <div className={styles.appContainer}>
+        <main className={styles.authStatus} role="alert">
+          <p>로그인 상태를 확인하지 못했어요.</p>
+          <button
+            type="button"
+            className={styles.authRetryButton}
+            onClick={() => window.location.reload()}
+          >
+            다시 시도
+          </button>
+        </main>
+      </div>
+    );
+  }
+
   if (!isSurveyCompleted()) {
     return <Navigate to="/survey" replace />;
   }
