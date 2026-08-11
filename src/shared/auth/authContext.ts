@@ -1,7 +1,6 @@
 import { createContext, useContext } from "react";
 
-export type AuthStatus =
-  "checking" | "authenticated" | "unauthenticated" | "error";
+import type { AuthStatus } from "@/shared/auth/auth.types";
 
 export const AuthContext = createContext<AuthStatus | null>(null);
 

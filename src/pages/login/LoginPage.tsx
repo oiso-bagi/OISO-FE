@@ -46,7 +46,12 @@ export function LoginPage() {
   const failureReason = searchParams.get("reason");
 
   useEffect(() => {
-    if (!failureReason || handledReasonRef.current === failureReason) return;
+    if (!failureReason) {
+      handledReasonRef.current = null;
+      return;
+    }
+
+    if (handledReasonRef.current === failureReason) return;
 
     handledReasonRef.current = failureReason;
     showToast({

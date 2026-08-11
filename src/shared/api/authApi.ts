@@ -13,7 +13,7 @@ export const getAuthSession = () => {
   return http.get<AuthSessionResponseDto>("/auth/session");
 };
 
-export const logout = () => {
+export const postLogout = () => {
   return http.post<void>("/auth/logout");
 };
 

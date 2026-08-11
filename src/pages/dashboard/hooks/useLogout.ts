@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { logout } from "@/shared/api/authApi";
+import { postLogout } from "@/shared/api/authApi";
 import { clearAccessToken } from "@/shared/auth/accessToken";
 import { resetOnboardingFlow } from "@/shared/lib/onboardingFlow";
 
@@ -8,7 +8,7 @@ export const useLogout = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: logout,
+    mutationFn: postLogout,
     onSuccess: () => {
       clearAccessToken();
       queryClient.clear();

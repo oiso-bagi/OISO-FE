@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { getConsentStatus, submitConsents } from "@/shared/api/consentApi";
+import { getConsentStatus, postConsents } from "@/shared/api/consentApi";
 import type { SubmitConsentRequestDto } from "@/shared/api/generated/types";
 import { queryKeys } from "@/shared/query/queryKeys";
 
@@ -16,7 +16,7 @@ export const useSubmitConsents = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (request: SubmitConsentRequestDto) => submitConsents(request),
+    mutationFn: (request: SubmitConsentRequestDto) => postConsents(request),
     onSuccess: (consentStatus) => {
       queryClient.setQueryData(queryKeys.consent.status, consentStatus);
     },

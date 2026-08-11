@@ -11,6 +11,6 @@ export const getConsentStatus = () => {
   return http.get<ConsentStatusResponseDto>("/consents");
 };
 
-export const submitConsents = (request: SubmitConsentRequestDto) => {
+export const postConsents = (request: SubmitConsentRequestDto) => {
   return http.post<ConsentStatusResponseDto>("/consents", request);
 };

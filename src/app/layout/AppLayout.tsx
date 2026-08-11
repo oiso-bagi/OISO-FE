@@ -2,6 +2,7 @@ import { Navigate, Outlet, ScrollRestoration } from "react-router-dom";
 import { BottomNavigation } from "@/shared/components/BottomNavigation";
 import { useAuthStatus } from "@/shared/auth/authContext";
 import { isSurveyCompleted } from "@/shared/lib/onboardingFlow";
+import * as typo from "@/shared/styles/typography.css";
 
 import * as styles from "./AppLayout.css";
 
@@ -11,7 +12,11 @@ export function AppLayout() {
   if (authStatus === "checking") {
     return (
       <div className={styles.appContainer}>
-        <main className={styles.authStatus} role="status" aria-live="polite">
+        <main
+          className={`${styles.authStatus} ${typo.body6}`}
+          role="status"
+          aria-live="polite"
+        >
           로그인 상태를 확인하고 있어요...
         </main>
       </div>
@@ -25,11 +30,11 @@ export function AppLayout() {
   if (authStatus === "error") {
     return (
       <div className={styles.appContainer}>
-        <main className={styles.authStatus} role="alert">
+        <main className={`${styles.authStatus} ${typo.body6}`} role="alert">
           <p>로그인 상태를 확인하지 못했어요.</p>
           <button
             type="button"
-            className={styles.authRetryButton}
+            className={`${styles.authRetryButton} ${typo.body4}`}
             onClick={() => window.location.reload()}
           >
             다시 시도

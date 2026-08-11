@@ -42,6 +42,5 @@ export const authRetryButton = style({
   border: `2px solid ${vars.color.black}`,
   backgroundColor: vars.color.white,
   color: vars.color.black,
-  fontWeight: vars.fontWeight.bold,
   cursor: "pointer",
 });

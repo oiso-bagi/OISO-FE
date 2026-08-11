@@ -9,10 +9,11 @@ export const isSurveyCompleted = () =>
 export const prepareSurveyOnboarding = () => {
   if (!canUseStorage()) return false;
 
-  return (
-    removeStorageItem(legacyLoginCompletedKey) &&
-    removeStorageItem(surveyCompletedKey)
+  const isLegacyLoginCompletedRemoved = removeStorageItem(
+    legacyLoginCompletedKey,
   );
+  const isSurveyCompletedRemoved = removeStorageItem(surveyCompletedKey);
+  return isLegacyLoginCompletedRemoved && isSurveyCompletedRemoved;
 };
 
 export const completeSurvey = () => {
@@ -24,10 +25,12 @@ export const completeSurvey = () => {
 export const resetOnboardingFlow = () => {
   if (!canUseStorage()) return false;
 
-  return (
-    removeStorageItem(legacyLoginCompletedKey) &&
-    removeStorageItem(surveyCompletedKey)
+  const isLegacyLoginCompletedRemoved = removeStorageItem(
+    legacyLoginCompletedKey,
   );
+  const isSurveyCompletedRemoved = removeStorageItem(surveyCompletedKey);
+
+  return isLegacyLoginCompletedRemoved && isSurveyCompletedRemoved;
 };
 
 const getStorageItem = (key: string) => {

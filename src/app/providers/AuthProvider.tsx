@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
-import type { PropsWithChildren } from "react";
+import type { ReactNode } from "react";
 
 import { restoreAuthSession } from "@/shared/api/authApi";
-import { AuthContext, type AuthStatus } from "@/shared/auth/authContext";
+import type { AuthStatus } from "@/shared/auth/auth.types";
+import { AuthContext } from "@/shared/auth/authContext";
 
-export function AuthProvider({ children }: PropsWithChildren) {
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
   const [authStatus, setAuthStatus] = useState<AuthStatus>("checking");
 
   useEffect(() => {
