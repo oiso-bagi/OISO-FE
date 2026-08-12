@@ -5,9 +5,9 @@ import { completeSurvey } from "@/shared/lib/onboardingFlow";
 
 import { SurveyHeader } from "./components/SurveyHeader";
 import { SurveyProgress } from "./components/SurveyProgress";
-import { useBudgetSelection } from "./hooks/useBudgetSelection";
+import { useRecommendationOptions } from "./hooks/useRecommendationOptions";
 import { useSurveyStep } from "./hooks/useSurveyStep";
-import { useTravelStyleSelection } from "./hooks/useTravelStyleSelection";
+import { useSurveyForm } from "./hooks/useSurveyForm";
 import { BudgetSection } from "./sections/BudgetSection";
 import { SurveyFooter } from "./sections/SurveyFooter";
 import { TravelStyleSection } from "./sections/TravelStyleSection";
@@ -19,19 +19,10 @@ export function SurveyPage() {
   const totalStep = 2;
   const { currentStep, isFirstStep, goNextStep, goPreviousStep, resetStep } =
     useSurveyStep();
-  const { selectedStyleIdSet, selectedCount, toggleStyle, resetSelection } =
-    useTravelStyleSelection();
-  const {
-    tripDays,
-    formattedBudget,
-    hasNegativeBudgetInput,
-    isBudgetAllocationVisible,
-    allocationItems,
-    setTripDays,
-    selectBudget,
-    updateBudgetText,
-    resetBudget,
-  } = useBudgetSelection();
+  const optionsQuery = useRecommendationOptions();
+  const surveyForm = useSurveyForm({
+    recommendationOptions: optionsQuery.data,
+  });
 
   const handleBack = () => {
     if (!isFirstStep) {
@@ -43,8 +34,7 @@ export function SurveyPage() {
   };
 
   const handleResetSurvey = () => {
-    resetSelection();
-    resetBudget();
+    surveyForm.reset();
     resetStep();
   };
 
@@ -73,20 +63,13 @@ export function SurveyPage() {
 
         {currentStep === 1 ? (
           <TravelStyleSection
-            selectedStyleIdSet={selectedStyleIdSet}
-            selectedCount={selectedCount}
-            onToggleStyle={toggleStyle}
+            optionsQuery={optionsQuery}
+            selection={surveyForm.travelStyle}
           />
         ) : (
           <BudgetSection
-            tripDays={tripDays}
-            formattedBudget={formattedBudget}
-            hasNegativeBudgetInput={hasNegativeBudgetInput}
-            isBudgetAllocationVisible={isBudgetAllocationVisible}
-            allocationItems={allocationItems}
-            onSelectTripDays={setTripDays}
-            onChangeBudget={updateBudgetText}
-            onSelectBudgetPreset={selectBudget}
+            optionsQuery={optionsQuery}
+            budget={surveyForm.budget}
           />
         )}
       </main>

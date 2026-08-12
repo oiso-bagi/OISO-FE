@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-const initialSelectedStyleIds = ["local-food", "photo-spot"];
+const initialSelectedStyleIds: string[] = [];
 
 export function useTravelStyleSelection() {
   const [selectedStyleIds, setSelectedStyleIds] = useState(
