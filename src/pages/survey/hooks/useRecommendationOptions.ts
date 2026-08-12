@@ -15,7 +15,7 @@ import {
   type BudgetPresetDto,
   type TravelStyleOptionDto,
 } from "../api/recommendationOptionsApi";
-import { surveyQueryKeys } from "./queryKeys";
+import { queryKeys } from "@/shared/query/queryKeys";
 
 const travelStyleIconBySlug: Record<string, string> = {
   "local-food": utensilsIcon,
@@ -30,7 +30,9 @@ const travelStyleIconBySlug: Record<string, string> = {
   "nature-walk": mountainIcon,
 };
 
-const allocationIconByType: Record<BudgetAllocationRuleDto["type"], string> = {
+const allocationIconByType: Partial<
+  Record<BudgetAllocationRuleDto["type"], string>
+> = {
   transport: tramIcon,
   food: utensilsIcon,
   activity: ticketIcon,
@@ -83,20 +85,24 @@ const toBudgetAllocation = (
   id: rule.type,
   label: rule.label,
   percent: rule.percentage,
-  icon: allocationIconByType[rule.type],
+  icon: allocationIconByType[rule.type] ?? cameraIcon,
+});
+
+const toSurveyRecommendationOptions = (
+  data: Awaited<ReturnType<typeof getRecommendationOptions>>,
+): SurveyRecommendationOptions => ({
+  travelStyles: data.travelStyles.map(toTravelStyleOption),
+  durationDays: data.durationDays,
+  budgetPresets: data.budgetPresets.map(toBudgetPreset),
+  budgetAllocations: data.budgetAllocation.rules.map(toBudgetAllocation),
+  defaultDailyBudgetWon: data.budgetAllocation.defaultDailyBudgetWon,
 });
 
 export const useRecommendationOptions = () => {
   return useQuery({
-    queryKey: surveyQueryKeys.recommendationOptions(),
+    queryKey: queryKeys.survey.recommendationOptions(),
     queryFn: getRecommendationOptions,
-    select: (data): SurveyRecommendationOptions => ({
-      travelStyles: data.travelStyles.map(toTravelStyleOption),
-      durationDays: data.durationDays,
-      budgetPresets: data.budgetPresets.map(toBudgetPreset),
-      budgetAllocations: data.budgetAllocation.rules.map(toBudgetAllocation),
-      defaultDailyBudgetWon: data.budgetAllocation.defaultDailyBudgetWon,
-    }),
+    select: toSurveyRecommendationOptions,
   });
 };
 

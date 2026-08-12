@@ -1,3 +1,4 @@
+import { RecommendationOptionsStatus } from "../components/RecommendationOptionsStatus";
 import { SurveyQuestion } from "../components/SurveyQuestion";
 import type { RecommendationOptionsQuery } from "../hooks/useRecommendationOptions";
 import type { SurveyForm } from "../hooks/useSurveyForm";
@@ -12,6 +13,10 @@ type BudgetSectionProps = {
 export function BudgetSection({ optionsQuery, budget }: BudgetSectionProps) {
   const tripDayOptions = optionsQuery.data?.durationDays ?? [];
   const budgetPresets = optionsQuery.data?.budgetPresets ?? [];
+  const hasNoOptions =
+    !optionsQuery.isLoading &&
+    !optionsQuery.isError &&
+    (tripDayOptions.length === 0 || budgetPresets.length === 0);
 
   return (
     <>
@@ -21,24 +26,15 @@ export function BudgetSection({ optionsQuery, budget }: BudgetSectionProps) {
         hint="입력한 예산을 항목별로 자동 배분해드려요"
       />
 
-      {optionsQuery.isLoading && (
-        <section className={styles.statusBox} role="status" aria-live="polite">
-          추천 옵션을 불러오는 중이에요.
-        </section>
-      )}
-
-      {optionsQuery.isError && (
-        <section className={styles.statusBox} role="alert">
-          <span>추천 옵션을 불러오지 못했어요.</span>
-          <button
-            type="button"
-            className={styles.retryButton}
-            onClick={() => optionsQuery.refetch()}
-          >
-            다시 시도
-          </button>
-        </section>
-      )}
+      <RecommendationOptionsStatus
+        isLoading={optionsQuery.isLoading}
+        isError={optionsQuery.isError}
+        isEmpty={hasNoOptions}
+        loadingMessage="추천 옵션을 불러오는 중이에요."
+        errorMessage="추천 옵션을 불러오지 못했어요."
+        emptyMessage="선택 가능한 예산 옵션이 아직 없어요."
+        onRetry={() => optionsQuery.refetch()}
+      />
 
       <section className={styles.budgetInputSection}>
         <div className={styles.fieldGroup}>
@@ -87,6 +83,7 @@ export function BudgetSection({ optionsQuery, budget }: BudgetSectionProps) {
               key={preset.id}
               type="button"
               className={styles.presetButton}
+              aria-pressed={budget.budget === preset.value}
               onClick={() => budget.selectBudget(preset.value)}
             >
               {preset.label}

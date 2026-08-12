@@ -15,6 +15,9 @@ export const queryKeys = {
   saved: {
     all: ["saved"],
   },
+  survey: {
+    recommendationOptions: () => ["survey", "recommendationOptions"] as const,
+  },
 };
 
 // 나중에 useQuery 쓸 때:

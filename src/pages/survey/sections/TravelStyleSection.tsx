@@ -1,3 +1,4 @@
+import { RecommendationOptionsStatus } from "../components/RecommendationOptionsStatus";
 import { SurveyQuestion } from "../components/SurveyQuestion";
 import type { RecommendationOptionsQuery } from "../hooks/useRecommendationOptions";
 import type { SurveyForm } from "../hooks/useSurveyForm";
@@ -23,32 +24,15 @@ export function TravelStyleSection({
         hint="복수 선택 가능"
       />
 
-      {optionsQuery.isLoading && (
-        <section className={styles.statusBox} role="status" aria-live="polite">
-          추천 옵션을 불러오는 중이에요.
-        </section>
-      )}
-
-      {optionsQuery.isError && (
-        <section className={styles.statusBox} role="alert">
-          <span>추천 옵션을 불러오지 못했어요.</span>
-          <button
-            type="button"
-            className={styles.retryButton}
-            onClick={() => optionsQuery.refetch()}
-          >
-            다시 시도
-          </button>
-        </section>
-      )}
-
-      {!optionsQuery.isLoading &&
-        !optionsQuery.isError &&
-        travelStyleOptions.length === 0 && (
-          <section className={styles.statusBox} role="status">
-            선택 가능한 여행 스타일이 아직 없어요.
-          </section>
-        )}
+      <RecommendationOptionsStatus
+        isLoading={optionsQuery.isLoading}
+        isError={optionsQuery.isError}
+        isEmpty={travelStyleOptions.length === 0}
+        loadingMessage="추천 옵션을 불러오는 중이에요."
+        errorMessage="추천 옵션을 불러오지 못했어요."
+        emptyMessage="선택 가능한 여행 스타일이 아직 없어요."
+        onRetry={() => optionsQuery.refetch()}
+      />
 
       <section className={styles.optionGrid} aria-label="여행 스타일 선택">
         {travelStyleOptions.map((option) => {

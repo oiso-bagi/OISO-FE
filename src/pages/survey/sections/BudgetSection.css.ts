@@ -9,31 +9,6 @@ export const budgetInputSection = style({
   gap: vars.space.xs,
 });
 
-export const statusBox = style({
-  minHeight: "4rem",
-  padding: vars.space.sm,
-  border: `0.15625rem solid ${vars.color.black}`,
-  backgroundColor: vars.color.white,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: vars.space.xs,
-  color: vars.color.neutral500,
-  textAlign: "center",
-  ...typographyStyles.body4,
-});
-
-export const retryButton = style({
-  minHeight: "2rem",
-  padding: `0.375rem ${vars.space.sm}`,
-  border: `0.125rem solid ${vars.color.black}`,
-  backgroundColor: vars.color.primary500,
-  color: vars.color.black,
-  cursor: "pointer",
-  whiteSpace: "nowrap",
-  ...typographyStyles.body7,
-});
-
 export const fieldGroup = style({
   display: "flex",
   flexDirection: "column",
@@ -140,6 +115,12 @@ export const presetButton = style({
   overflowWrap: "anywhere",
   wordBreak: "keep-all",
   ...typographyStyles.body7,
+
+  selectors: {
+    '&[aria-pressed="true"]': {
+      backgroundColor: vars.color.secondary100,
+    },
+  },
 });
 
 export const allocationCard = style({
