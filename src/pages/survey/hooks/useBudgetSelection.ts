@@ -1,11 +1,17 @@
 import { useMemo, useState } from "react";
 
-import { budgetAllocations } from "../mocks/budgetOptions";
+import type { BudgetAllocation } from "./useRecommendationOptions";
 
 const initialTripDays = 0;
 const initialBudget = 0;
 
-export function useBudgetSelection() {
+type UseBudgetSelectionOptions = {
+  budgetAllocationOptions?: BudgetAllocation[];
+};
+
+export function useBudgetSelection({
+  budgetAllocationOptions,
+}: UseBudgetSelectionOptions = {}) {
   const [tripDays, setTripDays] = useState(initialTripDays);
   const [budget, setBudget] = useState(initialBudget);
   const [hasNegativeBudgetInput, setHasNegativeBudgetInput] = useState(false);
@@ -15,14 +21,15 @@ export function useBudgetSelection() {
   }, [budget]);
 
   const allocationItems = useMemo(() => {
-    return budgetAllocations.map((allocation) => ({
+    const allocations = budgetAllocationOptions ?? [];
+
+    return allocations.map((allocation) => ({
       ...allocation,
       amount: Math.round((budget * allocation.percent) / 100),
     }));
-  }, [budget]);
+  }, [budget, budgetAllocationOptions]);
 
-  const isBudgetAllocationVisible =
-    tripDays > 0 && budget > 0 && !hasNegativeBudgetInput;
+  const isBudgetAllocationVisible = budget > 0 && !hasNegativeBudgetInput;
 
   const updateBudgetText = (budgetText: string) => {
     setHasNegativeBudgetInput(budgetText.includes("-"));
