@@ -141,7 +141,7 @@ export function DashboardPage() {
                 <div className={styles.contributionRow}>
                   <span>{dashboard.localContribution.label}</span>
                   <strong className={styles.contributionPercent}>
-                    {dashboard.localContribution.scorePercent}%
+                    {contributionScore}%
                   </strong>
                 </div>
 
