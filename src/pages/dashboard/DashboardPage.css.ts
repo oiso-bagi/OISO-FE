@@ -11,6 +11,40 @@ export const content = style({
   paddingTop: 0,
 });
 
+export const statusCard = style([
+  typographyStyles.body6,
+  {
+    marginTop: vars.space.xs,
+    padding: vars.space.lg,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: vars.space.sm,
+    color: vars.color.neutral500,
+    textAlign: "center",
+  },
+]);
+
+export const retryButton = style([
+  typographyStyles.body4,
+  {
+    padding: `${vars.space.xs} ${vars.space.md}`,
+    border: `2px solid ${vars.color.black}`,
+    backgroundColor: vars.color.white,
+    cursor: "pointer",
+  },
+]);
+
+export const emptyCard = style([
+  typographyStyles.body6,
+  {
+    marginTop: vars.space.sm,
+    padding: vars.space.md,
+    color: vars.color.neutral500,
+    textAlign: "center",
+  },
+]);
+
 export const summaryCard = style({
   marginTop: vars.space.xs,
   padding: vars.space.md,

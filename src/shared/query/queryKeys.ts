@@ -5,6 +5,9 @@ export const queryKeys = {
   consent: {
     status: ["consent", "status"],
   },
+  dashboard: {
+    savings: ["dashboard", "savings"],
+  },
   route: {
     all: ["route"],
     detail: (routeId: number) => ["route", routeId],
