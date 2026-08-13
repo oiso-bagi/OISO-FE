@@ -4,7 +4,7 @@ import type {
   RecommendRouteRequestDto,
   RecommendedRouteDetailResponseDto,
   RecommendedRouteListResponseDto,
-} from "@/shared/api/generated/schema";
+} from "@/shared/api/generated/types";
 
 import {
   toRecommendedRouteDetail,

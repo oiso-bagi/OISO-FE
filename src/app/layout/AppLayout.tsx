@@ -1,15 +1,47 @@
 import { Navigate, Outlet, ScrollRestoration } from "react-router-dom";
 import { BottomNavigation } from "@/shared/components/BottomNavigation";
-import {
-  isLoginCompleted,
-  isSurveyCompleted,
-} from "@/shared/lib/onboardingFlow";
+import { useAuthStatus } from "@/shared/auth/authContext";
+import { isSurveyCompleted } from "@/shared/lib/onboardingFlow";
+import * as typo from "@/shared/styles/typography.css";
 
 import * as styles from "./AppLayout.css";
 
 export function AppLayout() {
-  if (!isLoginCompleted()) {
+  const authStatus = useAuthStatus();
+
+  if (authStatus === "checking") {
+    return (
+      <div className={styles.appContainer}>
+        <main
+          className={`${styles.authStatus} ${typo.body6}`}
+          role="status"
+          aria-live="polite"
+        >
+          로그인 상태를 확인하고 있어요...
+        </main>
+      </div>
+    );
+  }
+
+  if (authStatus === "unauthenticated") {
     return <Navigate to="/login" replace />;
+  }
+
+  if (authStatus === "error") {
+    return (
+      <div className={styles.appContainer}>
+        <main className={`${styles.authStatus} ${typo.body6}`} role="alert">
+          <p>로그인 상태를 확인하지 못했어요.</p>
+          <button
+            type="button"
+            className={`${styles.authRetryButton} ${typo.body4}`}
+            onClick={() => window.location.reload()}
+          >
+            다시 시도
+          </button>
+        </main>
+      </div>
+    );
   }
 
   if (!isSurveyCompleted()) {

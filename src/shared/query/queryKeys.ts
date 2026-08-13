@@ -14,6 +14,18 @@ const recommendedRoutes = ["recommendedRoutes"] as const;
 const savedRoutes = ["savedRoutes"] as const;
 
 export const queryKeys = {
+  user: {
+    me: ["user", "me"],
+  },
+
+  consent: {
+    status: ["consent", "status"],
+  },
+
+  dashboard: {
+    savings: ["dashboard", "savings"],
+  },
+
   home: {
     all: home,
     summary: () => [...home, "summary"] as const,
@@ -32,5 +44,9 @@ export const queryKeys = {
     all: savedRoutes,
     list: () => [...savedRoutes, "list"] as const,
     detail: (routeId: string) => [...savedRoutes, "detail", routeId] as const,
+  },
+
+  survey: {
+    recommendationOptions: () => ["survey", "recommendationOptions"] as const,
   },
 };

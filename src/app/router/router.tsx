@@ -51,11 +51,11 @@ export const router = createBrowserRouter([
         element: <LoginPage />,
       },
       {
-        path: "/terms",
+        path: "/consents",
         element: <TermsPage />,
       },
       {
-        path: "/auth/callback",
+        path: "/auth/success",
         element: <AuthCallbackPage />,
       },
       {

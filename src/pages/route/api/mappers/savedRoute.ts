@@ -5,7 +5,7 @@ import type {
   SavedRouteItemDto,
   SavedRouteListResponseDto,
   SavedRouteStopDetailDto,
-} from "@/shared/api/generated/schema";
+} from "@/shared/api/generated/types";
 
 import {
   parseTransportType,

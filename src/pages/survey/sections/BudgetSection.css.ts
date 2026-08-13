@@ -115,6 +115,12 @@ export const presetButton = style({
   overflowWrap: "anywhere",
   wordBreak: "keep-all",
   ...typographyStyles.body7,
+
+  selectors: {
+    '&[aria-pressed="true"]': {
+      backgroundColor: vars.color.secondary100,
+    },
+  },
 });
 
 export const allocationCard = style({
@@ -135,6 +141,12 @@ export const allocationList = style({
   display: "flex",
   flexDirection: "column",
   gap: vars.space.xs,
+});
+
+export const allocationEmptyText = style({
+  color: vars.color.neutral500,
+  textAlign: "center",
+  ...typographyStyles.body4,
 });
 
 export const allocationItem = style({

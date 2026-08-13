@@ -5,7 +5,7 @@ import type {
   SavedRouteDetailResponseDto,
   SavedRouteListResponseDto,
   ToggleSavedRouteCompletionDto,
-} from "@/shared/api/generated/schema";
+} from "@/shared/api/generated/types";
 
 import { toSavedRouteDetail, toSavedRouteList } from "./mappers/savedRoute";
 import type { UpdateSavedRouteCompletionRequest } from "./types/savedRoute";

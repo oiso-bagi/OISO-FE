@@ -11,7 +11,7 @@ import type {
   RecommendedRouteListResponseDto,
   RouteStopLocationDto,
   RouteStopResponseDto,
-} from "@/shared/api/generated/schema";
+} from "@/shared/api/generated/types";
 
 import {
   parseTransportType,

@@ -4,7 +4,7 @@ import { toSavingAmount } from "@/pages/route/api/mappers/common";
 import type {
   HomeSummaryResponseDto,
   SavedRouteSummaryItemDto,
-} from "@/shared/api/generated/schema";
+} from "@/shared/api/generated/types";
 
 import type { HomeSavedRouteItem, HomeSummaryResponse } from "../types/home";
 

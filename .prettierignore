@@ -3,6 +3,7 @@ dist
 coverage
 *.tsbuildinfo
 pnpm-lock.yaml
+src/shared/api/generated/
 
 .agents
 .github
