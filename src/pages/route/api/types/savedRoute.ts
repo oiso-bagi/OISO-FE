@@ -6,7 +6,8 @@ import type {
 } from "./recommendedRoute";
 
 export interface SavedRouteListItem {
-  id: number;
+  /** 서버가 내려주는 루트 식별자. 숫자가 아니라 "route_001" 형태입니다. */
+  id: string;
   name: string;
   savedAt: string;
 
@@ -16,14 +17,15 @@ export interface SavedRouteListItem {
 
   totalCost: number | null;
   totalDurationMinutes: number | null;
-  congestionLevel: CongestionLevel;
+  /** 목록 응답에는 없습니다. 저장 카드는 혼잡도 대신 저장일을 표시합니다. */
+  congestionLevel?: CongestionLevel;
   savingAmount: number | null;
 
   isCompleted: boolean;
 }
 
 export interface SavedRouteListResponse {
-  totalSavingAmount?: number | null; // 백엔드에서 누적 금액 직접 내려줄지 미확인
+  totalSavingAmount: number;
   routes: SavedRouteListItem[];
 }
 
@@ -31,10 +33,6 @@ export interface SavedRouteDetail extends SavedRouteListItem {
   stops: RecommendedRouteStop[];
 }
 
-export interface SavedRouteDetailResponse {
-  route: SavedRouteDetail;
-}
-
-export interface UpdateSavedRouteCompletedRequest {
+export interface UpdateSavedRouteCompletionRequest {
   isCompleted: boolean;
 }

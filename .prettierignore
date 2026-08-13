@@ -9,3 +9,6 @@ src/shared/api/generated/
 .github
 docs
 README.md
+
+# 코드 생성물
+src/shared/api/generated
