@@ -416,7 +416,22 @@ const mockSavedRouteList: SavedRouteListResponse = {
       savingAmount: -12000,
       isCompleted: true,
     },
-    // 추천 목록에 없는 루트. 추천 루트를 저장하면 4번째 카드로 추가됩니다.
+    // 다일 코스. 저장 루트 상세에서도 일차 탭과 지도 색상 구분이 동작하는지
+    // 확인하려면 목에 다일 코스가 하나는 있어야 합니다.
+    {
+      id: "route_005",
+      name: "부산 2박 3일 알짜배기 코스",
+      savedAt: "2026-06-02T00:00:00.000Z",
+      stopCount: 6,
+      distanceKm: 18.4,
+      transportationTypes: ["WALKING", "BUS"],
+      totalCost: 125000,
+      totalDurationMinutes: 540,
+      congestionLevel: "MEDIUM",
+      savingAmount: -30000,
+      isCompleted: false,
+    },
+    // 추천 목록에 없는 루트. 추천 루트를 저장하면 카드가 하나 더 추가됩니다.
     {
       id: "route_004",
       name: "광안리 야경 코스",

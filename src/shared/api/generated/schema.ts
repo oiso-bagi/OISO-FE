@@ -406,6 +406,11 @@ export interface SavedRouteStopDetailDto {
    */
   sequence: number;
   /**
+   * 여행 일차 번호
+   * @example 1
+   */
+  dayNumber: number;
+  /**
    * 장소 이름
    * @example "광안리해수욕장"
    */
