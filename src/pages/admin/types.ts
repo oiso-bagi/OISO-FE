@@ -96,6 +96,43 @@ export interface AdminRoutesQuery extends PaginatedQuery {
   isPublished?: boolean;
 }
 
+/** 기존 루트 API 의 `transitTypes` 와 같은 값입니다. */
+export type TransportType =
+  "WALKING" | "BUS" | "SUBWAY" | "DRIVING" | "TAXI" | "BIKING";
+
+export interface AdminRouteStop {
+  /** 전체 통산. 일차가 넘어가도 이어집니다. */
+  sequence: number;
+  dayNumber: number;
+  placeId: string;
+  /** 수정 화면에서 장소를 다시 조회하지 않도록 서버가 함께 내려줍니다. */
+  placeName: string;
+  address: string;
+  /** 다음 경유지까지의 정보. 마지막 경유지는 모두 null 입니다. */
+  nextTransportType: TransportType | null;
+  nextTravelTimeMinutes: number | null;
+  nextTravelCostWon: number | null;
+}
+
+/** 코스 상세. 수정 폼을 채우는 데 씁니다. */
+export interface AdminRouteDetail {
+  id: string;
+  name: string;
+  theme: string;
+  description: string;
+  isPublished: boolean;
+  stops: AdminRouteStop[];
+}
+
+/** 코스 등록·수정 요청 본문 */
+export interface AdminRoutePayload {
+  name: string;
+  theme: string;
+  description: string;
+  isPublished: boolean;
+  stops: AdminRouteStop[];
+}
+
 /* ── 대시보드 ───────────────────────────────────────────── */
 
 export interface AdminStatsOverview {

@@ -12,8 +12,11 @@
  * 상태는 메모리에만 있어 새로고침하면 초기값으로 돌아갑니다.
  */
 
-import { ROUTE_THEMES } from "../constants";
+import { ROUTE_THEMES, SEQUENCE_BASE } from "../constants";
 import type {
+  AdminRouteDetail,
+  AdminRoutePayload,
+  AdminRouteStop,
   AdminKtoCollectResponse,
   AdminKtoStatus,
   AdminPlace,
@@ -341,6 +344,107 @@ export const mockGetAdminRoutes = async (
   );
 
   return paginate(sorted, query.page, query.size);
+};
+
+/**
+ * 코스별 경유지.
+ *
+ * 목록에 있는 코스를 수정 화면에서 열 수 있도록, 조회 시점에 `stopCount` 에
+ * 맞춰 만들어 두고 이후에는 저장된 값을 씁니다.
+ */
+const stopsByRouteId = new Map<string, AdminRouteStop[]>();
+
+const buildStops = (route: AdminRoute): AdminRouteStop[] =>
+  Array.from({ length: route.stopCount }, (_, index) => {
+    const place = places[(index * 7) % places.length];
+    const isLast = index === route.stopCount - 1;
+
+    return {
+      // 전체 통산이라 일차가 넘어가도 이어집니다.
+      sequence: SEQUENCE_BASE + index,
+      dayNumber: Math.floor(index / 4) + 1,
+      placeId: place.id,
+      placeName: place.name,
+      address: place.address,
+      nextTransportType: isLast ? null : index % 2 === 0 ? "WALKING" : "BUS",
+      nextTravelTimeMinutes: isLast ? null : 8 + (index % 5) * 4,
+      nextTravelCostWon: isLast ? null : index % 2 === 0 ? 0 : 1550,
+    };
+  });
+
+export const mockGetAdminRouteDetail = async (
+  routeId: string,
+): Promise<AdminRouteDetail> => {
+  await delay();
+
+  const route = routes.find((row) => row.id === routeId);
+
+  if (!route) throw new Error("존재하지 않는 코스입니다.");
+
+  if (!stopsByRouteId.has(routeId)) {
+    stopsByRouteId.set(routeId, buildStops(route));
+  }
+
+  return {
+    id: route.id,
+    name: route.name,
+    theme: route.theme,
+    description: `${route.themeLabel} 테마로 묶은 코스입니다.`,
+    isPublished: route.isPublished,
+    stops: stopsByRouteId.get(routeId) ?? [],
+  };
+};
+
+const findThemeLabel = (theme: string) =>
+  ROUTE_THEMES.find((item) => item.value === theme)?.label ?? theme;
+
+/** 경유지 수·거리는 서버가 계산해 목록에 반영하므로 목에서도 같이 갱신합니다. */
+const summarize = (payload: AdminRoutePayload) => ({
+  stopCount: payload.stops.length,
+  totalDistanceKm: Number((payload.stops.length * 0.8).toFixed(1)),
+});
+
+export const mockCreateAdminRoute = async (
+  payload: AdminRoutePayload,
+): Promise<AdminRouteDetail> => {
+  await delay(320);
+
+  const id = `route-${String(routes.length + 1).padStart(3, "0")}`;
+
+  routes.unshift({
+    id,
+    name: payload.name,
+    theme: payload.theme,
+    themeLabel: findThemeLabel(payload.theme),
+    isPublished: payload.isPublished,
+    createdAt: new Date().toISOString(),
+    ...summarize(payload),
+  });
+
+  stopsByRouteId.set(id, payload.stops);
+
+  return { id, ...payload };
+};
+
+export const mockUpdateAdminRoute = async (
+  routeId: string,
+  payload: AdminRoutePayload,
+): Promise<AdminRouteDetail> => {
+  await delay(320);
+
+  const route = routes.find((row) => row.id === routeId);
+
+  if (!route) throw new Error("존재하지 않는 코스입니다.");
+
+  route.name = payload.name;
+  route.theme = payload.theme;
+  route.themeLabel = findThemeLabel(payload.theme);
+  route.isPublished = payload.isPublished;
+  Object.assign(route, summarize(payload));
+
+  stopsByRouteId.set(routeId, payload.stops);
+
+  return { id: routeId, ...payload };
 };
 
 export const mockPatchAdminRoutePublished = async (

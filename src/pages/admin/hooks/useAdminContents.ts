@@ -9,15 +9,19 @@ import { queryKeys } from "@/shared/query/queryKeys";
 
 import { replaceItemInLists } from "../lib/adminCache";
 import {
+  mockCreateAdminRoute,
   mockGetAdminPlaces,
+  mockGetAdminRouteDetail,
   mockGetAdminRoutes,
   mockPatchAdminPlaceActive,
   mockPatchAdminRoutePublished,
+  mockUpdateAdminRoute,
 } from "../mocks/adminMocks";
 import type {
   AdminPlace,
   AdminPlacesQuery,
   AdminRoute,
+  AdminRoutePayload,
   AdminRoutesQuery,
 } from "../types";
 
@@ -70,5 +74,43 @@ export const useToggleRoutePublished = () => {
       mockPatchAdminRoutePublished(routeId, isPublished),
     onSuccess: (updated: AdminRoute) =>
       replaceItemInLists(queryClient, queryKeys.admin.routes.all, updated),
+  });
+};
+
+/* ── 코스 빌더 ──────────────────────────────────────────── */
+
+/** 수정 화면에서 폼을 채우기 위한 코스 상세 */
+export const useAdminRouteDetail = (routeId: string | undefined) =>
+  useQuery({
+    queryKey: queryKeys.admin.routes.detail(routeId ?? ""),
+    queryFn: () => mockGetAdminRouteDetail(routeId as string),
+    // 등록 화면에는 routeId 가 없습니다.
+    enabled: Boolean(routeId),
+  });
+
+export const useCreateAdminRoute = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: AdminRoutePayload) => mockCreateAdminRoute(payload),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.routes.all }),
+  });
+};
+
+interface UpdateRouteVariables {
+  routeId: string;
+  payload: AdminRoutePayload;
+}
+
+export const useUpdateAdminRoute = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ routeId, payload }: UpdateRouteVariables) =>
+      mockUpdateAdminRoute(routeId, payload),
+    // 목록의 요약값(경유지 수·거리)과 상세가 함께 바뀝니다.
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.routes.all }),
   });
 };

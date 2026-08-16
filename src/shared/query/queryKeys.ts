@@ -71,6 +71,8 @@ export const queryKeys = {
     routes: {
       all: adminRoutes,
       list: (query: object) => [...adminRoutes, "list", query] as const,
+      detail: (routeId: string) =>
+        [...adminRoutes, "detail", routeId] as const,
     },
 
     stats: {
