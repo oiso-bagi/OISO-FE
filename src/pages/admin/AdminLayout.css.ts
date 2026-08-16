@@ -72,6 +72,14 @@ export const userEmail = style({
 });
 
 export const logoutButton = style({
+  /**
+   * `Link` 는 inline 이라 height 만 주면 글씨가 위로 붙습니다.
+   * flex 로 세로·가로 가운데에 둡니다.
+   */
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+
   height: admin.size.control,
   padding: `0 ${admin.space.md}`,
 
