@@ -24,17 +24,30 @@ export function AdminKtoPanel() {
 
   /**
    * 쿨타임이 남아 있는 동안만 1초마다 다시 그려 남은 시간을 갱신합니다.
-   * 쿨타임이 없으면 타이머를 걸지 않습니다.
+   *
+   * 끝나면 타이머를 멈추고 현황을 한 번 다시 읽습니다. 폴링은 수집 중일 때만
+   * 도는데 수집은 몇 초 만에 끝나고 쿨타임은 10분이라, 이때 재조회하지 않으면
+   * 화면의 사용량·쿨타임이 계속 낡은 값으로 남습니다.
    */
   const [now, setNow] = useState(() => Date.now());
+  const { refetch } = statusQuery;
 
   useEffect(() => {
-    if (cooldownUntilMs === null) return;
+    if (cooldownUntilMs === null || cooldownUntilMs <= Date.now()) return;
 
-    const timer = setInterval(() => setNow(Date.now()), 1000);
+    const timer = setInterval(() => {
+      const current = Date.now();
+
+      setNow(current);
+
+      if (current >= cooldownUntilMs) {
+        clearInterval(timer);
+        void refetch();
+      }
+    }, 1000);
 
     return () => clearInterval(timer);
-  }, [cooldownUntilMs]);
+  }, [cooldownUntilMs, refetch]);
 
   const remaining =
     cooldownUntilMs === null ? null : formatRemaining(cooldownUntilMs, now);

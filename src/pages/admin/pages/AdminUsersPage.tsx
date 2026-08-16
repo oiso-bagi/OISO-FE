@@ -118,8 +118,17 @@ export function AdminUsersPage() {
 
   const actionError = toggleActive.error ?? changeRole.error;
 
-  const runPendingAction = () => {
+  const handleConfirmPendingAction = () => {
     if (!pendingAction) return;
+
+    /**
+     * 두 뮤테이션을 함께 초기화합니다.
+     *
+     * `mutate` 는 자기 자신의 error 만 지우므로, 권한 변경이 실패한 뒤 계정
+     * 상태 변경이 성공하면 이전 실패 문구가 성공한 작업 위에 그대로 남습니다.
+     */
+    toggleActive.reset();
+    changeRole.reset();
 
     if (pendingAction.kind === "active") {
       toggleActive.mutate({
@@ -273,7 +282,7 @@ export function AdminUsersPage() {
         description={dialog?.description ?? ""}
         confirmLabel={dialog?.confirmLabel}
         isDanger={dialog?.isDanger}
-        onConfirm={runPendingAction}
+        onConfirm={handleConfirmPendingAction}
         onCancel={() => setPendingAction(null)}
       />
     </>
