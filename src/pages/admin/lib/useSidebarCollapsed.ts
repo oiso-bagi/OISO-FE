@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const storageKey = "oiso:admin-sidebar-collapsed";
 
@@ -16,18 +16,21 @@ const readCollapsed = () => {
 export const useSidebarCollapsed = () => {
   const [isCollapsed, setIsCollapsed] = useState(readCollapsed);
 
+  /**
+   * 저장은 state updater 가 아니라 여기서 합니다. React 는 updater 를 다시
+   * 실행하거나 계산 결과를 버릴 수 있어, updater 안에서 저장하면 반영되지 않은
+   * 값이 저장될 수 있습니다.
+   */
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(storageKey, String(isCollapsed));
+    } catch {
+      // 저장이 막힌 환경에서는 이번 세션에만 적용됩니다.
+    }
+  }, [isCollapsed]);
+
   const toggle = useCallback(() => {
-    setIsCollapsed((previous) => {
-      const next = !previous;
-
-      try {
-        window.localStorage.setItem(storageKey, String(next));
-      } catch {
-        // 저장이 막힌 환경에서는 이번 세션에만 적용됩니다.
-      }
-
-      return next;
-    });
+    setIsCollapsed((previous) => !previous);
   }, []);
 
   return { isCollapsed, toggle };
