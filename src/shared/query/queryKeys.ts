@@ -13,6 +13,12 @@ const home = ["home"] as const;
 const recommendedRoutes = ["recommendedRoutes"] as const;
 const savedRoutes = ["savedRoutes"] as const;
 
+const adminUsers = ["admin", "users"] as const;
+const adminPlaces = ["admin", "places"] as const;
+const adminRoutes = ["admin", "routes"] as const;
+const adminStats = ["admin", "stats"] as const;
+const adminKto = ["admin", "kto"] as const;
+
 export const queryKeys = {
   user: {
     me: ["user", "me"],
@@ -48,5 +54,34 @@ export const queryKeys = {
 
   survey: {
     recommendationOptions: () => ["survey", "recommendationOptions"] as const,
+  },
+
+  admin: {
+    users: {
+      all: adminUsers,
+      /** 검색·필터·페이지가 바뀌면 다른 결과이므로 key 에 포함합니다. */
+      list: (query: object) => [...adminUsers, "list", query] as const,
+    },
+
+    places: {
+      all: adminPlaces,
+      list: (query: object) => [...adminPlaces, "list", query] as const,
+    },
+
+    routes: {
+      all: adminRoutes,
+      list: (query: object) => [...adminRoutes, "list", query] as const,
+    },
+
+    stats: {
+      all: adminStats,
+      overview: () => [...adminStats, "overview"] as const,
+      savingsBreakdown: () => [...adminStats, "savingsBreakdown"] as const,
+    },
+
+    kto: {
+      all: adminKto,
+      status: () => [...adminKto, "status"] as const,
+    },
   },
 };
