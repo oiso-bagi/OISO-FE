@@ -48,43 +48,45 @@ export function DataTable<T>({
         : null;
 
   return (
-    <table className={styles.table}>
-      <thead>
-        <tr>
-          {columns.map((column) => (
-            <th
-              key={column.key}
-              className={`${styles.th} ${column.numeric ? styles.numericHeader : ""}`}
-              style={column.width ? { width: column.width } : undefined}
-            >
-              {column.header}
-            </th>
-          ))}
-        </tr>
-      </thead>
-
-      <tbody>
-        {stateMessage ? (
+    <div className={styles.tableScroll}>
+      <table className={styles.table}>
+        <thead>
           <tr>
-            <td className={styles.tableStateCell} colSpan={columns.length}>
-              {stateMessage}
-            </td>
+            {columns.map((column) => (
+              <th
+                key={column.key}
+                className={`${styles.th} ${column.numeric ? styles.numericHeader : ""}`}
+                style={column.width ? { width: column.width } : undefined}
+              >
+                {column.header}
+              </th>
+            ))}
           </tr>
-        ) : (
-          rows.map((row) => (
-            <tr key={getRowId(row)}>
-              {columns.map((column) => (
-                <td
-                  key={column.key}
-                  className={`${styles.td} ${column.numeric ? styles.numericCell : ""}`}
-                >
-                  {column.render(row)}
-                </td>
-              ))}
+        </thead>
+
+        <tbody>
+          {stateMessage ? (
+            <tr>
+              <td className={styles.tableStateCell} colSpan={columns.length}>
+                {stateMessage}
+              </td>
             </tr>
-          ))
-        )}
-      </tbody>
-    </table>
+          ) : (
+            rows.map((row) => (
+              <tr key={getRowId(row)}>
+                {columns.map((column) => (
+                  <td
+                    key={column.key}
+                    className={`${styles.td} ${column.numeric ? styles.numericCell : ""}`}
+                  >
+                    {column.render(row)}
+                  </td>
+                ))}
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
   );
 }

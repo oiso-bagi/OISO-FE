@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 import { Badge } from "../components/Badge";
 import { ConfirmDialog } from "../components/ConfirmDialog";
@@ -114,6 +115,20 @@ export function AdminRoutesPanel() {
         </div>
       ),
     },
+    {
+      key: "actions",
+      header: "",
+      width: "64px",
+      render: (route) => (
+        <Link
+          to={`/admin/routes/${route.id}/edit`}
+          className={styles.tableLink}
+          aria-label={`${route.name} 수정`}
+        >
+          수정
+        </Link>
+      ),
+    },
   ];
 
   return (
@@ -138,6 +153,11 @@ export function AdminRoutesPanel() {
             onChange: (value) => setFilter("isPublished", value),
           },
         ]}
+        action={
+          <Link to="/admin/routes/new" className={styles.linkButton}>
+            + 코스 등록
+          </Link>
+        }
       />
 
       {togglePublished.error && (

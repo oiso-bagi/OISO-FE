@@ -16,6 +16,19 @@ const TITLE_BY_PATH: Record<string, string> = {
   "/admin/routes/new": "큐레이션 코스 등록",
 };
 
+const resolveTitle = (pathname: string) => {
+  const exact = TITLE_BY_PATH[pathname];
+
+  if (exact) return exact;
+
+  // 코스 수정은 경로에 id 가 들어가 정확히 일치시킬 수 없습니다.
+  if (/^\/admin\/routes\/[^/]+\/edit$/.test(pathname)) {
+    return "큐레이션 코스 수정";
+  }
+
+  return "관리자";
+};
+
 interface NoticeProps {
   title: string;
   description: string;
@@ -88,7 +101,7 @@ export function AdminLayout() {
       <div className={styles.main}>
         <header className={styles.topbar}>
           <h1 className={styles.topbarTitle}>
-            {TITLE_BY_PATH[location.pathname] ?? "관리자"}
+            {resolveTitle(location.pathname)}
           </h1>
 
           <div className={styles.topbarRight}>

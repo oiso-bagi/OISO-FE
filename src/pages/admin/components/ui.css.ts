@@ -2,6 +2,13 @@ import { style, styleVariants } from "@vanilla-extract/css";
 
 import { admin } from "../styles/adminTheme.css";
 
+/**
+ * 관리자는 데스크톱 전용이지만, 브라우저를 화면 절반~2/3 폭으로 띄워 두고
+ * 쓰는 경우가 많습니다. 그 구간에서 2열 배치를 유지하면 안쪽 컨트롤이 눌려
+ * 글자가 세로로 접히므로, 아래 폭부터는 세로로 쌓습니다.
+ */
+const NARROW = "screen and (max-width: 1180px)";
+
 /* ── PageHeader ─────────────────────────────────────────── */
 
 export const pageHeader = style({
@@ -109,8 +116,18 @@ export const filterSpacer = style({ flex: 1 });
 
 /* ── DataTable ──────────────────────────────────────────── */
 
+/**
+ * 표가 패널보다 넓어지면 페이지 전체가 아니라 이 안에서만 가로로 스크롤합니다.
+ * 사이드바와 상단바는 제자리에 두면서 표만 밀어 볼 수 있습니다.
+ */
+export const tableScroll = style({
+  overflowX: "auto",
+});
+
 export const table = style({
   width: "100%",
+  /** 이보다 좁아지면 열이 눌려 글자가 세로로 접히므로 스크롤로 넘깁니다. */
+  minWidth: "720px",
   borderCollapse: "collapse",
 
   fontSize: admin.fontSize.md,
@@ -359,6 +376,25 @@ export const buttonTone = styleVariants({
   },
 });
 
+/** 링크를 버튼처럼 보이게 할 때 */
+export const linkButton = style([
+  button,
+  buttonTone.primary,
+  { textDecoration: "none" },
+]);
+
+/** 표 안에서 상세·수정으로 넘어가는 링크 */
+export const tableLink = style({
+  color: admin.color.accent,
+  fontSize: admin.fontSize.md,
+  textDecoration: "none",
+  whiteSpace: "nowrap",
+
+  selectors: {
+    "&:hover": { textDecoration: "underline" },
+  },
+});
+
 /* ── 알림 문구 ──────────────────────────────────────────── */
 
 /** 뮤테이션 실패 사유를 목록 위에 그대로 띄웁니다. */
@@ -497,10 +533,20 @@ export const dialogActions = style({
 
 export const statGrid = style({
   display: "grid",
-  gridTemplateColumns: "repeat(4, 1fr)",
+  gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
   gap: admin.space.md,
 
   marginBottom: admin.space.lg,
+
+  "@media": {
+    /**
+     * 카드가 4개라 auto-fit 을 쓰면 3+1 로 한 장만 남는 줄이 생깁니다.
+     * 좁아지면 2×2 로 딱 떨어지게 열 수를 직접 정합니다.
+     */
+    [NARROW]: {
+      gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+    },
+  },
 });
 
 export const statCard = style({
@@ -538,10 +584,17 @@ export const statUnit = style({
 /** 차트 2종을 나란히 둡니다. */
 export const dashboardRow = style({
   display: "grid",
-  gridTemplateColumns: "1fr 1fr",
+  gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
   gap: admin.space.md,
 
   marginBottom: admin.space.lg,
+
+  "@media": {
+    // 막대 옆 금액·비율이 눌려 줄바꿈되기 시작하는 폭부터 위아래로 놓습니다.
+    [NARROW]: {
+      gridTemplateColumns: "minmax(0, 1fr)",
+    },
+  },
 });
 
 export const sectionTitle = style({
@@ -599,7 +652,7 @@ export const barValue = style({
 
 export const ktoGrid = style({
   display: "grid",
-  gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
   gap: admin.space.lg,
 
   marginBottom: admin.space.lg,
@@ -629,6 +682,297 @@ export const ktoFooter = style({
 });
 
 export const ktoNote = style({
+  color: admin.color.textMuted,
+  fontSize: admin.fontSize.sm,
+});
+
+/* ── 폼 ─────────────────────────────────────────────────── */
+
+export const field = style({
+  display: "flex",
+  flexDirection: "column",
+  gap: admin.space.xs,
+});
+
+export const fieldLabel = style({
+  color: admin.color.textMuted,
+  fontSize: admin.fontSize.sm,
+  fontWeight: admin.fontWeight.medium,
+});
+
+export const input = style({
+  height: admin.size.control,
+  padding: `0 ${admin.space.md}`,
+  width: "100%",
+
+  border: admin.border.thin,
+  backgroundColor: admin.color.surface,
+
+  color: admin.color.text,
+  fontSize: admin.fontSize.md,
+  fontFamily: admin.font.body,
+
+  selectors: {
+    "&:focus": { outline: "none", borderColor: admin.color.accent },
+    "&::placeholder": { color: admin.color.textDisabled },
+    "&:disabled": {
+      backgroundColor: admin.color.canvas,
+      color: admin.color.textDisabled,
+      cursor: "not-allowed",
+    },
+  },
+});
+
+export const textarea = style([
+  input,
+  {
+    height: "auto",
+    minHeight: "72px",
+    padding: admin.space.md,
+    resize: "vertical",
+    lineHeight: 1.5,
+  },
+]);
+
+/** 숫자 입력은 자릿수를 맞춰 오른쪽 정렬합니다. */
+export const numberInput = style([
+  input,
+  {
+    fontFamily: admin.font.mono,
+    fontVariantNumeric: "tabular-nums",
+    textAlign: "right",
+  },
+]);
+
+export const checkboxField = style({
+  display: "flex",
+  alignItems: "center",
+  gap: admin.space.sm,
+
+  fontSize: admin.fontSize.md,
+  cursor: "pointer",
+});
+
+/** 코스 기본 정보 3열 배치 */
+export const formGrid = style({
+  display: "grid",
+  gridTemplateColumns: "2fr 1fr 1fr",
+  gap: admin.space.lg,
+
+  padding: admin.space.lg,
+});
+
+export const formGridWide = style({
+  padding: `0 ${admin.space.lg} ${admin.space.lg}`,
+});
+
+/** 필수 항목 누락 등 저장 전 검증 실패 문구 */
+export const fieldError = style({
+  color: admin.color.danger,
+  fontSize: admin.fontSize.sm,
+});
+
+/* ── 코스 빌더 ──────────────────────────────────────────── */
+
+export const builderSection = style({
+  marginBottom: admin.space.lg,
+});
+
+/** 좌: 장소 검색 · 우: 담은 경유지 */
+export const builderColumns = style({
+  display: "grid",
+  gridTemplateColumns: "300px minmax(0, 1fr)",
+  gap: admin.space.md,
+
+  alignItems: "start",
+  marginBottom: admin.space.lg,
+
+  "@media": {
+    /**
+     * 좁아지면 경유지 행(8열)이 들어갈 자리가 없어 장소명이 세로로 접힙니다.
+     * 검색을 위로 올리고 경유지에 폭을 전부 내줍니다.
+     */
+    [NARROW]: {
+      gridTemplateColumns: "minmax(0, 1fr)",
+    },
+  },
+});
+
+export const searchResultList = style({
+  maxHeight: "420px",
+  overflowY: "auto",
+
+  "@media": {
+    /**
+     * 세로로 쌓이면 검색 목록이 전체 폭을 차지해, 이 높이 그대로면 경유지
+     * 목록이 화면 밖으로 밀립니다. 담고 나서 결과를 바로 볼 수 있게 줄입니다.
+     */
+    [NARROW]: {
+      maxHeight: "240px",
+    },
+  },
+});
+
+export const searchResultItem = style({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: admin.space.sm,
+
+  width: "100%",
+  padding: `${admin.space.sm} ${admin.space.md}`,
+
+  border: "none",
+  borderBottom: admin.border.thin,
+  background: "none",
+
+  fontFamily: admin.font.body,
+  fontSize: admin.fontSize.md,
+  textAlign: "left",
+
+  cursor: "pointer",
+
+  selectors: {
+    "&:hover:not(:disabled)": { backgroundColor: admin.color.accentSurface },
+    "&:disabled": { color: admin.color.textDisabled, cursor: "not-allowed" },
+  },
+});
+
+/** 일차 구분선 */
+export const dayDivider = style({
+  display: "flex",
+  alignItems: "center",
+  gap: admin.space.sm,
+
+  padding: `${admin.space.sm} ${admin.space.md}`,
+
+  backgroundColor: admin.color.canvas,
+  borderBottom: admin.border.thin,
+
+  color: admin.color.textMuted,
+  fontSize: admin.fontSize.sm,
+  fontWeight: admin.fontWeight.semibold,
+});
+
+export const stopRow = style({
+  display: "grid",
+  /** 장소 열만 남는 폭을 가져갑니다. minmax(0,..) 이어야 긴 이름에서 줄어듭니다. */
+  gridTemplateColumns: "24px 48px minmax(0, 1fr) 84px 96px 76px 84px 36px",
+  alignItems: "center",
+  gap: admin.space.sm,
+
+  padding: `${admin.space.sm} ${admin.space.md}`,
+  borderBottom: admin.border.thin,
+
+  // 드롭 위치 표시선이 자리를 밀지 않도록 미리 자리를 잡아 둡니다.
+  borderTop: "2px solid transparent",
+});
+
+/** 끌고 있는 행 */
+export const stopRowDragging = style({
+  opacity: 0.4,
+});
+
+/** 여기에 놓입니다 */
+export const stopRowDropTarget = style({
+  borderTopColor: admin.color.accent,
+});
+
+export const dragHandle = style({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+
+  width: "24px",
+  height: admin.size.control,
+
+  border: "none",
+  background: "none",
+  padding: 0,
+
+  color: admin.color.textDisabled,
+  fontSize: admin.fontSize.md,
+  lineHeight: 1,
+
+  cursor: "grab",
+
+  selectors: {
+    "&:hover": { color: admin.color.text },
+    "&:active": { cursor: "grabbing" },
+  },
+});
+
+/**
+ * 행 안의 셀렉트는 필터바용 최소 너비(132px)를 쓰면 안 됩니다.
+ * 그리드 트랙보다 넓어져 장소 열을 밀어냅니다.
+ */
+export const stopSelect = style({
+  minWidth: 0,
+  paddingLeft: admin.space.sm,
+});
+
+/** 마지막 경유지는 구간 정보가 없어 흐리게 둡니다. */
+export const stopRowLast = style({
+  backgroundColor: admin.color.canvas,
+});
+
+export const stopName = style({
+  display: "flex",
+  flexDirection: "column",
+  gap: admin.space.xxs,
+
+  minWidth: 0,
+});
+
+export const stopHeaderRow = style([
+  stopRow,
+  {
+    padding: `${admin.space.sm} ${admin.space.md}`,
+    borderTop: "none",
+    borderBottom: admin.border.thin,
+
+    color: admin.color.textMuted,
+    fontSize: admin.fontSize.sm,
+    fontWeight: admin.fontWeight.semibold,
+  },
+]);
+
+export const iconButton = style({
+  width: admin.size.control,
+  height: admin.size.control,
+
+  border: admin.border.thin,
+  backgroundColor: admin.color.surface,
+
+  color: admin.color.textMuted,
+  fontSize: admin.fontSize.md,
+  fontFamily: admin.font.body,
+
+  cursor: "pointer",
+
+  selectors: {
+    "&:hover": {
+      borderColor: admin.color.danger,
+      color: admin.color.danger,
+    },
+  },
+});
+
+/** 저장·취소 */
+export const formActions = style({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-end",
+  gap: admin.space.sm,
+
+  padding: admin.space.md,
+  borderTop: admin.border.thin,
+  backgroundColor: admin.color.canvas,
+});
+
+export const formActionsNote = style({
+  marginRight: "auto",
+
   color: admin.color.textMuted,
   fontSize: admin.fontSize.sm,
 });

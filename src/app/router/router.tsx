@@ -108,6 +108,15 @@ export const router = createBrowserRouter([
           return { Component: AdminRouteBuilderPage };
         },
       },
+      {
+        // 등록과 같은 화면입니다. routeId 가 있으면 상세를 받아 폼을 채웁니다.
+        path: "routes/:routeId/edit",
+        lazy: async () => {
+          const { AdminRouteBuilderPage } =
+            await import("@/pages/admin/pages/AdminRouteBuilderPage");
+          return { Component: AdminRouteBuilderPage };
+        },
+      },
     ],
   },
   {
