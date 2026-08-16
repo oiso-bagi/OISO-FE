@@ -12,6 +12,7 @@
  * 상태는 메모리에만 있어 새로고침하면 초기값으로 돌아갑니다.
  */
 
+import { ROUTE_THEMES } from "../constants";
 import type {
   AdminKtoCollectResponse,
   AdminKtoStatus,
@@ -298,15 +299,6 @@ export const mockPatchAdminPlaceActive = async (
 };
 
 /* ── 마스터 추천 코스 ───────────────────────────────────── */
-
-export const ROUTE_THEMES = [
-  { value: "local-food", label: "부산 로컬 맛집" },
-  { value: "nature-walk", label: "바다·자연 산책" },
-  { value: "culture-art", label: "문화·예술" },
-  { value: "market-tour", label: "전통시장 투어" },
-  { value: "night-view", label: "야경 명소" },
-  { value: "cafe-hopping", label: "카페 호핑" },
-];
 
 const routes: AdminRoute[] = Array.from({ length: 42 }, (_, index) => {
   const theme = ROUTE_THEMES[index % ROUTE_THEMES.length];

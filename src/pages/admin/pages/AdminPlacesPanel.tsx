@@ -189,8 +189,8 @@ export function AdminPlacesPanel() {
         description={
           pendingAction
             ? pendingAction.next
-              ? `${pendingAction.place.name} 이(가) 다시 서비스에 노출됩니다.`
-              : `${pendingAction.place.name} 이(가) 서비스에서 보이지 않게 됩니다. 데이터는 지워지지 않아 언제든 다시 노출할 수 있어요.`
+              ? `${pendingAction.place.name}이(가) 다시 서비스에 노출됩니다.`
+              : `${pendingAction.place.name}이(가) 서비스에서 보이지 않게 됩니다. 데이터는 지워지지 않아 언제든 다시 노출할 수 있어요.`
             : ""
         }
         confirmLabel={pendingAction?.next ? "노출" : "노출 중지"}

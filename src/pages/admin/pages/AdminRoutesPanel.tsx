@@ -15,8 +15,8 @@ import {
 import { toAdminErrorMessage } from "../lib/adminCache";
 import { formatDate } from "../lib/format";
 import { useDebouncedValue } from "../lib/useDebouncedValue";
+import { ROUTE_THEMES } from "../constants";
 import { useListQueryParams } from "../lib/useListQueryParams";
-import { ROUTE_THEMES } from "../mocks/adminMocks";
 import type { AdminRoute } from "../types";
 
 const FILTER_KEYS = ["theme", "isPublished"] as const;
@@ -170,8 +170,8 @@ export function AdminRoutesPanel() {
         description={
           pendingAction
             ? pendingAction.next
-              ? `${pendingAction.route.name} 이(가) 서비스 추천 목록에 바로 노출됩니다.`
-              : `${pendingAction.route.name} 이(가) 서비스 추천 목록에서 즉시 내려갑니다.`
+              ? `${pendingAction.route.name}이(가) 서비스 추천 목록에 바로 노출됩니다.`
+              : `${pendingAction.route.name}이(가) 서비스 추천 목록에서 즉시 내려갑니다.`
             : ""
         }
         confirmLabel={pendingAction?.next ? "게시" : "게시 내리기"}

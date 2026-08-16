@@ -26,6 +26,16 @@ export function AdminDashboardPage() {
         description="서비스 현황과 KTO 공공데이터 배치 운영 상태를 확인합니다."
       />
 
+      {/*
+       * 실패했을 때 카드가 전부 "—" 로만 남으면 값이 없는 이유를 알 수 없습니다.
+       * 같은 화면의 BarBreakdown 도 에러를 표시하므로 동작을 맞춥니다.
+       */}
+      {overview.isError && (
+        <p className={styles.inlineError} role="alert">
+          지표를 불러오지 못했어요.
+        </p>
+      )}
+
       <div className={styles.statGrid}>
         <StatCard
           label="누적 회원"
