@@ -2,6 +2,13 @@ import { style, styleVariants } from "@vanilla-extract/css";
 
 import { admin } from "../styles/adminTheme.css";
 
+/**
+ * 관리자는 데스크톱 전용이지만, 브라우저를 화면 절반~2/3 폭으로 띄워 두고
+ * 쓰는 경우가 많습니다. 그 구간에서 2열 배치를 유지하면 안쪽 컨트롤이 눌려
+ * 글자가 세로로 접히므로, 아래 폭부터는 세로로 쌓습니다.
+ */
+const NARROW = "screen and (max-width: 1180px)";
+
 /* ── PageHeader ─────────────────────────────────────────── */
 
 export const pageHeader = style({
@@ -109,8 +116,18 @@ export const filterSpacer = style({ flex: 1 });
 
 /* ── DataTable ──────────────────────────────────────────── */
 
+/**
+ * 표가 패널보다 넓어지면 페이지 전체가 아니라 이 안에서만 가로로 스크롤합니다.
+ * 사이드바와 상단바는 제자리에 두면서 표만 밀어 볼 수 있습니다.
+ */
+export const tableScroll = style({
+  overflowX: "auto",
+});
+
 export const table = style({
   width: "100%",
+  /** 이보다 좁아지면 열이 눌려 글자가 세로로 접히므로 스크롤로 넘깁니다. */
+  minWidth: "720px",
   borderCollapse: "collapse",
 
   fontSize: admin.fontSize.md,
@@ -516,10 +533,20 @@ export const dialogActions = style({
 
 export const statGrid = style({
   display: "grid",
-  gridTemplateColumns: "repeat(4, 1fr)",
+  gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
   gap: admin.space.md,
 
   marginBottom: admin.space.lg,
+
+  "@media": {
+    /**
+     * 카드가 4개라 auto-fit 을 쓰면 3+1 로 한 장만 남는 줄이 생깁니다.
+     * 좁아지면 2×2 로 딱 떨어지게 열 수를 직접 정합니다.
+     */
+    [NARROW]: {
+      gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+    },
+  },
 });
 
 export const statCard = style({
@@ -557,10 +584,17 @@ export const statUnit = style({
 /** 차트 2종을 나란히 둡니다. */
 export const dashboardRow = style({
   display: "grid",
-  gridTemplateColumns: "1fr 1fr",
+  gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
   gap: admin.space.md,
 
   marginBottom: admin.space.lg,
+
+  "@media": {
+    // 막대 옆 금액·비율이 눌려 줄바꿈되기 시작하는 폭부터 위아래로 놓습니다.
+    [NARROW]: {
+      gridTemplateColumns: "minmax(0, 1fr)",
+    },
+  },
 });
 
 export const sectionTitle = style({
@@ -618,7 +652,7 @@ export const barValue = style({
 
 export const ktoGrid = style({
   display: "grid",
-  gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
   gap: admin.space.lg,
 
   marginBottom: admin.space.lg,
@@ -752,11 +786,31 @@ export const builderColumns = style({
 
   alignItems: "start",
   marginBottom: admin.space.lg,
+
+  "@media": {
+    /**
+     * 좁아지면 경유지 행(8열)이 들어갈 자리가 없어 장소명이 세로로 접힙니다.
+     * 검색을 위로 올리고 경유지에 폭을 전부 내줍니다.
+     */
+    [NARROW]: {
+      gridTemplateColumns: "minmax(0, 1fr)",
+    },
+  },
 });
 
 export const searchResultList = style({
   maxHeight: "420px",
   overflowY: "auto",
+
+  "@media": {
+    /**
+     * 세로로 쌓이면 검색 목록이 전체 폭을 차지해, 이 높이 그대로면 경유지
+     * 목록이 화면 밖으로 밀립니다. 담고 나서 결과를 바로 볼 수 있게 줄입니다.
+     */
+    [NARROW]: {
+      maxHeight: "240px",
+    },
+  },
 });
 
 export const searchResultItem = style({

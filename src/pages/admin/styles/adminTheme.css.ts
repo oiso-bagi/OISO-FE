@@ -84,8 +84,12 @@ export const admin = createGlobalTheme(":root", {
     sidebar: "240px",
     sidebarCollapsed: "64px",
     topbar: "56px",
-    /** 이 폭 아래로는 대응하지 않습니다. 관리자는 데스크톱 전용입니다. */
-    minContent: "1040px",
+    /**
+     * 이 폭 아래로는 가로 스크롤이 생깁니다. 관리자는 데스크톱 전용이지만,
+     * 브라우저를 화면 절반~2/3 폭으로 띄워 두고 쓰는 경우가 많아 그 구간까지는
+     * 스크롤 없이 보이도록 낮춰 두었습니다.
+     */
+    minContent: "900px",
     control: "32px",
   },
 
