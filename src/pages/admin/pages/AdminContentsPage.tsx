@@ -1,8 +1,10 @@
+import { useId } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { PageHeader } from "../components/PageHeader";
 import type { TabItem } from "../components/Tabs";
 import { Tabs } from "../components/Tabs";
+import { tabId, tabPanelId } from "../lib/tabIds";
 import { AdminPlacesPanel } from "./AdminPlacesPanel";
 import { AdminRoutesPanel } from "./AdminRoutesPanel";
 
@@ -19,7 +21,9 @@ export function AdminContentsPage() {
   const raw = searchParams.get("tab");
   const tab: ContentsTab = raw === "routes" ? "routes" : "places";
 
-  const changeTab = (next: ContentsTab) => {
+  const idBase = useId();
+
+  const handleTabChange = (next: ContentsTab) => {
     setSearchParams(
       (previous) => {
         const params = new URLSearchParams(previous);
@@ -39,13 +43,25 @@ export function AdminContentsPage() {
         description="장소 데이터와 마스터 추천 코스를 관리합니다."
       />
 
-      <Tabs items={TABS} value={tab} onChange={changeTab} label="콘텐츠 종류" />
+      <Tabs
+        items={TABS}
+        value={tab}
+        onChange={handleTabChange}
+        label="콘텐츠 종류"
+        idBase={idBase}
+      />
 
       {/*
        * 탭별로 컴포넌트를 나눠 두면 보이지 않는 탭의 목록은 조회하지 않습니다.
        * 검색·필터도 각자의 쿼리 prefix(`place*` / `route*`)를 써서 섞이지 않습니다.
        */}
-      {tab === "places" ? <AdminPlacesPanel /> : <AdminRoutesPanel />}
+      <div
+        role="tabpanel"
+        id={tabPanelId(idBase, tab)}
+        aria-labelledby={tabId(idBase, tab)}
+      >
+        {tab === "places" ? <AdminPlacesPanel /> : <AdminRoutesPanel />}
+      </div>
     </>
   );
 }
