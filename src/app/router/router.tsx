@@ -59,6 +59,14 @@ export const router = createBrowserRouter([
         element: <AuthCallbackPage />,
       },
       {
+        path: "/auth/kakao/success",
+        element: <AuthCallbackPage />,
+      },
+      {
+        path: "/auth/google/success",
+        element: <AuthCallbackPage />,
+      },
+      {
         path: "/survey",
         element: <SurveyPage />,
       },
