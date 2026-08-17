@@ -159,6 +159,10 @@ export const useUpdateSavedRouteCompleted = () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.savedRoutes.detail(routeId),
       });
+
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.dashboard.savings,
+      });
     },
   });
 };
