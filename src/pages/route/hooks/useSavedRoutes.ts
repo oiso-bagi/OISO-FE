@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { queryKeys } from "@/shared/query/queryKeys";
+
 import {
   createSavedRoute,
   deleteSavedRoute,
@@ -63,6 +65,7 @@ export const useUpdateSavedRouteCompleted = () => {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: routeQueryKeys.savedRoutes() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.savings });
     },
   });
 };
