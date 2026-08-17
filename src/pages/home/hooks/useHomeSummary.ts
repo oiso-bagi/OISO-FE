@@ -1,15 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getHomeSummary } from "../api/homeApi";
-import { USE_MOCK_HOME_DATA, mockHomeSummary } from "../mocks/homeMocks";
+import { queryKeys } from "@/shared/query/queryKeys";
 
-export const homeQueryKeys = {
-  summary: () => ["home", "summary"] as const,
-};
+import { getHomeSummary } from "../api/homeApi";
+import { USE_MOCK_HOME_DATA, getMockHomeSummary } from "../mocks/homeMocks";
 
 export const useHomeSummary = () => {
   return useQuery({
-    queryKey: homeQueryKeys.summary(),
-    queryFn: USE_MOCK_HOME_DATA ? async () => mockHomeSummary : getHomeSummary,
+    queryKey: queryKeys.home.summary(),
+    queryFn: USE_MOCK_HOME_DATA
+      ? async () => getMockHomeSummary()
+      : getHomeSummary,
   });
 };

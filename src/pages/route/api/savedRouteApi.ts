@@ -1,31 +1,55 @@
 import { http } from "@/shared/api/http";
-
 import type {
-  SavedRouteDetailResponse,
-  SavedRouteListResponse,
-  UpdateSavedRouteCompletedRequest,
-} from "./types/savedRoute";
+  CreateSavedRouteDto,
+  SavedRouteCompletionResponseDto,
+  SavedRouteDetailResponseDto,
+  SavedRouteListResponseDto,
+  ToggleSavedRouteCompletionDto,
+} from "@/shared/api/generated/types";
+
+import { toSavedRouteDetail, toSavedRouteList } from "./mappers/savedRoute";
+import type { UpdateSavedRouteCompletionRequest } from "./types/savedRoute";
 
 export const getSavedRoutes = async () => {
-  return http.get<SavedRouteListResponse>("/saved-routes");
+  const response = await http.get<SavedRouteListResponseDto>("/saved-routes");
+
+  return toSavedRouteList(response);
 };
 
-// TODO: 저장 엔드포인트 명세 확인 필요 (POST /saved-routes 로 가정)
-export const createSavedRoute = async (routeId: number) => {
-  return http.post("/saved-routes", { routeId });
+export const createSavedRoute = async (routeId: string) => {
+  const body: CreateSavedRouteDto = { routeId };
+
+  return http.post("/saved-routes", body);
 };
 
-export const getSavedRouteDetail = async (routeId: number) => {
-  return http.get<SavedRouteDetailResponse>(`/saved-routes/${routeId}`);
+export const getSavedRouteDetail = async (routeId: string) => {
+  const route = await http.get<SavedRouteDetailResponseDto>(
+    `/saved-routes/${routeId}`,
+  );
+
+  return toSavedRouteDetail(route);
 };
 
-export const updateSavedRouteCompleted = async (
-  routeId: number,
-  body: UpdateSavedRouteCompletedRequest,
+/**
+ * 완료 토글. 경로 끝이 `completed` 가 아니라 `completion` 입니다.
+ *
+ * 요청 본문의 `actualCostWon`(실제 지출)은 아직 입력 화면이 없어 보내지
+ * 않습니다. 서버는 변경된 상태를 응답으로 돌려줍니다.
+ */
+export const updateSavedRouteCompletion = async (
+  routeId: string,
+  body: UpdateSavedRouteCompletionRequest,
 ) => {
-  return http.patch(`/saved-routes/${routeId}/completed`, body);
+  const request: ToggleSavedRouteCompletionDto = {
+    isCompleted: body.isCompleted,
+  };
+
+  return http.patch<SavedRouteCompletionResponseDto>(
+    `/saved-routes/${routeId}/completion`,
+    request,
+  );
 };
 
-export const deleteSavedRoute = async (routeId: number) => {
+export const deleteSavedRoute = async (routeId: string) => {
   return http.delete(`/saved-routes/${routeId}`);
 };

@@ -34,11 +34,12 @@ export const formatCongestion = (value: CongestionLevel): string => {
 };
 
 const transportationMap: Record<TransportationType, string> = {
-  WALK: "도보",
+  WALKING: "도보",
   BUS: "버스",
   SUBWAY: "지하철",
-  BICYCLE: "자전거",
+  DRIVING: "자동차",
   TAXI: "택시",
+  BIKING: "자전거",
 };
 
 /** 루트 카드 상단 교통수단 표기. 예: "도보 + 지하철" */
@@ -53,14 +54,20 @@ export const formatStopTransportation = (value: TransportationType): string =>
 interface RouteSummarySource {
   totalCost: number | null;
   totalDurationMinutes: number | null;
-  congestionLevel: CongestionLevel;
+  /** 저장 루트 목록 응답에는 혼잡도가 없어 optional 입니다. */
+  congestionLevel?: CongestionLevel;
   savingAmount: number | null;
   savedAt?: string;
 }
 
-/** 저장일 짧은 표기. "2026-05-18" → "26.05.18" */
+/**
+ * 저장일 짧은 표기. "2026-05-18" → "26.05.18"
+ *
+ * 서버는 "2026-08-01T00:00:00.000Z" 형태의 ISO datetime 을 내려주므로
+ * 시각 부분을 먼저 떼어냅니다.
+ */
 const formatSavedDateShort = (isoDate: string): string => {
-  const [year, month, day] = isoDate.split("-");
+  const [year, month, day] = isoDate.split("T")[0].split("-");
 
   return `${year.slice(2)}.${month}.${day}`;
 };
@@ -85,7 +92,7 @@ export const toRouteSummaryItems = (
         }
       : {
           label: "혼잡도",
-          value: formatCongestion(route.congestionLevel),
+          value: formatCongestion(route.congestionLevel ?? "UNKNOWN"),
           variant: "primary",
         };
 

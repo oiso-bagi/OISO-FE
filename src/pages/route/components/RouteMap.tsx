@@ -9,11 +9,19 @@ interface RouteMapPoint {
   longitude: number;
 }
 
-interface RouteMapStop extends RouteMapPoint {
+/**
+ * 좌표가 없는 장소가 섞여 들어올 수 있어 null 을 허용하고, 지도를 그릴 때
+ * 걸러냅니다. 호출부마다 필터링하지 않도록 여기서 한 번에 처리합니다.
+ */
+interface RouteMapStop {
+  latitude: number | null;
+  longitude: number | null;
   sequence: number;
   /** 몇 일차 경유지인지. 일차별 마커/Polyline 색상 구분에 사용합니다. */
   dayNumber: number;
 }
+
+type PlottableStop = RouteMapStop & RouteMapPoint;
 
 interface RouteMapProps {
   /** 선택된 코스의 경유지. 비어 있으면 부산 기본 지도만 표시합니다. */
@@ -91,10 +99,15 @@ export function RouteMap({ stops, path, selectedDay }: RouteMapProps) {
     overlaysRef.current.forEach((overlay) => overlay.setMap(null));
     overlaysRef.current = [];
 
+    const plottableStops = stops.filter(
+      (stop): stop is PlottableStop =>
+        stop.latitude !== null && stop.longitude !== null,
+    );
+
     const visibleStops =
       selectedDay === undefined
-        ? stops
-        : stops.filter((stop) => stop.dayNumber === selectedDay);
+        ? plottableStops
+        : plottableStops.filter((stop) => stop.dayNumber === selectedDay);
 
     if (visibleStops.length === 0) {
       map.setCenter(

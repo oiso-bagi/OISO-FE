@@ -5,37 +5,31 @@
  * 전환됩니다.
  */
 
+import { getMockSavedRouteList } from "@/pages/route/mocks/routeMocks";
 import { USE_MOCK } from "@/shared/config/env";
 
 import type { HomeSummaryResponse } from "../api/types/home";
 
 export const USE_MOCK_HOME_DATA = USE_MOCK;
 
-// 저장 페이지 목(routeMocks.mockSavedRouteList)과 id·이름을 맞춰,
-// 홈에서 카드를 눌렀을 때 저장 페이지에서 해당 루트가 펼쳐지도록 합니다.
-export const mockHomeSummary: HomeSummaryResponse = {
-  totalSavingAmount: 55000,
-  savedRoutes: [
-    {
-      id: 1,
-      name: "원도심 로컬 체험 코스",
-      savedAt: "2026-05-18",
-      savingAmount: -25000,
-      distanceKm: 3.2,
-    },
-    {
-      id: 2,
-      name: "해운대 바다 산책 코스",
-      savedAt: "2026-05-02",
-      savingAmount: -12000,
-      distanceKm: 4.8,
-    },
-    {
-      id: 4,
-      name: "광안리 야경 코스",
-      savedAt: "2026-04-21",
-      savingAmount: null,
-      distanceKm: 1.4,
-    },
-  ],
+/**
+ * 홈 요약은 저장 루트에서 파생되는 값이라 저장 목 데이터에서 계산합니다.
+ *
+ * 별도 상수로 두면 루트를 저장하거나 삭제해도 홈이 그대로여서, 실제 서버와
+ * 다르게 동작합니다. 목에서도 같은 흐름을 확인할 수 있도록 맞춥니다.
+ */
+export const getMockHomeSummary = (): HomeSummaryResponse => {
+  const { totalSavingAmount, routes } = getMockSavedRouteList();
+
+  return {
+    totalSavingAmount,
+    savedRouteCount: routes.length,
+    savedRoutes: routes.map((route) => ({
+      id: route.id,
+      name: route.name,
+      savedAt: route.savedAt,
+      savingAmount: route.savingAmount,
+      distanceKm: route.distanceKm,
+    })),
+  };
 };

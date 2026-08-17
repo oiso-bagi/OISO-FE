@@ -30,12 +30,12 @@ export interface RouteStopLocationDto {
    * 장소 위도
    * @example 35.1532
    */
-  latitude: object | null;
+  latitude: number | null;
   /**
    * 장소 경도
    * @example 129.1187
    */
-  longitude: object | null;
+  longitude: number | null;
 }
 
 export interface RecommendedRouteListResponseDto {
@@ -110,6 +110,32 @@ export interface RecommendedRouteListResponseDto {
   stopLocations: RouteStopLocationDto[];
 }
 
+export interface MetaCostDto {
+  /**
+   * 대중교통/이동 비용(원)
+   * @example 2500
+   */
+  transportCost: number;
+  /**
+   * 장소 예상 지출 비용(원)
+   * @example 39500
+   */
+  placeCost: number;
+}
+
+export interface MetaTimeDto {
+  /**
+   * 순수 이동 시간(분)
+   * @example 45
+   */
+  pureTravelTime: number;
+  /**
+   * 장소 체류 시간(분)
+   * @example 135
+   */
+  stayTime: number;
+}
+
 export interface RouteStopResponseDto {
   /**
    * 경유지 순서
@@ -128,29 +154,38 @@ export interface RouteStopResponseDto {
   placeName: string;
   /**
    * 장소 카테고리
-   * @example "ATTRACTION"
+   * @example "NATURE"
    */
-  category: string;
+  category:
+    | "MARKET"
+    | "CAFE"
+    | "FOOD"
+    | "CULTURE"
+    | "NATURE"
+    | "EXPERIENCE"
+    | "VIEWPOINT"
+    | "ETC"
+    | null;
   /**
    * 장소 영업 시작 시간
    * @example "09:00"
    */
-  openTime: object | null;
+  openTime: string | null;
   /**
    * 장소 영업 종료 시간
    * @example "21:00"
    */
-  closeTime: object | null;
+  closeTime: string | null;
   /**
    * 장소 위도
    * @example 35.1532
    */
-  latitude: object | null;
+  latitude: number | null;
   /**
    * 장소 경도
    * @example 129.1187
    */
-  longitude: object | null;
+  longitude: number | null;
   /**
    * 다음 경유지까지 이동 수단
    * @example "BUS"
@@ -167,7 +202,7 @@ export interface RouteStopResponseDto {
    * 다음 경유지까지 예상 이동 시간(분)
    * @example 15
    */
-  nextTravelTimeMinutes: object | null;
+  nextTravelTimeMinutes: number | null;
 }
 
 export interface RecommendedRouteDetailResponseDto {
@@ -202,10 +237,15 @@ export interface RecommendedRouteDetailResponseDto {
    */
   congestionLevel: "LOW" | "MEDIUM" | "HIGH";
   /**
-   * 예상 절약 금액(원)
+   * 절약 금액(원) — savedCost 호환 필드 (estimatedSavingsWon과 동일한 값)
    * @example 15000
    */
   savedCost: number;
+  /**
+   * 예상 절약 금액(원)
+   * @example 15000
+   */
+  estimatedSavingsWon: number;
   /**
    * 추천 점수
    * @example 87.5
@@ -236,16 +276,10 @@ export interface RecommendedRouteDetailResponseDto {
    * @example "3h 0m"
    */
   totalTimeDisplay: string;
-  /**
-   * 비용 메타 정보
-   * @example {"transportCost":2500,"placeCost":39500}
-   */
-  metaCost: object;
-  /**
-   * 시간 메타 정보
-   * @example {"pureTravelTime":45,"stayTime":135}
-   */
-  metaTime: object;
+  /** 비용 메타 정보 */
+  metaCost: MetaCostDto;
+  /** 시간 메타 정보 */
+  metaTime: MetaTimeDto;
   /** 경유지 상세 목록 */
   stops: RouteStopResponseDto[];
 }
@@ -326,17 +360,61 @@ export interface SavedRouteListResponseDto {
   savedRoutes: SavedRouteItemDto[];
 }
 
+export interface CreateSavedRouteDto {
+  /**
+   * 보관함에 저장할 추천/마스터 루트 ID
+   * @example "clx1234567890abcdef"
+   */
+  routeId: string;
+}
+
+export interface ToggleSavedRouteCompletionDto {
+  /**
+   * 여행 완료 여부 (true: 여행 완료 ON, false: 미완료 OFF)
+   * @example true
+   */
+  isCompleted: boolean;
+  /**
+   * 유저가 해당 여행에서 실제 지출한 총 금액 (원화)
+   * @example 45000
+   */
+  actualCostWon?: number;
+}
+
+export interface SavedRouteCompletionResponseDto {
+  /**
+   * 보관 처리된 경로 ID
+   * @example "route_001"
+   */
+  routeId: string;
+  /**
+   * 여행 완료 여부 (ON/OFF)
+   * @example true
+   */
+  isCompleted: boolean;
+  /**
+   * 실제 지출 금액 (원화)
+   * @example 45000
+   */
+  actualCostWon: number | null;
+}
+
 export interface SavedRouteStopDetailDto {
   /**
    * 경유지 순서
    * @example 1
    */
-  sequence: object;
+  sequence: number;
+  /**
+   * 여행 일차 번호
+   * @example 1
+   */
+  dayNumber: number;
   /**
    * 장소 이름
    * @example "광안리해수욕장"
    */
-  placeName: object;
+  placeName: string;
   /**
    * 장소 카테고리
    * @example "NATURE"
@@ -349,17 +427,18 @@ export interface SavedRouteStopDetailDto {
     | "NATURE"
     | "EXPERIENCE"
     | "VIEWPOINT"
-    | "ETC";
+    | "ETC"
+    | null;
   /**
    * 장소 영업 시작 시간
    * @example "09:00"
    */
-  openTime: object | null;
+  openTime: string | null;
   /**
    * 장소 영업 종료 시간
    * @example "21:00"
    */
-  closeTime: object | null;
+  closeTime: string | null;
   /**
    * 다음 경유지까지 이동 수단
    * @example "BUS"
@@ -376,17 +455,17 @@ export interface SavedRouteStopDetailDto {
    * 다음 경유지까지 예상 이동 시간(분)
    * @example 15
    */
-  nextTravelTimeMinutes: object | null;
+  nextTravelTimeMinutes: number | null;
   /**
    * 장소 위도
    * @example 35.1532
    */
-  latitude: object | null;
+  latitude: number | null;
   /**
    * 장소 경도
    * @example 129.1187
    */
-  longitude: object | null;
+  longitude: number | null;
 }
 
 export interface SavedRouteDetailResponseDto {
@@ -394,92 +473,87 @@ export interface SavedRouteDetailResponseDto {
    * 저장 루트 ID
    * @example "route_001"
    */
-  routeId: object;
+  routeId: string;
   /**
    * 저장 루트 이름
    * @example "부산 바다 감성 코스"
    */
-  routeName: object;
+  routeName: string;
   /**
    * 저장 일시
+   * @format date-time
    * @example "2026-08-01T00:00:00.000Z"
    */
-  savedAt: object;
+  savedAt: string;
   /**
    * 여행 완료 여부
    * @example false
    */
-  isCompleted: object;
+  isCompleted: boolean;
   /**
    * 경유지 수
    * @example 4
    */
-  stopCount: object;
+  stopCount: number;
   /**
    * 총 이동 거리(km)
    * @example 8.5
    */
-  totalDistanceKm: object;
+  totalDistanceKm: number;
   /**
    * 대표 이동 수단
    * @example "WALKING + BUS"
    */
-  transportType: object;
+  transportType: string;
   /**
    * 예상 혼잡도
    * @example "MEDIUM"
    */
   congestionLevel: "LOW" | "MEDIUM" | "HIGH";
   /**
-   * 예상 절약 금액(원)
+   * 절약 금액(원) — savedCost 호환 필드 (estimatedSavingsWon과 동일한 값)
    * @example 15000
    */
-  savedCost: object;
+  savedCost: number;
   /**
    * 추천 점수
    * @example 87.5
    */
-  recommendScore: object;
+  recommendScore: number;
   /**
    * 추천 루트 여부
    * @example true
    */
-  isRecommended: object;
+  isRecommended: boolean;
   /**
    * 사용자 저장 여부
    * @example true
    */
-  isSaved: object;
+  isSaved: boolean;
   /**
    * 예상 총 비용(원)
    * @example 42000
    */
-  totalCost: object;
+  totalCost: number;
   /**
    * 예상 총 소요 시간(분)
    * @example 180
    */
-  totalTimeMinutes: object;
+  totalTimeMinutes: number;
   /**
    * 예상 총 소요 시간 표시값
    * @example "3h 0m"
    */
-  totalTimeDisplay: object;
-  /**
-   * 비용 메타 정보
-   * @example {"transportCost":2500,"placeCost":39500}
-   */
-  metaCost: object;
-  /**
-   * 시간 메타 정보
-   * @example {"pureTravelTime":45,"stayTime":135}
-   */
-  metaTime: object;
+  totalTimeDisplay: string;
+  /** 비용 메타 정보 */
+  metaCost: MetaCostDto;
+  /** 시간 메타 정보 */
+  metaTime: MetaTimeDto;
   /**
    * 예상 절약 금액(원)
    * @example 15000
    */
-  estimatedSavingsWon: object;
+  estimatedSavingsWon: number;
   /** 저장 루트 경유지 상세 목록 */
   stops: SavedRouteStopDetailDto[];
 }
@@ -605,6 +679,50 @@ export interface SubmitConsentRequestDto {
   location: boolean;
 }
 
+export interface TravelStyleOptionDto {
+  /**
+   * 여행 스타일 슬러그 식별자
+   * @example "local-food"
+   */
+  slug: string;
+  /**
+   * 여행 스타일 한국어 라벨
+   * @example "부산 로컬 맛집"
+   */
+  label: string;
+}
+
+export interface BudgetPresetDto {
+  /**
+   * 예산 구간 표기 라벨
+   * @example "~3만원 · 가성비"
+   */
+  label: string;
+  /**
+   * 금액(원)
+   * @example 30000
+   */
+  amountWon: number;
+}
+
+export interface BudgetAllocationRuleDto {
+  /**
+   * 예산 항목 구분 (transport | food | activity)
+   * @example "transport"
+   */
+  type: "transport" | "food" | "activity";
+  /**
+   * 예산 항목 한국어 라벨
+   * @example "교통비"
+   */
+  label: string;
+  /**
+   * 배분 비율(%)
+   * @example 40
+   */
+  percentage: number;
+}
+
 export interface BudgetAllocationOptionsDto {
   /**
    * 기본 1일 예산(원)
@@ -612,18 +730,18 @@ export interface BudgetAllocationOptionsDto {
    */
   defaultDailyBudgetWon: number;
   /**
-   * 예산 항목별 배분 규칙
+   * 예산 항목별 배분 규칙 목록
    * @example [{"type":"transport","label":"교통비","percentage":40},{"type":"food","label":"식비","percentage":35},{"type":"activity","label":"체험/입장료","percentage":25}]
    */
-  rules: string[];
+  rules: BudgetAllocationRuleDto[];
 }
 
 export interface RecommendationOptionsResponseDto {
   /**
    * 선택 가능한 여행 스타일 목록
-   * @example [{"slug":"local-food","label":"부산 로컬 맛집"},{"slug":"cafe","label":"감성 카페"}]
+   * @example [{"slug":"local-food","label":"부산 로컬 맛집"},{"slug":"emotion-cafe","label":"감성 카페"}]
    */
-  travelStyles: string[];
+  travelStyles: TravelStyleOptionDto[];
   /**
    * 선택 가능한 여행 기간(일) 목록
    * @example [1,2,3,4,5]
@@ -633,7 +751,7 @@ export interface RecommendationOptionsResponseDto {
    * 예산 프리셋 목록
    * @example [{"label":"~3만원 · 가성비","amountWon":30000},{"label":"3~6만원 · 적당","amountWon":60000},{"label":"6만원 이상 · 자유","amountWon":90000}]
    */
-  budgetPresets: string[];
+  budgetPresets: BudgetPresetDto[];
   /** 기본 예산 및 항목별 예산 배분 옵션 */
   budgetAllocation: BudgetAllocationOptionsDto;
 }
@@ -643,35 +761,35 @@ export interface BudgetRatiosDto {
    * 식비 비율 (0 ~ 1). 미입력 시 기본값 0.35 적용
    * @example 0.35
    */
-  foodRatio?: object;
+  foodRatio?: number;
   /**
    * 체험/입장료 비율 (0 ~ 1). 미입력 시 기본값 0.25 적용
    * @example 0.25
    */
-  experienceRatio?: object;
+  experienceRatio?: number;
   /**
    * 교통비 비율 (0 ~ 1). 미입력 시 기본값 0.40 적용
    * @example 0.4
    */
-  transportRatio?: object;
+  transportRatio?: number;
 }
 
 export interface RecommendRouteRequestDto {
   /**
    * 추천에 사용할 여행 스타일 slug 목록
-   * @example ["local-food","cafe"]
+   * @example ["local-food","emotion-cafe"]
    */
   travelStyleSlugs: string[];
   /**
    * 여행 기간(일). 1부터 5까지 허용됩니다.
    * @example 2
    */
-  durationDays: object;
+  durationDays: number;
   /**
    * 1일 예산(원). 안전한 양의 정수여야 합니다.
    * @example 60000
    */
-  dailyBudgetWon: object;
+  dailyBudgetWon: number;
   /**
    * 예산 비율 배분 (선택). foodRatio + experienceRatio + transportRatio 합계가 1.0이어야 합니다. 미입력 시 기본값 { food: 0.35, experience: 0.25, transport: 0.40 } 적용.
    * @example {"foodRatio":0.35,"experienceRatio":0.25,"transportRatio":0.4}
