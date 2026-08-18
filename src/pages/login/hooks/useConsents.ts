@@ -9,6 +9,7 @@ export const useConsentStatus = (isEnabled: boolean) => {
     queryKey: queryKeys.consent.status,
     queryFn: getConsentStatus,
     enabled: isEnabled,
+    refetchOnMount: "always",
   });
 };
 

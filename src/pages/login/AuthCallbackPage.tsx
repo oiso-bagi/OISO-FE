@@ -5,12 +5,14 @@ import { useAuthStatus } from "@/shared/auth/authContext";
 import XIcon from "@/shared/icons/x.svg?react";
 import { isSurveyCompleted } from "@/shared/lib/onboardingFlow";
 
+import { useConsentStatus } from "./hooks/useConsents";
 import * as styles from "./AuthCallbackPage.css";
 
 export function AuthCallbackPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const authStatus = useAuthStatus();
+  const consentStatusQuery = useConsentStatus(authStatus === "authenticated");
 
   const hasRedirectError =
     searchParams.get("status") === "error" ||
@@ -19,15 +21,27 @@ export function AuthCallbackPage() {
   const isError =
     hasRedirectError ||
     authStatus === "unauthenticated" ||
-    authStatus === "error";
+    authStatus === "error" ||
+    consentStatusQuery.isError;
 
   useEffect(() => {
-    if (hasRedirectError || authStatus !== "authenticated") return;
+    if (
+      hasRedirectError ||
+      authStatus !== "authenticated" ||
+      !consentStatusQuery.data
+    ) {
+      return;
+    }
+
+    if (!consentStatusQuery.data.hasCompletedRequiredConsents) {
+      navigate("/consents", { replace: true });
+      return;
+    }
 
     navigate(isSurveyCompleted() ? "/" : "/survey", {
       replace: true,
     });
-  }, [authStatus, hasRedirectError, navigate]);
+  }, [authStatus, consentStatusQuery.data, hasRedirectError, navigate]);
 
   if (isError) {
     return (
