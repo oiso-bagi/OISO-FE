@@ -29,6 +29,7 @@ export function useTravelStyleSelection() {
   };
 
   return {
+    selectedStyleIds,
     selectedStyleIdSet,
     selectedCount: selectedStyleIds.length,
     toggleStyle,
