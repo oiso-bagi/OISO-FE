@@ -41,12 +41,12 @@ export function SurveyPage() {
 
   const handleNext = () => {
     if (currentStep >= totalStep) {
-      const isSurveyCompleted = completeSurvey();
       const areConditionsSaved = saveRecommendationConditions({
         travelStyleSlugs: surveyForm.travelStyle.selectedStyleIds,
         durationDays: surveyForm.budget.tripDays,
         dailyBudgetWon: surveyForm.budget.budget,
       });
+      const isSurveyCompleted = areConditionsSaved && completeSurvey();
 
       if (!isSurveyCompleted || !areConditionsSaved) {
         showToast({

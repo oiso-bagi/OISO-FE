@@ -1,3 +1,5 @@
+import { vars } from "@/shared/styles/theme.css";
+
 import { RecommendationOptionsStatus } from "../components/RecommendationOptionsStatus";
 import { SurveyQuestion } from "../components/SurveyQuestion";
 import type { RecommendationOptionsQuery } from "../hooks/useRecommendationOptions";
@@ -131,7 +133,7 @@ export function BudgetSection({ optionsQuery, budget }: BudgetSectionProps) {
                       }
                       aria-label={`${item.label} 배분 비율`}
                       style={{
-                        background: `linear-gradient(to right, #111111 ${item.percent}%, #F3F4F6 ${item.percent}%)`,
+                        background: `linear-gradient(to right, ${vars.color.neutral900} ${item.percent}%, ${vars.color.neutral100} ${item.percent}%) center / 100% 1rem no-repeat`,
                       }}
                     />
                   </div>

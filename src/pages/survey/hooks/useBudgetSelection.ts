@@ -6,6 +6,13 @@ const initialTripDays = 0;
 const initialBudget = 0;
 const allocationPercentStep = 5;
 
+const normalizeAllocationPercent = (percent: number) => {
+  const roundedPercent =
+    Math.round(percent / allocationPercentStep) * allocationPercentStep;
+
+  return Math.min(100, Math.max(0, roundedPercent));
+};
+
 type UseBudgetSelectionOptions = {
   budgetAllocationOptions?: BudgetAllocation[];
 };
@@ -28,7 +35,9 @@ export function useBudgetSelection({
     const allocations = budgetAllocationOptions ?? [];
 
     return allocations.map((allocation) => {
-      const percent = allocationPercents[allocation.id] ?? allocation.percent;
+      const percent =
+        allocationPercents[allocation.id] ??
+        normalizeAllocationPercent(allocation.percent);
 
       return {
         ...allocation,
@@ -63,13 +72,27 @@ export function useBudgetSelection({
     allocationId: string,
     nextPercent: number,
   ) => {
-    const roundedPercent =
-      Math.round(nextPercent / allocationPercentStep) * allocationPercentStep;
-    const clampedPercent = Math.min(100, Math.max(0, roundedPercent));
+    const allocations = budgetAllocationOptions ?? [];
+    const requestedPercent = normalizeAllocationPercent(nextPercent);
 
     setAllocationPercents((currentPercents) => ({
       ...currentPercents,
-      [allocationId]: clampedPercent,
+      [allocationId]: Math.min(
+        requestedPercent,
+        Math.max(
+          0,
+          100 -
+            allocations.reduce((total, allocation) => {
+              if (allocation.id === allocationId) return total;
+
+              return (
+                total +
+                (currentPercents[allocation.id] ??
+                  normalizeAllocationPercent(allocation.percent))
+              );
+            }, 0),
+        ),
+      ),
     }));
   };
 
