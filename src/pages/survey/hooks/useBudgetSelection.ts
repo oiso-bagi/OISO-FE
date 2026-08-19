@@ -38,10 +38,20 @@ export function useBudgetSelection({
       const percent =
         allocationPercents[allocation.id] ??
         normalizeAllocationPercent(allocation.percent);
+      const otherPercentTotal = allocations.reduce((total, otherAllocation) => {
+        if (otherAllocation.id === allocation.id) return total;
+
+        return (
+          total +
+          (allocationPercents[otherAllocation.id] ??
+            normalizeAllocationPercent(otherAllocation.percent))
+        );
+      }, 0);
 
       return {
         ...allocation,
         percent,
+        maxPercent: Math.max(0, 100 - otherPercentTotal),
         amount: Math.round((budget * percent) / 100),
       };
     });

@@ -102,43 +102,50 @@ export function BudgetSection({ optionsQuery, budget }: BudgetSectionProps) {
 
           {budget.allocationItems.length > 0 ? (
             <div className={styles.allocationList}>
-              {budget.allocationItems.map((item) => (
-                <div key={item.id} className={styles.allocationItem}>
-                  <div className={styles.allocationRow}>
-                    <span className={styles.allocationLabel}>
-                      <img
-                        src={item.icon}
-                        alt=""
-                        className={styles.allocationIcon}
+              {budget.allocationItems.map((item) => {
+                const sliderFillPercent =
+                  item.maxPercent > 0
+                    ? Math.min(100, (item.percent / item.maxPercent) * 100)
+                    : 0;
+
+                return (
+                  <div key={item.id} className={styles.allocationItem}>
+                    <div className={styles.allocationRow}>
+                      <span className={styles.allocationLabel}>
+                        <img
+                          src={item.icon}
+                          alt=""
+                          className={styles.allocationIcon}
+                        />
+                        {item.label}
+                      </span>
+                      <span className={styles.allocationValue}>
+                        {`${item.amount.toLocaleString("ko-KR")}원(${item.percent}%)`}
+                      </span>
+                    </div>
+                    <div className={styles.allocationControl}>
+                      <input
+                        className={styles.allocationRange}
+                        type="range"
+                        min={0}
+                        max={item.maxPercent}
+                        step={5}
+                        value={item.percent}
+                        onChange={(event) =>
+                          budget.updateAllocationPercent(
+                            item.id,
+                            Number(event.target.value),
+                          )
+                        }
+                        aria-label={`${item.label} 배분 비율`}
+                        style={{
+                          background: `linear-gradient(to right, ${vars.color.neutral900} ${sliderFillPercent}%, ${vars.color.neutral100} ${sliderFillPercent}%) center / 100% 1rem no-repeat`,
+                        }}
                       />
-                      {item.label}
-                    </span>
-                    <span className={styles.allocationValue}>
-                      {item.amount.toLocaleString("ko-KR")}원({item.percent}%)
-                    </span>
+                    </div>
                   </div>
-                  <div className={styles.allocationControl}>
-                    <input
-                      className={styles.allocationRange}
-                      type="range"
-                      min={0}
-                      max={100}
-                      step={5}
-                      value={item.percent}
-                      onChange={(event) =>
-                        budget.updateAllocationPercent(
-                          item.id,
-                          Number(event.target.value),
-                        )
-                      }
-                      aria-label={`${item.label} 배분 비율`}
-                      style={{
-                        background: `linear-gradient(to right, ${vars.color.neutral900} ${item.percent}%, ${vars.color.neutral100} ${item.percent}%) center / 100% 1rem no-repeat`,
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <p className={styles.allocationEmptyText}>
