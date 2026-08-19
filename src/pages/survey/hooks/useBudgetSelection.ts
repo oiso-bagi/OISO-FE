@@ -38,20 +38,10 @@ export function useBudgetSelection({
       const percent =
         allocationPercents[allocation.id] ??
         normalizeAllocationPercent(allocation.percent);
-      const otherPercentTotal = allocations.reduce((total, otherAllocation) => {
-        if (otherAllocation.id === allocation.id) return total;
-
-        return (
-          total +
-          (allocationPercents[otherAllocation.id] ??
-            normalizeAllocationPercent(otherAllocation.percent))
-        );
-      }, 0);
 
       return {
         ...allocation,
         percent,
-        maxPercent: Math.max(0, 100 - otherPercentTotal),
         amount: Math.round((budget * percent) / 100),
       };
     });
@@ -85,25 +75,62 @@ export function useBudgetSelection({
     const allocations = budgetAllocationOptions ?? [];
     const requestedPercent = normalizeAllocationPercent(nextPercent);
 
-    setAllocationPercents((currentPercents) => ({
-      ...currentPercents,
-      [allocationId]: Math.min(
-        requestedPercent,
-        Math.max(
-          0,
-          100 -
-            allocations.reduce((total, allocation) => {
-              if (allocation.id === allocationId) return total;
+    setAllocationPercents((currentPercents) => {
+      const nextPercents = allocations.reduce<Record<string, number>>(
+        (percents, allocation) => ({
+          ...percents,
+          [allocation.id]:
+            currentPercents[allocation.id] ??
+            normalizeAllocationPercent(allocation.percent),
+        }),
+        {},
+      );
+      const otherAllocations = allocations.filter(
+        (allocation) => allocation.id !== allocationId,
+      );
+      const remainingPercent = 100 - requestedPercent;
+      const otherPercentTotal = otherAllocations.reduce(
+        (total, allocation) => total + nextPercents[allocation.id],
+        0,
+      );
 
-              return (
-                total +
-                (currentPercents[allocation.id] ??
-                  normalizeAllocationPercent(allocation.percent))
-              );
-            }, 0),
-        ),
-      ),
-    }));
+      nextPercents[allocationId] = requestedPercent;
+
+      if (otherAllocations.length === 0) return nextPercents;
+
+      if (otherPercentTotal === 0) {
+        otherAllocations.forEach((allocation, index) => {
+          nextPercents[allocation.id] = index === 0 ? remainingPercent : 0;
+        });
+
+        return nextPercents;
+      }
+
+      otherAllocations.forEach((allocation) => {
+        nextPercents[allocation.id] = normalizeAllocationPercent(
+          (nextPercents[allocation.id] / otherPercentTotal) * remainingPercent,
+        );
+      });
+
+      let adjustment =
+        remainingPercent -
+        otherAllocations.reduce(
+          (total, allocation) => total + nextPercents[allocation.id],
+          0,
+        );
+
+      for (const allocation of otherAllocations) {
+        if (adjustment === 0) break;
+
+        const nextValue = nextPercents[allocation.id] + adjustment;
+        if (nextValue < 0 || nextValue > 100) continue;
+
+        nextPercents[allocation.id] = nextValue;
+        adjustment = 0;
+      }
+
+      return nextPercents;
+    });
   };
 
   return {
