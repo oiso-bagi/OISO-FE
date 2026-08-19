@@ -185,14 +185,13 @@ export const allocationValue = style({
 
 export const allocationControl = style({
   display: "flex",
-  minHeight: "2.75rem",
-  alignItems: "center",
 });
 
 export const allocationRange = style({
   width: "100%",
-  height: "2.75rem",
-  border: 0,
+  height: "1rem",
+  border: `0.125rem solid ${vars.color.neutral900}`,
+  borderRadius: vars.radius.sm,
   appearance: "none",
   cursor: "pointer",
 
