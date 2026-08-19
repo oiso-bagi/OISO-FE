@@ -38,7 +38,6 @@ export interface AdminUser {
   provider: AuthProvider;
   role: UserRole;
   isActive: boolean;
-  profileImageUrl: string | null;
   createdAt: string;
 }
 

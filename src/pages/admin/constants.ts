@@ -7,22 +7,10 @@
  */
 
 /**
- * 마스터 추천 코스 테마.
- *
- * 서버의 `GET /recommended-routes/recommend/options` 가 내려주는
- * `travelStyles[]` 의 `slug` / `label` 과 같은 값입니다. 연동 후에는 이 상수
- * 대신 그 응답을 쓰면 됩니다.
- */
-/**
  * 경유지 `sequence` 의 시작값.
  *
- * 백엔드에 전달한 스펙 문서에는 "0부터" 로 적었지만, 서비스가 이미 쓰고 있는
- * 경유지 데이터는 **1부터 시작하고 일차가 넘어가도 이어집니다**
- * (2일차가 3·4, 3일차가 5·6). `RouteStopLocationDto` 등 생성 타입 3곳의
- * `@example` 도 모두 1 입니다.
- *
- * 그래서 기존 데이터 쪽에 맞췄습니다. 서버가 0부터로 확정되면 이 값만
- * 0 으로 바꾸면 됩니다.
+ * **1부터 시작하고 일차가 넘어가도 통산합니다** (2일차가 3·4, 3일차가 5·6).
+ * 백엔드의 기존 `orderIndex` 매핑 기준과 동일하다는 확답을 받았습니다.
  */
 export const SEQUENCE_BASE = 1;
 
@@ -39,11 +27,18 @@ export const TRANSPORT_OPTIONS = [
 /** 코스에 담을 수 있는 최대 일차 */
 export const MAX_DAY_NUMBER = 5;
 
+/**
+ * 마스터 추천 코스 테마.
+ *
+ * 백엔드 추천 엔진에 적재·운영 중인 6종으로 확정된 값입니다.
+ * `GET /recommended-routes/recommend/options` 의 `travelStyles[]` 이 내려주는
+ * `slug` / `label` 과 같습니다. 연동 후에는 이 상수 대신 그 응답을 쓰면 됩니다.
+ */
 export const ROUTE_THEMES = [
   { value: "local-food", label: "부산 로컬 맛집" },
-  { value: "nature-walk", label: "바다·자연 산책" },
-  { value: "culture-art", label: "문화·예술" },
-  { value: "market-tour", label: "전통시장 투어" },
-  { value: "night-view", label: "야경 명소" },
-  { value: "cafe-hopping", label: "카페 호핑" },
+  { value: "emotion-cafe", label: "감성 카페" },
+  { value: "beach-tour", label: "바다 관광" },
+  { value: "photo-spot", label: "포토 스팟" },
+  { value: "traditional-market", label: "전통시장" },
+  { value: "nature-walk", label: "자연 / 산책" },
 ];
