@@ -4,6 +4,7 @@ import type { BudgetAllocation } from "./useRecommendationOptions";
 
 const initialTripDays = 0;
 const initialBudget = 0;
+const allocationPercentStep = 5;
 
 type UseBudgetSelectionOptions = {
   budgetAllocationOptions?: BudgetAllocation[];
@@ -15,6 +16,9 @@ export function useBudgetSelection({
   const [tripDays, setTripDays] = useState(initialTripDays);
   const [budget, setBudget] = useState(initialBudget);
   const [hasNegativeBudgetInput, setHasNegativeBudgetInput] = useState(false);
+  const [allocationPercents, setAllocationPercents] = useState<
+    Record<string, number>
+  >({});
 
   const formattedBudget = useMemo(() => {
     return budget.toLocaleString("ko-KR");
@@ -23,11 +27,16 @@ export function useBudgetSelection({
   const allocationItems = useMemo(() => {
     const allocations = budgetAllocationOptions ?? [];
 
-    return allocations.map((allocation) => ({
-      ...allocation,
-      amount: Math.round((budget * allocation.percent) / 100),
-    }));
-  }, [budget, budgetAllocationOptions]);
+    return allocations.map((allocation) => {
+      const percent = allocationPercents[allocation.id] ?? allocation.percent;
+
+      return {
+        ...allocation,
+        percent,
+        amount: Math.round((budget * percent) / 100),
+      };
+    });
+  }, [allocationPercents, budget, budgetAllocationOptions]);
 
   const isBudgetAllocationVisible = budget > 0 && !hasNegativeBudgetInput;
 
@@ -42,11 +51,26 @@ export function useBudgetSelection({
     setTripDays(initialTripDays);
     setBudget(initialBudget);
     setHasNegativeBudgetInput(false);
+    setAllocationPercents({});
   };
 
   const selectBudget = (nextBudget: number) => {
     setBudget(nextBudget);
     setHasNegativeBudgetInput(false);
+  };
+
+  const updateAllocationPercent = (
+    allocationId: string,
+    nextPercent: number,
+  ) => {
+    const roundedPercent =
+      Math.round(nextPercent / allocationPercentStep) * allocationPercentStep;
+    const clampedPercent = Math.min(100, Math.max(0, roundedPercent));
+
+    setAllocationPercents((currentPercents) => ({
+      ...currentPercents,
+      [allocationId]: clampedPercent,
+    }));
   };
 
   return {
@@ -58,6 +82,7 @@ export function useBudgetSelection({
     allocationItems,
     setTripDays,
     selectBudget,
+    updateAllocationPercent,
     updateBudgetText,
     resetBudget,
   };

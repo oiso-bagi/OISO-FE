@@ -115,14 +115,24 @@ export function BudgetSection({ optionsQuery, budget }: BudgetSectionProps) {
                       {item.amount.toLocaleString("ko-KR")}원({item.percent}%)
                     </span>
                   </div>
-                  <div className={styles.allocationTrack}>
-                    <span
-                      className={styles.allocationFill}
-                      style={{ width: `${item.percent}%` }}
-                    />
-                    <span
-                      className={styles.allocationThumb}
-                      style={{ left: `${item.percent}%` }}
+                  <div className={styles.allocationControl}>
+                    <input
+                      className={styles.allocationRange}
+                      type="range"
+                      min={0}
+                      max={100}
+                      step={5}
+                      value={item.percent}
+                      onChange={(event) =>
+                        budget.updateAllocationPercent(
+                          item.id,
+                          Number(event.target.value),
+                        )
+                      }
+                      aria-label={`${item.label} 배분 비율`}
+                      style={{
+                        background: `linear-gradient(to right, #111111 ${item.percent}%, #F3F4F6 ${item.percent}%)`,
+                      }}
                     />
                   </div>
                 </div>
