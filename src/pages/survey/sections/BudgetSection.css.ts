@@ -183,28 +183,37 @@ export const allocationValue = style({
   whiteSpace: "nowrap",
 });
 
-export const allocationTrack = style({
-  position: "relative",
-  height: "1rem",
-  overflow: "hidden",
-  borderRadius: vars.radius.sm,
-  backgroundColor: vars.color.neutral100,
+export const allocationControl = style({
+  display: "flex",
 });
 
-export const allocationFill = style({
-  position: "absolute",
-  inset: "0 auto 0 0",
-  borderRadius: vars.radius.sm,
-  backgroundColor: vars.color.neutral900,
-});
-
-export const allocationThumb = style({
-  position: "absolute",
-  top: 0,
-  width: "1.5rem",
+export const allocationRange = style({
+  width: "100%",
   height: "1rem",
   border: `0.125rem solid ${vars.color.neutral900}`,
   borderRadius: vars.radius.sm,
-  backgroundColor: vars.color.white,
-  transform: "translateX(-50%)",
+  appearance: "none",
+  cursor: "pointer",
+
+  "::-webkit-slider-thumb": {
+    width: "1.5rem",
+    height: "1rem",
+    border: `0.125rem solid ${vars.color.neutral900}`,
+    borderRadius: vars.radius.sm,
+    appearance: "none",
+    backgroundColor: vars.color.white,
+  },
+
+  "::-moz-range-thumb": {
+    width: "1.5rem",
+    height: "1rem",
+    border: `0.125rem solid ${vars.color.neutral900}`,
+    borderRadius: vars.radius.sm,
+    backgroundColor: vars.color.white,
+  },
+
+  ":focus-visible": {
+    outline: `0.125rem solid ${vars.color.black}`,
+    outlineOffset: vars.space.xxs,
+  },
 });

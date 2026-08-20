@@ -1,3 +1,5 @@
+import { vars } from "@/shared/styles/theme.css";
+
 import { RecommendationOptionsStatus } from "../components/RecommendationOptionsStatus";
 import { SurveyQuestion } from "../components/SurveyQuestion";
 import type { RecommendationOptionsQuery } from "../hooks/useRecommendationOptions";
@@ -112,17 +114,27 @@ export function BudgetSection({ optionsQuery, budget }: BudgetSectionProps) {
                       {item.label}
                     </span>
                     <span className={styles.allocationValue}>
-                      {item.amount.toLocaleString("ko-KR")}원({item.percent}%)
+                      {`${item.amount.toLocaleString("ko-KR")}원(${item.percent}%)`}
                     </span>
                   </div>
-                  <div className={styles.allocationTrack}>
-                    <span
-                      className={styles.allocationFill}
-                      style={{ width: `${item.percent}%` }}
-                    />
-                    <span
-                      className={styles.allocationThumb}
-                      style={{ left: `${item.percent}%` }}
+                  <div className={styles.allocationControl}>
+                    <input
+                      className={styles.allocationRange}
+                      type="range"
+                      min={0}
+                      max={100}
+                      step={5}
+                      value={item.percent}
+                      onChange={(event) =>
+                        budget.updateAllocationPercent(
+                          item.id,
+                          Number(event.target.value),
+                        )
+                      }
+                      aria-label={`${item.label} 배분 비율`}
+                      style={{
+                        background: `linear-gradient(to right, ${vars.color.neutral900} ${item.percent}%, ${vars.color.neutral100} ${item.percent}%) center / 100% 1rem no-repeat`,
+                      }}
                     />
                   </div>
                 </div>
