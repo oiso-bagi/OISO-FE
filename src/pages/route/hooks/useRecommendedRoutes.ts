@@ -10,12 +10,12 @@ import { rankRecommendedRoutes } from "../utils/routeRanking";
 /**
  * 설문 조건에 맞춘 추천 목록(top 3).
  *
- * 조건은 설문 화면이 저장하고 여기서 읽습니다. 조건이 없으면 조회하지
- * 않습니다 — 전체 목록 API 로 폴백하면 일수·예산과 무관한 마스터 코스가
- * 통째로 내려와 화면이 top 3 대신 100여 개를 그리게 됩니다.
+ * 조건은 설문 화면이 저장하고 여기서 읽습니다. 조건이 없으면 실패시킵니다 —
+ * 전체 목록 API 로 폴백하면 일수·예산과 무관한 마스터 코스가 통째로 내려와
+ * 화면이 top 3 대신 100여 개를 그리게 됩니다.
  *
  * 조건이 없는 상태로 이 화면에 닿는 경우는 `AppLayout` 가드가 설문으로
- * 되돌려 막습니다.
+ * 되돌려 막습니다. 그래도 뚫렸을 때는 스켈레톤이 아니라 에러 문구가 뜹니다.
  */
 export const useRecommendedRoutes = () => {
   const conditions = readRecommendationConditions();
@@ -25,7 +25,11 @@ export const useRecommendedRoutes = () => {
     queryFn: () => {
       if (USE_MOCK_DATA) return Promise.resolve(mockRecommendedRouteList);
 
-      // enabled 로 막아 두어 여기까지 오면 조건이 반드시 있습니다.
+      /**
+       * 조건 없이 여기까지 오면 조회를 막는 대신 실패시킵니다.
+       * `enabled` 로 끄면 비활성 쿼리의 `isPending` 이 계속 참이라
+       * 화면이 스켈레톤에서 벗어나지 못합니다.
+       */
       if (!conditions) throw new Error("설문 조건이 없습니다.");
 
       return postRecommendedRoutes(conditions);
@@ -35,6 +39,5 @@ export const useRecommendedRoutes = () => {
      * 정렬과 뱃지 판정을 여기서 한 번에 끝내 화면은 결과만 그리게 합니다.
      */
     select: rankRecommendedRoutes,
-    enabled: USE_MOCK_DATA || Boolean(conditions),
   });
 };
