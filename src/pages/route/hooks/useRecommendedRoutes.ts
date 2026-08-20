@@ -5,6 +5,7 @@ import { queryKeys } from "@/shared/query/queryKeys";
 
 import { postRecommendedRoutes } from "../api/recommendedRouteApi";
 import { USE_MOCK_DATA, mockRecommendedRouteList } from "../mocks/routeMocks";
+import { rankRecommendedRoutes } from "../utils/routeRanking";
 
 /**
  * 설문 조건에 맞춘 추천 목록(top 3).
@@ -29,6 +30,11 @@ export const useRecommendedRoutes = () => {
 
       return postRecommendedRoutes(conditions);
     },
+    /**
+     * 서버 응답은 점수순이 아니고 `isRecommended` 도 전부 참으로 옵니다.
+     * 정렬과 뱃지 판정을 여기서 한 번에 끝내 화면은 결과만 그리게 합니다.
+     */
+    select: rankRecommendedRoutes,
     enabled: USE_MOCK_DATA || Boolean(conditions),
   });
 };
