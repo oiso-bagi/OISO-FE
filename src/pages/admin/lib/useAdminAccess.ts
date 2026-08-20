@@ -40,7 +40,11 @@ const hasAdminRole = (user: CurrentUserWithRole | undefined) =>
  */
 export const useAdminAccess = (): AdminAccess => {
   const authStatus = useAuthStatus();
-  const { data: user, isPending, isError } = useCurrentUser();
+  const {
+    data: user,
+    isPending,
+    isError,
+  } = useCurrentUser(!USE_MOCK && authStatus === "authenticated");
 
   if (USE_MOCK) return "allowed";
 

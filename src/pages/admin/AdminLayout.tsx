@@ -1,6 +1,8 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 
 import { useCurrentUser } from "@/pages/dashboard/hooks/useCurrentUser";
+import { useAuthStatus } from "@/shared/auth/authContext";
+import { USE_MOCK } from "@/shared/config/env";
 
 import { AdminSidebar } from "./components/AdminSidebar";
 import { useAdminAccess } from "./lib/useAdminAccess";
@@ -51,10 +53,13 @@ function Notice({ title, description, action }: NoticeProps) {
 }
 
 export function AdminLayout() {
+  const authStatus = useAuthStatus();
   const access = useAdminAccess();
   const location = useLocation();
   const { isCollapsed, toggle } = useSidebarCollapsed();
-  const { data: user } = useCurrentUser();
+  const { data: user } = useCurrentUser(
+    !USE_MOCK && authStatus === "authenticated",
+  );
 
   if (access === "checking") {
     return (
