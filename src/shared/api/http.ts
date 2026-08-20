@@ -29,6 +29,12 @@ export const http = {
     return data;
   },
 
+  put: async <T>(url: string, body?: unknown, config?: AxiosRequestConfig) => {
+    const { data } = await apiClient.put<T>(url, body, config);
+
+    return data;
+  },
+
   delete: async <T>(url: string, config?: AxiosRequestConfig) => {
     const { data } = await apiClient.delete<T>(url, config);
 
