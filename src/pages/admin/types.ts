@@ -1,10 +1,8 @@
 /**
  * 관리자 화면이 그리는 데이터 형태.
  *
- * 이 이슈의 범위는 UI 까지입니다. 실제 API 연동은 별도 작업이라, 여기서는
- * 백엔드에 전달한 스펙 문서와 같은 형태로 타입만 정의해 두고 목 데이터로
- * 화면을 만듭니다. 연동할 때 이 타입을 그대로 쓰거나, Swagger 에 반영된 뒤
- * `shared/api/generated/types.ts` 의 생성 타입으로 옮기면 됩니다.
+ * 서버 DTO와 화면에서 사용하기 좋은 형태가 다른 경우 API 경계에서 이 타입으로
+ * 매핑합니다. 서버 계약 자체는 `shared/api/generated/types.ts`를 사용합니다.
  */
 
 /** 목록 공통 응답 */
@@ -146,7 +144,7 @@ export interface SavingsCategoryBreakdown {
   category: string;
   label: string;
   amountWon: number;
-  /** 서버에서 계산해 내려줍니다. 합이 1 */
+  /** 서버의 percentage(0~100)를 API 경계에서 0~1로 변환합니다. */
   ratio: number;
 }
 
