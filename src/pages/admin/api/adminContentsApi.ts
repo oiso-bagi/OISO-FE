@@ -73,9 +73,7 @@ const toAdminRoutePage = (
   totalPages: response.totalPages,
 });
 
-const toAdminRouteStop = (
-  stop: AdminRouteDetailStopDto,
-): AdminRouteStop => ({
+const toAdminRouteStop = (stop: AdminRouteDetailStopDto): AdminRouteStop => ({
   sequence: stop.sequence,
   dayNumber: stop.dayNumber,
   placeId: stop.placeId,
