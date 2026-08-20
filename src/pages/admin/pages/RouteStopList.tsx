@@ -1,9 +1,10 @@
 import { Fragment, useState } from "react";
 import type { DragEvent } from "react";
 
-import * as styles from "../components/ui.css";
 import { MAX_DAY_NUMBER, TRANSPORT_OPTIONS } from "../constants";
 import type { AdminRouteStop, TransportType } from "../types";
+
+import * as styles from "../components/ui.css";
 
 interface RouteStopListProps {
   stops: AdminRouteStop[];
@@ -83,6 +84,22 @@ export function RouteStopList({
   const handleDragEnd = () => {
     setDraggingIndex(null);
     setDropIndex(null);
+  };
+
+  /**
+   * 순서 입력은 유효한 화면 번호일 때만 반영합니다.
+   *
+   * 입력을 비우면 `Number("")` 가 0 이라 그대로 넘기면 인덱스 -1 이 되고,
+   * `moveStop` 이 0 으로 보정해 경유지가 맨 앞으로 튑니다. 소수도 배열
+   * 인덱스가 될 수 없어 막습니다.
+   */
+  const handleOrderChange = (index: number, raw: string) => {
+    const displayOrder = Number(raw);
+
+    if (!Number.isInteger(displayOrder)) return;
+    if (displayOrder < 1 || displayOrder > stops.length) return;
+
+    onMove(index, displayOrder - 1);
   };
 
   if (stops.length === 0) {
@@ -166,7 +183,7 @@ export function RouteStopList({
                 max={stops.length}
                 aria-label={`${stop.placeName} 순서`}
                 onChange={(event) =>
-                  onMove(index, Number(event.target.value) - 1)
+                  handleOrderChange(index, event.target.value)
                 }
               />
 

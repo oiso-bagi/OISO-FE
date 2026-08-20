@@ -23,14 +23,16 @@ export const useRecommendedRoutes = () => {
   return useQuery({
     queryKey: queryKeys.recommendedRoutes.list(conditions),
     queryFn: () => {
-      if (USE_MOCK_DATA) return Promise.resolve(mockRecommendedRouteList);
-
       /**
-       * 조건 없이 여기까지 오면 조회를 막는 대신 실패시킵니다.
-       * `enabled` 로 끄면 비활성 쿼리의 `isPending` 이 계속 참이라
-       * 화면이 스켈레톤에서 벗어나지 못합니다.
+       * 조건 검증을 목 분기보다 먼저 둡니다. 목은 서버 응답을 대신하는
+       * 것이라 요청이 성립하지 않는 상황까지 흉내 내면 안 됩니다.
+       *
+       * 조회를 막는 대신 실패시키는 이유는, `enabled` 로 끄면 비활성 쿼리의
+       * `isPending` 이 계속 참이라 화면이 스켈레톤에서 벗어나지 못해서입니다.
        */
       if (!conditions) throw new Error("설문 조건이 없습니다.");
+
+      if (USE_MOCK_DATA) return Promise.resolve(mockRecommendedRouteList);
 
       return postRecommendedRoutes(conditions);
     },
