@@ -12,8 +12,8 @@
 
 export interface RouteStopLocationDto {
   /**
-   * 경유지 순서
-   * @example 1
+   * 경유지 순서 (0부터 시작)
+   * @example 0
    */
   sequence: number;
   /**
@@ -138,8 +138,8 @@ export interface MetaTimeDto {
 
 export interface RouteStopResponseDto {
   /**
-   * 경유지 순서
-   * @example 1
+   * 경유지 순서 (0부터 시작)
+   * @example 0
    */
   sequence: number;
   /**
@@ -153,7 +153,7 @@ export interface RouteStopResponseDto {
    */
   placeName: string;
   /**
-   * 장소 카테고리
+   * 장소 카테고리 (FOOD: 식당 | CAFE: 카페 | MARKET: 전통시장 | CULTURE: 문화 | NATURE: 자연 | EXPERIENCE: 체험 | VIEWPOINT: 전망대 | ETC: 기타)
    * @example "NATURE"
    */
   category:
@@ -401,8 +401,8 @@ export interface SavedRouteCompletionResponseDto {
 
 export interface SavedRouteStopDetailDto {
   /**
-   * 경유지 순서
-   * @example 1
+   * 경유지 순서 (0부터 시작)
+   * @example 0
    */
   sequence: number;
   /**
@@ -416,7 +416,7 @@ export interface SavedRouteStopDetailDto {
    */
   placeName: string;
   /**
-   * 장소 카테고리
+   * 장소 카테고리 (FOOD: 식당 | CAFE: 카페 | MARKET: 전통시장 | CULTURE: 문화 | NATURE: 자연 | EXPERIENCE: 체험 | VIEWPOINT: 전망대 | ETC: 기타)
    * @example "NATURE"
    */
   category:
@@ -576,9 +576,14 @@ export interface CurrentUserResponseDto {
   nickname: string;
   /**
    * 가입 또는 로그인에 사용한 OAuth 제공자
-   * @example "kakao"
+   * @example "LOCAL"
    */
   provider: string;
+  /**
+   * User role
+   * @example "USER"
+   */
+  role: "USER" | "ADMIN";
 }
 
 export interface AuthTokenResponseDto {
@@ -738,8 +743,8 @@ export interface BudgetAllocationOptionsDto {
 
 export interface RecommendationOptionsResponseDto {
   /**
-   * 선택 가능한 여행 스타일 목록
-   * @example [{"slug":"local-food","label":"부산 로컬 맛집"},{"slug":"emotion-cafe","label":"감성 카페"}]
+   * 선택 가능한 여행 스타일 목록 (6대 테마 전체)
+   * @example [{"slug":"local-food","label":"부산 로컬 맛집"},{"slug":"emotion-cafe","label":"감성 카페"},{"slug":"beach-tour","label":"바다 관광"},{"slug":"photo-spot","label":"포토 스팟"},{"slug":"traditional-market","label":"전통시장"},{"slug":"nature-walk","label":"자연 / 산책"}]
    */
   travelStyles: TravelStyleOptionDto[];
   /**
@@ -776,10 +781,10 @@ export interface BudgetRatiosDto {
 
 export interface RecommendRouteRequestDto {
   /**
-   * 추천에 사용할 여행 스타일 slug 목록
+   * 추천에 사용할 여행 스타일 slug 목록 (1개 이상 선택 가능: local-food: 부산 로컬 맛집 | emotion-cafe: 감성 카페 | beach-tour: 바다 관광 | photo-spot: 포토 스팟 | traditional-market: 전통시장 | nature-walk: 자연 / 산책)
    * @example ["local-food","emotion-cafe"]
    */
-  travelStyleSlugs: string[];
+  travelStyleSlugs: string[][];
   /**
    * 여행 기간(일). 1부터 5까지 허용됩니다.
    * @example 2
@@ -923,6 +928,573 @@ export interface HomeSummaryResponseDto {
   totalSavedCount: number;
   /** 최근 저장 루트 요약 목록 */
   savedRoutes: SavedRouteSummaryItemDto[];
+}
+
+export interface AdminRouteListItemDto {
+  /**
+   * 코스 ID
+   * @example "route-03b77f38aa146d15"
+   */
+  id: string;
+  /**
+   * 코스명
+   * @example "부산 로컬 맛집 릴레이 코스"
+   */
+  name: string;
+  /**
+   * 대표 테마 슬러그
+   * @example "local-food"
+   */
+  theme: string;
+  /**
+   * 대표 테마 한글 라벨
+   * @example "부산 로컬 맛집"
+   */
+  themeLabel: string;
+  /**
+   * 경유 장소 수
+   * @example 4
+   */
+  stopCount: number;
+  /**
+   * 총 이동 거리 (km)
+   * @example 3.4
+   */
+  totalDistanceKm: number;
+  /**
+   * 게시 여부
+   * @example true
+   */
+  isPublished: boolean;
+  /**
+   * 생성 일시
+   * @format date-time
+   * @example "2026-08-01T00:00:00.000Z"
+   */
+  createdAt: string;
+}
+
+export interface AdminRoutePageResponseDto {
+  /** 추천 코스 목록 데이터 아이템 */
+  items: AdminRouteListItemDto[];
+  /**
+   * 현재 페이지 (1부터 시작)
+   * @example 1
+   */
+  page: number;
+  /**
+   * 페이지당 항목 수
+   * @example 20
+   */
+  size: number;
+  /**
+   * 전체 데이터 건수
+   * @example 137
+   */
+  totalCount: number;
+  /**
+   * 전체 페이지 수
+   * @example 7
+   */
+  totalPages: number;
+}
+
+export interface AdminToggleRoutePublishedDto {
+  /**
+   * 게시 상태 여부
+   * @example true
+   */
+  isPublished: boolean;
+}
+
+export interface AdminPlaceListItemDto {
+  /**
+   * 장소 ID
+   * @example "place_001"
+   */
+  id: string;
+  /**
+   * 장소명
+   * @example "가야포차선지국"
+   */
+  name: string;
+  /**
+   * 주소
+   * @example "부산광역시 부산진구 ..."
+   */
+  address: string;
+  /**
+   * 카테고리
+   * @example "FOOD"
+   */
+  category: object | null;
+  /**
+   * TPI 지수
+   * @example 0.82
+   */
+  tpiScore: object | null;
+  /**
+   * 활성화 상태 (Soft Delete 여부)
+   * @example true
+   */
+  isActive: boolean;
+  /**
+   * 위도
+   * @example 35.3223258
+   */
+  latitude: number;
+  /**
+   * 경도
+   * @example 129.1788934
+   */
+  longitude: number;
+}
+
+export interface AdminPlacePageResponseDto {
+  /** 장소 목록 데이터 아이템 */
+  items: AdminPlaceListItemDto[];
+  /**
+   * 현재 페이지 (1부터 시작)
+   * @example 1
+   */
+  page: number;
+  /**
+   * 페이지당 항목 수
+   * @example 20
+   */
+  size: number;
+  /**
+   * 전체 데이터 건수
+   * @example 137
+   */
+  totalCount: number;
+  /**
+   * 전체 페이지 수
+   * @example 7
+   */
+  totalPages: number;
+}
+
+export interface AdminTogglePlaceActiveDto {
+  /**
+   * 활성화 상태 여부 (Soft Delete)
+   * @example true
+   */
+  isActive: boolean;
+}
+
+export interface AdminRouteStopInputDto {
+  /**
+   * 장소 ID
+   * @example "place_001"
+   */
+  placeId: string;
+  /**
+   * 코스 내 경유 순서 (0부터 시작하는 연속 정수)
+   * @example 0
+   */
+  sequence: number;
+  /**
+   * 장소 체류 시간 (분)
+   * @default 60
+   * @example 60
+   */
+  stayTimeMinutes?: number;
+  /**
+   * 다음 장소까지 이동 소요 시간 (분)
+   * @example 20
+   */
+  nextTravelTimeMinutes?: number;
+  /**
+   * 다음 장소까지 이동 수단 (WALKING, BUS, SUBWAY, TAXI, CAR 등)
+   * @example "WALKING"
+   */
+  nextTransportType?:
+    | "WALKING"
+    | "BUS"
+    | "SUBWAY"
+    | "DRIVING"
+    | "TAXI"
+    | "BIKING";
+}
+
+export interface CreateAdminRouteDto {
+  /**
+   * 마스터 추천 코스명
+   * @example "부산 감성 카페 & 야경 코스"
+   */
+  name: string;
+  /**
+   * 코스 상세 설명
+   * @example "광안리와 해운대의 밤바다를 즐기는 로미오 코스"
+   */
+  description?: string;
+  /**
+   * 대표 테마 슬러그 (local-food: 부산 로컬 맛집 | emotion-cafe: 감성 카페 | beach-tour: 바다 관광 | photo-spot: 포토 스팟 | traditional-market: 전통시장 | nature-walk: 자연 / 산책)
+   * @example "emotion-cafe"
+   */
+  themeSlug: string;
+  /**
+   * 게시 여부
+   * @default true
+   * @example true
+   */
+  isPublished?: boolean;
+  /**
+   * 경유 장소 목록 (sequence는 0부터 시작하는 연속 정수)
+   * @example [{"placeId":"place_001","sequence":0,"stayTimeMinutes":60,"nextTravelTimeMinutes":20,"nextTransportType":"WALKING"},{"placeId":"place_002","sequence":1,"stayTimeMinutes":45}]
+   */
+  stops: AdminRouteStopInputDto[];
+}
+
+export interface AdminRouteDetailStopDto {
+  /**
+   * 경유지 순서 (0부터 시작)
+   * @example 0
+   */
+  sequence: number;
+  /**
+   * 여행 일차
+   * @example 1
+   */
+  dayNumber: number;
+  /**
+   * 장소 ID
+   * @example "place_001"
+   */
+  placeId: string;
+  /**
+   * 장소명
+   * @example "가야포차선지국"
+   */
+  placeName: string;
+  /**
+   * 주소
+   * @example "부산진구 ..."
+   */
+  address: string;
+  /**
+   * 카테고리
+   * @example "FOOD"
+   */
+  category: object | null;
+  /**
+   * 체류 시간 (분)
+   * @example 60
+   */
+  stayTimeMinutes: number;
+  /**
+   * 다음 이동 시간 (분)
+   * @example 20
+   */
+  nextTravelTimeMinutes: object | null;
+  /**
+   * 다음 이동 수단
+   * @example "WALKING"
+   */
+  nextTransportType:
+    | "WALKING"
+    | "BUS"
+    | "SUBWAY"
+    | "DRIVING"
+    | "TAXI"
+    | "BIKING"
+    | null;
+  /**
+   * 위도
+   * @example 35.1532
+   */
+  latitude: number;
+  /**
+   * 경도
+   * @example 129.1187
+   */
+  longitude: number;
+}
+
+export interface AdminRouteDetailResponseDto {
+  /**
+   * 코스 ID
+   * @example "route-03b77f38aa146d15"
+   */
+  id: string;
+  /**
+   * 코스명
+   * @example "부산 감성 카페 & 야경 코스"
+   */
+  name: string;
+  /**
+   * 코스 설명
+   * @example "광안리와 해운대의 밤바다를 즐기는 코스"
+   */
+  description: object | null;
+  /**
+   * 대표 테마 슬러그
+   * @example "emotion-cafe"
+   */
+  themeSlug: string;
+  /**
+   * 대표 테마 한글 라벨
+   * @example "감성 카페"
+   */
+  themeLabel: string;
+  /**
+   * 전체 소요 일수
+   * @example 2
+   */
+  durationDays: number;
+  /**
+   * 총 경유 장소 수
+   * @example 4
+   */
+  stopCount: number;
+  /**
+   * 총 이동 거리 (km)
+   * @example 5.2
+   */
+  totalDistanceKm: number;
+  /**
+   * 게시 여부
+   * @example true
+   */
+  isPublished: boolean;
+  /**
+   * 생성 일시
+   * @format date-time
+   * @example "2026-08-01T00:00:00.000Z"
+   */
+  createdAt: string;
+  /**
+   * 경유 장소 상세 목록
+   * @example [{"sequence":0,"dayNumber":1,"placeId":"place_001","placeName":"가야포차선지국","address":"부산진구 가야대로","category":"FOOD","stayTimeMinutes":60,"nextTravelTimeMinutes":20,"nextTransportType":"WALKING","latitude":35.1532,"longitude":129.1187}]
+   */
+  stops: AdminRouteDetailStopDto[];
+}
+
+export interface UpdateAdminRouteDto {
+  /**
+   * 마스터 추천 코스명
+   * @example "부산 감성 카페 & 야경 코스"
+   */
+  name: string;
+  /**
+   * 코스 상세 설명
+   * @example "광안리와 해운대의 밤바다를 즐기는 로미오 코스"
+   */
+  description?: string;
+  /**
+   * 대표 테마 슬러그 (local-food: 부산 로컬 맛집 | emotion-cafe: 감성 카페 | beach-tour: 바다 관광 | photo-spot: 포토 스팟 | traditional-market: 전통시장 | nature-walk: 자연 / 산책)
+   * @example "emotion-cafe"
+   */
+  themeSlug: string;
+  /**
+   * 게시 여부
+   * @default true
+   * @example true
+   */
+  isPublished?: boolean;
+  /**
+   * 경유 장소 목록 (sequence는 0부터 시작하는 연속 정수)
+   * @example [{"placeId":"place_001","sequence":0,"stayTimeMinutes":60,"nextTravelTimeMinutes":20,"nextTransportType":"WALKING"},{"placeId":"place_002","sequence":1,"stayTimeMinutes":45}]
+   */
+  stops: AdminRouteStopInputDto[];
+}
+
+export interface AdminStatsOverviewResponseDto {
+  /**
+   * 총 가입 유저 수
+   * @example 128
+   */
+  totalUserCount: number;
+  /**
+   * 누적 저장 루트 수
+   * @example 342
+   */
+  totalSavedRouteCount: number;
+  /**
+   * 누적 절약 금액 합계 (원)
+   * @example 4850000
+   */
+  totalSavingsCostWon: number;
+  /**
+   * 누적 로컬 기여 지수 평균 (0~100점)
+   * @example 78.4
+   */
+  averageLocalContributionScore: number;
+}
+
+export interface AdminSavingsCategoryItemDto {
+  /**
+   * 장소 카테고리 코드
+   * @example "MARKET"
+   */
+  category: string;
+  /**
+   * 카테고리 한글 라벨
+   * @example "전통시장"
+   */
+  label: string;
+  /**
+   * 해당 카테고리 절약 금액 (원)
+   * @example 1940000
+   */
+  amountWon: number;
+  /**
+   * 전체 대비 절약 금액 비율 (%)
+   * @example 40
+   */
+  percentage: number;
+}
+
+export interface AdminSavingsBreakdownResponseDto {
+  /**
+   * 전체 절약 금액 합계 (원)
+   * @example 4850000
+   */
+  totalSavingsCostWon: number;
+  /**
+   * 카테고리별 절약 지출 요약 목록 (내림차순 정렬)
+   * @example [{"category":"MARKET","label":"전통시장","amountWon":1940000,"percentage":40},{"category":"FOOD","label":"식당 / 음식점","amountWon":1455000,"percentage":30},{"category":"CAFE","label":"감성 카페","amountWon":970000,"percentage":20},{"category":"LOCAL","label":"로컬 상권","amountWon":485000,"percentage":10}]
+   */
+  breakdown: AdminSavingsCategoryItemDto[];
+}
+
+export interface AdminKtoStatusResponseDto {
+  /**
+   * 오늘 KTO API 호출 사용량 (쿼터 1,000건 한도)
+   * @example 142
+   */
+  dailyApiUsage: number;
+  /**
+   * 일일 최대 허용 쿼터 수
+   * @example 1000
+   */
+  dailyQuotaLimit: number;
+  /**
+   * 마지막 수집 성공 일시
+   * @example "2026-08-17T04:00:00.000Z"
+   */
+  lastCollectedAt: object | null;
+  /**
+   * 현재 수집 작업 상태 (IDLE | RUNNING)
+   * @example "IDLE"
+   */
+  status: string;
+  /**
+   * 혼잡도 수집 대상 장소 수
+   * @example 85
+   */
+  targetPlaceCount: number;
+}
+
+export interface AdminKtoCollectResponseDto {
+  /**
+   * 수동 수집 실행 결과 메시지
+   * @example "KTO 경로 혼잡도 수동 수집이 성공적으로 완료되었습니다."
+   */
+  message: string;
+  /**
+   * 수집 실행 완료 일시
+   * @format date-time
+   * @example "2026-08-17T17:45:00.000Z"
+   */
+  collectedAt: string;
+  /**
+   * 갱신된 장소 건수
+   * @example 85
+   */
+  updatedPlaceCount: number;
+  /**
+   * 갱신 실패한 장소 건수
+   * @example 0
+   */
+  failureCount: number;
+}
+
+export interface AdminUserListItemDto {
+  /**
+   * 회원 ID
+   * @example "cm1234567890"
+   */
+  id: string;
+  /**
+   * 회원 이메일
+   * @example "user@example.com"
+   */
+  email: string;
+  /**
+   * 회원 닉네임
+   * @example "oiso_user"
+   */
+  nickname: string;
+  /**
+   * OAuth 제공자
+   * @example "google"
+   */
+  provider: string;
+  /**
+   * 회원 권한
+   * @example "USER"
+   */
+  role: "USER" | "ADMIN";
+  /**
+   * 계정 활성 상태
+   * @example true
+   */
+  isActive: boolean;
+  /**
+   * 계정 생성 일시
+   * @format date-time
+   * @example "2026-08-01T00:00:00.000Z"
+   */
+  createdAt: string;
+  /**
+   * 계정 수정 일시
+   * @format date-time
+   * @example "2026-08-01T00:00:00.000Z"
+   */
+  updatedAt: string;
+}
+
+export interface AdminUserPageResponseDto {
+  /** 회원 목록 데이터 */
+  items: AdminUserListItemDto[];
+  /**
+   * 현재 페이지 (1부터 시작)
+   * @example 1
+   */
+  page: number;
+  /**
+   * 페이지당 항목 수
+   * @example 20
+   */
+  size: number;
+  /**
+   * 전체 데이터 건수
+   * @example 137
+   */
+  totalCount: number;
+  /**
+   * 전체 페이지 수
+   * @example 7
+   */
+  totalPages: number;
+}
+
+export interface AdminToggleUserActiveDto {
+  /**
+   * 변경할 계정 활성 상태
+   * @example false
+   */
+  isActive: boolean;
+}
+
+export interface AdminUpdateUserRoleDto {
+  /**
+   * 변경할 회원 권한
+   * @example "ADMIN"
+   */
+  role: "USER" | "ADMIN";
 }
 
 export interface CommonErrorResponse {

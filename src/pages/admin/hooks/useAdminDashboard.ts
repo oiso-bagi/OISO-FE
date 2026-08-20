@@ -1,7 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { queryKeys } from "@/shared/query/queryKeys";
+import { USE_MOCK } from "@/shared/config/env";
 
+import {
+  getAdminKtoStatus,
+  getAdminSavingsBreakdown,
+  getAdminStatsOverview,
+  postAdminKtoCollect,
+} from "../api/adminDashboardApi";
 import {
   mockGetAdminKtoStatus,
   mockGetAdminSavingsBreakdown,
@@ -15,13 +22,13 @@ const COLLECTING_POLL_MS = 2000;
 export const useAdminStatsOverview = () =>
   useQuery({
     queryKey: queryKeys.admin.stats.overview(),
-    queryFn: mockGetAdminStatsOverview,
+    queryFn: USE_MOCK ? mockGetAdminStatsOverview : getAdminStatsOverview,
   });
 
 export const useAdminSavingsBreakdown = () =>
   useQuery({
     queryKey: queryKeys.admin.stats.savingsBreakdown(),
-    queryFn: mockGetAdminSavingsBreakdown,
+    queryFn: USE_MOCK ? mockGetAdminSavingsBreakdown : getAdminSavingsBreakdown,
   });
 
 /**
@@ -33,7 +40,7 @@ export const useAdminSavingsBreakdown = () =>
 export const useAdminKtoStatus = () =>
   useQuery({
     queryKey: queryKeys.admin.kto.status(),
-    queryFn: mockGetAdminKtoStatus,
+    queryFn: USE_MOCK ? mockGetAdminKtoStatus : getAdminKtoStatus,
     refetchInterval: (query) =>
       query.state.data?.isCollecting ? COLLECTING_POLL_MS : false,
   });
@@ -43,7 +50,7 @@ export const useTriggerKtoCollect = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: mockPostAdminKtoCollect,
+    mutationFn: USE_MOCK ? mockPostAdminKtoCollect : postAdminKtoCollect,
     // 트리거 직후 현황을 다시 읽어 쿨타임·진행 상태를 화면에 반영합니다.
     onSettled: () =>
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.kto.all }),

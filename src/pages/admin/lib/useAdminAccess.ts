@@ -15,18 +15,7 @@ export type AdminAccess =
   /** 세션 또는 사용자 정보를 가져오지 못함 */
   | "error";
 
-export type UserRole = "USER" | "ADMIN";
-
-/**
- * 서버가 아직 `GET /me` 응답에 `role` 을 내려주지 않습니다.
- *
- * `generated/types.ts` 는 Swagger 에서 자동 생성되므로 직접 고치지 않고,
- * 추가 예정 필드를 여기서 선택적으로 얹어 둡니다. 서버에 `role` 이 반영되면
- * 이 타입과 아래 목 모드 폴백을 함께 지우고 생성 타입을 그대로 쓰면 됩니다.
- */
-type CurrentUserWithRole = CurrentUserResponseDto & { role?: UserRole };
-
-const hasAdminRole = (user: CurrentUserWithRole | undefined) =>
+const hasAdminRole = (user: CurrentUserResponseDto | undefined) =>
   user?.role === "ADMIN";
 
 /**

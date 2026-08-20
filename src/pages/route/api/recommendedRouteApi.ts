@@ -12,6 +12,17 @@ import {
 } from "./mappers/recommendedRoute";
 
 /**
+ * Swagger 예시는 문자열 배열이지만 현재 생성 타입은 이 필드만 string[][]로
+ * 생성됩니다. 서버가 받는 기존 payload를 유지하고 명세 수정 범위를 격리합니다.
+ */
+type RecommendRouteRequest = Omit<
+  RecommendRouteRequestDto,
+  "travelStyleSlugs"
+> & {
+  travelStyleSlugs: string[];
+};
+
+/**
  * 전체 마스터 코스 목록. 현재 화면에서는 쓰지 않습니다.
  *
  * 설문 조건이 없을 때 이 API 로 폴백하던 시절이 있었는데, 일수·예산과
@@ -36,7 +47,7 @@ import {
 export const postRecommendedRoutes = async (
   conditions: RecommendationConditions,
 ) => {
-  const body: RecommendRouteRequestDto = {
+  const body: RecommendRouteRequest = {
     travelStyleSlugs: conditions.travelStyleSlugs,
     durationDays: conditions.durationDays,
     dailyBudgetWon: conditions.dailyBudgetWon,
