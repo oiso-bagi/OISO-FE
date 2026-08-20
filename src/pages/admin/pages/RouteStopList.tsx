@@ -2,12 +2,13 @@ import { Fragment, useState } from "react";
 import type { DragEvent } from "react";
 
 import * as styles from "../components/ui.css";
-import { MAX_DAY_NUMBER, SEQUENCE_BASE, TRANSPORT_OPTIONS } from "../constants";
+import { MAX_DAY_NUMBER, TRANSPORT_OPTIONS } from "../constants";
 import type { AdminRouteStop, TransportType } from "../types";
 
 interface RouteStopListProps {
   stops: AdminRouteStop[];
-  onMove: (index: number, toSequence: number) => void;
+  /** `toIndex` 는 배열 인덱스입니다. 서버 `sequence` 와 다릅니다. */
+  onMove: (index: number, toIndex: number) => void;
   onChangeDay: (index: number, dayNumber: number) => void;
   onChangeNext: (
     index: number,
@@ -72,7 +73,7 @@ export function RouteStopList({
 
     if (draggingIndex !== null && draggingIndex !== index) {
       // 순서 입력과 같은 경로를 씁니다. 일차 따라가기·재정렬이 그대로 적용됩니다.
-      onMove(draggingIndex, SEQUENCE_BASE + index);
+      onMove(draggingIndex, index);
     }
 
     setDraggingIndex(null);
@@ -153,15 +154,20 @@ export function RouteStopList({
               {/*
                * 번호를 입력해도 같은 자리로 옮길 수 있습니다. 드래그가 어려운
                * 환경과 키보드만 쓰는 경우를 위해 둘 다 남겨 둡니다.
+               *
+               * 서버 `sequence` 는 0부터지만 "0번 경유지" 로 보이면 곤란해
+               * 화면에서만 1부터로 표기하고, 입력값은 인덱스로 되돌립니다.
                */}
               <input
                 type="number"
                 className={styles.numberInput}
-                value={stop.sequence}
+                value={index + 1}
                 min={1}
                 max={stops.length}
                 aria-label={`${stop.placeName} 순서`}
-                onChange={(event) => onMove(index, Number(event.target.value))}
+                onChange={(event) =>
+                  onMove(index, Number(event.target.value) - 1)
+                }
               />
 
               <span className={styles.stopName}>

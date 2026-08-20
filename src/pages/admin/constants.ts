@@ -7,12 +7,16 @@
  */
 
 /**
- * 경유지 `sequence` 의 시작값.
+ * 서버에 보내는 경유지 `sequence` 의 시작값.
  *
- * **1부터 시작하고 일차가 넘어가도 통산합니다** (2일차가 3·4, 3일차가 5·6).
- * 백엔드의 기존 `orderIndex` 매핑 기준과 동일하다는 확답을 받았습니다.
+ * 읽기 API(`GET /recommended-routes`)와 관리자 API(`POST/PUT /admin/routes`)
+ * 모두 **0부터** 로 통일됐습니다. 일차가 넘어가도 초기화되지 않고 전체를
+ * 통산합니다 — 1일차 0·1·2, 2일차 3·4·5, 3일차 6·7·8.
+ *
+ * 화면에는 이 값을 그대로 보여주지 않고 1부터로 바꿔 표기합니다.
+ * 서비스 쪽 `toDisplaySequence` 와 같은 기준입니다.
  */
-export const SEQUENCE_BASE = 1;
+export const SEQUENCE_BASE = 0;
 
 /** 이동 수단 선택지. 기존 루트 API 의 `transitTypes` 와 같은 값입니다. */
 export const TRANSPORT_OPTIONS = [

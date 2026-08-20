@@ -245,8 +245,8 @@ export function AdminRouteBuilderPage() {
 
         <RouteStopList
           stops={stops}
-          onMove={(index, toSequence) =>
-            applyStops(moveStop(stops, index, toSequence))
+          onMove={(index, toIndex) =>
+            applyStops(moveStop(stops, index, toIndex))
           }
           onChangeDay={(index, dayNumber) =>
             applyStops(setStopDay(stops, index, dayNumber))
