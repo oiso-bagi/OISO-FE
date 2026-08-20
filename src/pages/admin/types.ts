@@ -27,7 +27,7 @@ export interface PaginatedQuery {
 
 export type UserRole = "USER" | "ADMIN";
 
-export type AuthProvider = "KAKAO" | "GOOGLE";
+export type AuthProvider = "LOCAL" | "KAKAO" | "GOOGLE";
 
 export interface AdminUser {
   id: string;

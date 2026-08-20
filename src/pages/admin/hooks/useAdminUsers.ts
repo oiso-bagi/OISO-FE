@@ -7,12 +7,12 @@ import {
 
 import { queryKeys } from "@/shared/query/queryKeys";
 
-import { replaceItemInLists } from "../lib/adminCache";
 import {
-  mockGetAdminUsers,
-  mockPatchAdminUserActive,
-  mockPatchAdminUserRole,
-} from "../mocks/adminMocks";
+  getAdminUsers,
+  patchAdminUserActive,
+  patchAdminUserRole,
+} from "../api/adminUsersApi";
+import { replaceItemInLists } from "../lib/adminCache";
 import type { AdminUser, AdminUsersQuery, UserRole } from "../types";
 
 /**
@@ -24,7 +24,7 @@ import type { AdminUser, AdminUsersQuery, UserRole } from "../types";
 export const useAdminUsers = (query: AdminUsersQuery) =>
   useQuery({
     queryKey: queryKeys.admin.users.list(query),
-    queryFn: () => mockGetAdminUsers(query),
+    queryFn: () => getAdminUsers(query),
     placeholderData: keepPreviousData,
   });
 
@@ -39,7 +39,7 @@ export const useToggleUserActive = () => {
 
   return useMutation({
     mutationFn: ({ userId, isActive }: ToggleActiveVariables) =>
-      mockPatchAdminUserActive(userId, isActive),
+      patchAdminUserActive(userId, isActive),
     onSuccess: (updated: AdminUser) =>
       replaceItemInLists(queryClient, queryKeys.admin.users.all, updated),
   });
@@ -56,7 +56,7 @@ export const useChangeUserRole = () => {
 
   return useMutation({
     mutationFn: ({ userId, role }: ChangeRoleVariables) =>
-      mockPatchAdminUserRole(userId, role),
+      patchAdminUserRole(userId, role),
     onSuccess: (updated: AdminUser) =>
       replaceItemInLists(queryClient, queryKeys.admin.users.all, updated),
   });
