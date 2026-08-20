@@ -91,7 +91,6 @@ const users: AdminUser[] = Array.from({ length: 137 }, (_, index) => {
     role: index % 23 === 0 ? "ADMIN" : "USER",
     // 정지 계정도 섞여야 필터가 의미 있습니다.
     isActive: index % 11 !== 0,
-    profileImageUrl: null,
     createdAt: createdAt.toISOString(),
   };
 });

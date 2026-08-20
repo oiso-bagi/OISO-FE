@@ -15,8 +15,8 @@ const DEFAULT_NEXT = {
  * 목록 순서를 확정하고 `sequence` 를 다시 매깁니다.
  *
  * 정렬은 일차 우선이고, 같은 일차 안에서는 현재 배열 순서를 유지합니다.
- * `sequence` 는 일차별로 초기화되지 않고 전체를 통산합니다. 서비스가 이미
- * 쓰고 있는 경유지 데이터가 그런 형태입니다(2일차가 3·4, 3일차가 5·6).
+ * `sequence` 는 서버 규약대로 `SEQUENCE_BASE`(0)부터 매기고, 일차가 넘어가도
+ * 초기화하지 않고 전체를 통산합니다 — 1일차 0·1·2, 2일차 3·4·5.
  *
  * 순서를 입력받는 대신 여기서 매번 다시 매기므로, 번호가 겹치거나 비는
  * 상태 자체가 만들어지지 않습니다.
@@ -85,7 +85,11 @@ export const setStopDay = (
   );
 
 /**
- * 순서 번호를 입력해 경유지를 그 자리로 옮깁니다.
+ * 경유지를 목록의 다른 자리로 옮깁니다.
+ *
+ * 자리는 `sequence` 가 아니라 **배열 인덱스**로 받습니다. 서버 `sequence` 는
+ * 0부터인데 화면 표기는 1부터라, 둘을 섞으면 호출부마다 보정이 흩어집니다.
+ * 변환은 화면에서 한 번만 하고 여기서는 인덱스만 다룹니다.
  *
  * 끼어드는 자리의 일차를 따라가게 해서, 번호 입력만으로 일차 사이를 오갈 수
  * 있게 합니다. 그렇게 하지 않으면 다른 일차의 번호를 넣어도 정렬에서 제자리로
@@ -94,19 +98,17 @@ export const setStopDay = (
 export const moveStop = (
   stops: AdminRouteStop[],
   fromIndex: number,
-  toSequence: number,
+  toIndex: number,
 ): AdminRouteStop[] => {
-  const lastSequence = SEQUENCE_BASE + stops.length - 1;
-  const target = Math.min(Math.max(SEQUENCE_BASE, toSequence), lastSequence);
-  const toIndex = target - SEQUENCE_BASE;
+  const target = Math.min(Math.max(0, toIndex), stops.length - 1);
 
-  if (toIndex === fromIndex) return stops;
+  if (target === fromIndex) return stops;
 
   const moved = stops[fromIndex];
   const rest = stops.filter((_, current) => current !== fromIndex);
-  const anchor = rest[Math.min(toIndex, rest.length - 1)];
+  const anchor = rest[Math.min(target, rest.length - 1)];
 
-  rest.splice(toIndex, 0, {
+  rest.splice(target, 0, {
     ...moved,
     dayNumber: anchor?.dayNumber ?? moved.dayNumber,
   });

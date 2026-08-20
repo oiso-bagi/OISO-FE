@@ -8,7 +8,8 @@ export const container = style({
   flexDirection: "column",
   gap: "16px",
 
-  minHeight: "100%",
+  // 콘텐츠가 짧아도 배경 그라데이션이 화면 아래까지 이어지도록 남는 높이를 채웁니다.
+  flex: 1,
   paddingInline: "24px",
   paddingBottom: "24px",
 

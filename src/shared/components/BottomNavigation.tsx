@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 
 import courseIcon from "@/shared/assets/svg/course.svg";
 import dashboardIcon from "@/shared/assets/svg/dashboard.svg";
-import homeIcon from "@/shared/assets/svg/home.svg";
+import homeIcon from "@/shared/assets/svg/ic-house.svg";
 import saveIcon from "@/shared/assets/svg/save.svg";
 
 import * as styles from "./BottomNavigation.css.ts";

@@ -2,8 +2,13 @@ import { fontFace, globalStyle } from "@vanilla-extract/css";
 
 import { vars } from "./theme.css";
 
+/**
+ * 폰트는 `public/` 바로 아래에 있어 `/PretendardVariable.woff2` 로 서빙됩니다.
+ * `/fonts/` 를 붙이면 그 경로가 없어 SPA rewrite 가 index.html 을 대신
+ * 내려주고, 브라우저는 이를 폰트로 파싱하다 OTS 오류로 버립니다.
+ */
 const pretendard = fontFace({
-  src: 'url("/fonts/PretendardVariable.woff2") format("woff2")',
+  src: 'url("/PretendardVariable.woff2") format("woff2")',
   fontDisplay: "swap",
 });
 
