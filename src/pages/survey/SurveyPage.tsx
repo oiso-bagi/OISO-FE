@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useToast } from "@/shared/components/Toast/toastContext";
 import { completeSurvey } from "@/shared/lib/onboardingFlow";
+import { saveRecommendationConditions } from "@/shared/lib/recommendationConditions";
 
 import { SurveyHeader } from "./components/SurveyHeader";
 import { SurveyProgress } from "./components/SurveyProgress";
@@ -40,14 +41,21 @@ export function SurveyPage() {
 
   const handleNext = () => {
     if (currentStep >= totalStep) {
-      if (!completeSurvey()) {
+      const areConditionsSaved = saveRecommendationConditions({
+        travelStyleSlugs: surveyForm.travelStyle.selectedStyleIds,
+        durationDays: surveyForm.budget.tripDays,
+        dailyBudgetWon: surveyForm.budget.budget,
+      });
+      const isSurveyCompleted = areConditionsSaved && completeSurvey();
+
+      if (!isSurveyCompleted || !areConditionsSaved) {
         showToast({
           message: "설문 완료 상태를 저장하지 못했어요. 다시 시도해 주세요.",
         });
         return;
       }
 
-      navigate("/");
+      navigate("/route");
       return;
     }
 
