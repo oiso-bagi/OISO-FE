@@ -6,7 +6,17 @@ import {
 } from "@tanstack/react-query";
 
 import { queryKeys } from "@/shared/query/queryKeys";
+import { USE_MOCK } from "@/shared/config/env";
 
+import {
+  getAdminPlaces,
+  getAdminRouteDetail,
+  getAdminRoutes,
+  patchAdminPlaceActive,
+  patchAdminRoutePublished,
+  postAdminRoute,
+  putAdminRoute,
+} from "../api/adminContentApi";
 import { replaceItemInLists } from "../lib/adminCache";
 import {
   mockCreateAdminRoute,
@@ -30,7 +40,8 @@ import type {
 export const useAdminPlaces = (query: AdminPlacesQuery) =>
   useQuery({
     queryKey: queryKeys.admin.places.list(query),
-    queryFn: () => mockGetAdminPlaces(query),
+    queryFn: () =>
+      USE_MOCK ? mockGetAdminPlaces(query) : getAdminPlaces(query),
     placeholderData: keepPreviousData,
   });
 
@@ -45,7 +56,9 @@ export const useTogglePlaceActive = () => {
 
   return useMutation({
     mutationFn: ({ placeId, isActive }: TogglePlaceActiveVariables) =>
-      mockPatchAdminPlaceActive(placeId, isActive),
+      USE_MOCK
+        ? mockPatchAdminPlaceActive(placeId, isActive)
+        : patchAdminPlaceActive(placeId, isActive),
     onSuccess: (updated: AdminPlace) =>
       replaceItemInLists(queryClient, queryKeys.admin.places.all, updated),
   });
@@ -56,7 +69,8 @@ export const useTogglePlaceActive = () => {
 export const useAdminRoutes = (query: AdminRoutesQuery) =>
   useQuery({
     queryKey: queryKeys.admin.routes.list(query),
-    queryFn: () => mockGetAdminRoutes(query),
+    queryFn: () =>
+      USE_MOCK ? mockGetAdminRoutes(query) : getAdminRoutes(query),
     placeholderData: keepPreviousData,
   });
 
@@ -71,7 +85,9 @@ export const useToggleRoutePublished = () => {
 
   return useMutation({
     mutationFn: ({ routeId, isPublished }: ToggleRoutePublishedVariables) =>
-      mockPatchAdminRoutePublished(routeId, isPublished),
+      USE_MOCK
+        ? mockPatchAdminRoutePublished(routeId, isPublished)
+        : patchAdminRoutePublished(routeId, isPublished),
     onSuccess: (updated: AdminRoute) =>
       replaceItemInLists(queryClient, queryKeys.admin.routes.all, updated),
   });
@@ -83,7 +99,10 @@ export const useToggleRoutePublished = () => {
 export const useAdminRouteDetail = (routeId: string | undefined) =>
   useQuery({
     queryKey: queryKeys.admin.routes.detail(routeId ?? ""),
-    queryFn: () => mockGetAdminRouteDetail(routeId as string),
+    queryFn: () =>
+      USE_MOCK
+        ? mockGetAdminRouteDetail(routeId as string)
+        : getAdminRouteDetail(routeId as string),
     // 등록 화면에는 routeId 가 없습니다.
     enabled: Boolean(routeId),
   });
@@ -92,7 +111,8 @@ export const useCreateAdminRoute = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: AdminRoutePayload) => mockCreateAdminRoute(payload),
+    mutationFn: (payload: AdminRoutePayload) =>
+      USE_MOCK ? mockCreateAdminRoute(payload) : postAdminRoute(payload),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.routes.all }),
   });
@@ -108,7 +128,9 @@ export const useUpdateAdminRoute = () => {
 
   return useMutation({
     mutationFn: ({ routeId, payload }: UpdateRouteVariables) =>
-      mockUpdateAdminRoute(routeId, payload),
+      USE_MOCK
+        ? mockUpdateAdminRoute(routeId, payload)
+        : putAdminRoute(routeId, payload),
     // 목록의 요약값(경유지 수·거리)과 상세가 함께 바뀝니다.
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.routes.all }),
