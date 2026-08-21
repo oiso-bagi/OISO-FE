@@ -575,10 +575,10 @@ export interface CurrentUserResponseDto {
    */
   nickname: string;
   /**
-   * 가입 또는 로그인에 사용한 OAuth 제공자
+   * 가입 또는 로그인에 사용한 제공자
    * @example "LOCAL"
    */
-  provider: string;
+  provider: "LOCAL" | "KAKAO" | "GOOGLE";
   /**
    * User role
    * @example "USER"
@@ -1428,10 +1428,10 @@ export interface AdminUserListItemDto {
    */
   nickname: string;
   /**
-   * OAuth 제공자
-   * @example "google"
+   * 가입 또는 로그인에 사용한 제공자
+   * @example "GOOGLE"
    */
-  provider: string;
+  provider: "LOCAL" | "KAKAO" | "GOOGLE";
   /**
    * 회원 권한
    * @example "USER"

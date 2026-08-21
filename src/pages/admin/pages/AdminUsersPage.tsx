@@ -24,6 +24,7 @@ import type { AdminUser, AuthProvider, UserRole } from "../types";
 const FILTER_KEYS = ["provider", "isActive", "role"] as const;
 
 const PROVIDER_OPTIONS = [
+  { value: "LOCAL", label: "LOCAL" },
   { value: "", label: "제공자 전체" },
   { value: "KAKAO", label: "카카오" },
   { value: "GOOGLE", label: "구글" },
@@ -42,6 +43,7 @@ const ROLE_OPTIONS = [
 ];
 
 const PROVIDER_LABEL: Record<AuthProvider, string> = {
+  LOCAL: "LOCAL",
   KAKAO: "카카오",
   GOOGLE: "구글",
 };
