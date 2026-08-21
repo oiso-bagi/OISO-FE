@@ -6,7 +6,6 @@ import {
 } from "@tanstack/react-query";
 
 import { queryKeys } from "@/shared/query/queryKeys";
-import { USE_MOCK } from "@/shared/config/env";
 
 import {
   createAdminRoute,
