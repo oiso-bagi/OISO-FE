@@ -79,9 +79,10 @@ const toAdminRouteStop = (stop: AdminRouteDetailStopDto): AdminRouteStop => ({
   placeId: stop.placeId,
   placeName: stop.placeName,
   address: stop.address,
+  stayTimeMinutes: stop.stayTimeMinutes,
   nextTransportType: stop.nextTransportType,
   nextTravelTimeMinutes: toNullableNumber(stop.nextTravelTimeMinutes),
-  nextTravelCostWon: null,
+  nextTravelCostWon: toNullableNumber(stop.nextTravelCostWon),
 });
 
 const toAdminRouteDetail = (
@@ -98,12 +99,16 @@ const toAdminRouteDetail = (
 const toRouteStopInput = (stop: AdminRouteStop): AdminRouteStopInputDto => ({
   placeId: stop.placeId,
   sequence: stop.sequence,
-  stayTimeMinutes: 60,
+  dayNumber: stop.dayNumber,
+  stayTimeMinutes: stop.stayTimeMinutes ?? 60,
   ...(stop.nextTravelTimeMinutes !== null
     ? { nextTravelTimeMinutes: stop.nextTravelTimeMinutes }
     : {}),
   ...(stop.nextTransportType !== null
     ? { nextTransportType: stop.nextTransportType }
+    : {}),
+  ...(stop.nextTravelCostWon !== null
+    ? { nextTravelCostWon: stop.nextTravelCostWon }
     : {}),
 });
 

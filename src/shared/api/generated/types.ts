@@ -27,6 +27,52 @@ export interface RouteStopLocationDto {
    */
   placeName: string;
   /**
+   * 장소 카테고리 (FOOD: 식당 | CAFE: 카페 | MARKET: 전통시장 | CULTURE: 문화 | NATURE: 자연 | EXPERIENCE: 체험 | VIEWPOINT: 전망대 | ETC: 기타)
+   * @example "NATURE"
+   */
+  category:
+    | "MARKET"
+    | "CAFE"
+    | "FOOD"
+    | "CULTURE"
+    | "NATURE"
+    | "EXPERIENCE"
+    | "VIEWPOINT"
+    | "ETC"
+    | null;
+  /**
+   * 장소 영업 시작 시간
+   * @example "09:00"
+   */
+  openTime: string | null;
+  /**
+   * 장소 영업 종료 시간
+   * @example "21:00"
+   */
+  closeTime: string | null;
+  /**
+   * 다음 경유지로의 이동 수단 (WALKING, BUS, SUBWAY, TAXI, DRIVING 등)
+   * @example "BUS"
+   */
+  nextTransportType:
+    | "WALKING"
+    | "BUS"
+    | "SUBWAY"
+    | "DRIVING"
+    | "TAXI"
+    | "BIKING"
+    | null;
+  /**
+   * 다음 경유지로의 이동 소요 시간(분)
+   * @example 20
+   */
+  nextTravelTimeMinutes: number | null;
+  /**
+   * 장소 체류 소요 시간(분)
+   * @example 60
+   */
+  stayMinutes: number | null;
+  /**
    * 장소 위도
    * @example 35.1532
    */
@@ -136,9 +182,22 @@ export interface MetaTimeDto {
   stayTime: number;
 }
 
+export interface PathCoordinateDto {
+  /**
+   * 위도
+   * @example 35.1587
+   */
+  latitude: number;
+  /**
+   * 경도
+   * @example 129.1604
+   */
+  longitude: number;
+}
+
 export interface RouteStopResponseDto {
   /**
-   * 경유지 순서 (0부터 시작)
+   * 경유지 순서 (0부터 시작하는 연속 정수)
    * @example 0
    */
   sequence: number;
@@ -149,7 +208,7 @@ export interface RouteStopResponseDto {
   dayNumber: number;
   /**
    * 장소 이름
-   * @example "광안리해수욕장"
+   * @example "해운대 해수욕장"
    */
   placeName: string;
   /**
@@ -203,6 +262,16 @@ export interface RouteStopResponseDto {
    * @example 15
    */
   nextTravelTimeMinutes: number | null;
+  /**
+   * 장소 체류 소요 시간(분)
+   * @example 60
+   */
+  stayMinutes: number | null;
+  /**
+   * 이 경유지부터 다음 경유지까지의 실제 도로 굴곡 좌표 배열 (카카오맵 Polyline 렌더링용)
+   * @example [{"latitude":35.1587,"longitude":129.1604},{"latitude":35.159,"longitude":129.161}]
+   */
+  pathCoordinates: PathCoordinateDto[];
 }
 
 export interface RecommendedRouteDetailResponseDto {
@@ -466,6 +535,11 @@ export interface SavedRouteStopDetailDto {
    * @example 129.1187
    */
   longitude: number | null;
+  /**
+   * 이 경유지부터 다음 경유지까지의 실제 도로 굴곡 좌표 배열 (카카오맵 Polyline 렌더링용)
+   * @example [{"latitude":35.1587,"longitude":129.1604},{"latitude":35.159,"longitude":129.161}]
+   */
+  pathCoordinates: PathCoordinateDto[];
 }
 
 export interface SavedRouteDetailResponseDto {
@@ -784,7 +858,7 @@ export interface RecommendRouteRequestDto {
    * 추천에 사용할 여행 스타일 slug 목록 (1개 이상 선택 가능: local-food: 부산 로컬 맛집 | emotion-cafe: 감성 카페 | beach-tour: 바다 관광 | photo-spot: 포토 스팟 | traditional-market: 전통시장 | nature-walk: 자연 / 산책)
    * @example ["local-food","emotion-cafe"]
    */
-  travelStyleSlugs: string[][];
+  travelStyleSlugs: string[];
   /**
    * 여행 기간(일). 1부터 5까지 허용됩니다.
    * @example 2
@@ -1095,6 +1169,12 @@ export interface AdminRouteStopInputDto {
    */
   sequence: number;
   /**
+   * 여행 일차 번호 (1일차, 2일차 등)
+   * @default 1
+   * @example 1
+   */
+  dayNumber?: number;
+  /**
    * 장소 체류 시간 (분)
    * @default 60
    * @example 60
@@ -1116,6 +1196,11 @@ export interface AdminRouteStopInputDto {
     | "DRIVING"
     | "TAXI"
     | "BIKING";
+  /**
+   * 다음 장소까지 이동 비용 (원)
+   * @example 1500
+   */
+  nextTravelCostWon?: number;
 }
 
 export interface CreateAdminRouteDto {
@@ -1142,7 +1227,7 @@ export interface CreateAdminRouteDto {
   isPublished?: boolean;
   /**
    * 경유 장소 목록 (sequence는 0부터 시작하는 연속 정수)
-   * @example [{"placeId":"place_001","sequence":0,"stayTimeMinutes":60,"nextTravelTimeMinutes":20,"nextTransportType":"WALKING"},{"placeId":"place_002","sequence":1,"stayTimeMinutes":45}]
+   * @example [{"placeId":"place_001","sequence":0,"dayNumber":1,"stayTimeMinutes":60,"nextTravelTimeMinutes":20,"nextTransportType":"WALKING","nextTravelCostWon":1500},{"placeId":"place_002","sequence":1,"dayNumber":1,"stayTimeMinutes":45}]
    */
   stops: AdminRouteStopInputDto[];
 }
@@ -1200,6 +1285,11 @@ export interface AdminRouteDetailStopDto {
     | "TAXI"
     | "BIKING"
     | null;
+  /**
+   * 다음 이동 비용 (원)
+   * @example 1500
+   */
+  nextTravelCostWon: object | null;
   /**
    * 위도
    * @example 35.1532
@@ -1295,7 +1385,7 @@ export interface UpdateAdminRouteDto {
   isPublished?: boolean;
   /**
    * 경유 장소 목록 (sequence는 0부터 시작하는 연속 정수)
-   * @example [{"placeId":"place_001","sequence":0,"stayTimeMinutes":60,"nextTravelTimeMinutes":20,"nextTransportType":"WALKING"},{"placeId":"place_002","sequence":1,"stayTimeMinutes":45}]
+   * @example [{"placeId":"place_001","sequence":0,"dayNumber":1,"stayTimeMinutes":60,"nextTravelTimeMinutes":20,"nextTransportType":"WALKING","nextTravelCostWon":1500},{"placeId":"place_002","sequence":1,"dayNumber":1,"stayTimeMinutes":45}]
    */
   stops: AdminRouteStopInputDto[];
 }
@@ -1346,6 +1436,29 @@ export interface AdminSavingsCategoryItemDto {
   percentage: number;
 }
 
+export interface AdminSavingsRegionItemDto {
+  /**
+   * 지역/구 코드 또는 명칭
+   * @example "해운대구"
+   */
+  region: string;
+  /**
+   * 지역 한글 라벨
+   * @example "해운대구"
+   */
+  label: string;
+  /**
+   * 해당 지역/구 절약 금액 (원)
+   * @example 1940000
+   */
+  amountWon: number;
+  /**
+   * 전체 대비 절약 금액 비율 (%)
+   * @example 40
+   */
+  percentage: number;
+}
+
 export interface AdminSavingsBreakdownResponseDto {
   /**
    * 전체 절약 금액 합계 (원)
@@ -1357,6 +1470,11 @@ export interface AdminSavingsBreakdownResponseDto {
    * @example [{"category":"MARKET","label":"전통시장","amountWon":1940000,"percentage":40},{"category":"FOOD","label":"식당 / 음식점","amountWon":1455000,"percentage":30},{"category":"CAFE","label":"감성 카페","amountWon":970000,"percentage":20},{"category":"LOCAL","label":"로컬 상권","amountWon":485000,"percentage":10}]
    */
   breakdown: AdminSavingsCategoryItemDto[];
+  /**
+   * 부산 구 단위 상권별 절약 요약 목록 (내림차순 정렬)
+   * @example [{"region":"해운대구","label":"해운대구","amountWon":2425000,"percentage":50},{"region":"부산진구","label":"부산진구","amountWon":1455000,"percentage":30},{"region":"수영구","label":"수영구","amountWon":970000,"percentage":20}]
+   */
+  regionBreakdown: AdminSavingsRegionItemDto[];
 }
 
 export interface AdminKtoStatusResponseDto {
@@ -1380,6 +1498,16 @@ export interface AdminKtoStatusResponseDto {
    * @example "IDLE"
    */
   status: string;
+  /**
+   * 마지막 수집 실행 결과 상태 (SUCCESS | PARTIAL_SUCCESS | FAILURE)
+   * @example "SUCCESS"
+   */
+  lastResult: "SUCCESS" | "PARTIAL_SUCCESS" | "FAILURE" | null;
+  /**
+   * 마지막 수집 실행 결과 메시지
+   * @example "KTO 경로 혼잡도 수동 수집이 성공적으로 완료되었습니다."
+   */
+  lastMessage: object | null;
   /**
    * 혼잡도 수집 대상 장소 수
    * @example 85
