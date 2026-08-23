@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import * as styles from "./ui.css";
 
@@ -28,13 +28,33 @@ export function FilterBar({
   selects = [],
   action,
 }: FilterBarProps) {
+  const [searchInputValue, setSearchInputValue] = useState(searchValue);
+  const isComposing = useRef(false);
+
+  useEffect(() => {
+    if (!isComposing.current) setSearchInputValue(searchValue);
+  }, [searchValue]);
+
   return (
     <div className={styles.filterBar}>
       <input
         type="search"
         className={styles.searchInput}
-        value={searchValue}
-        onChange={(event) => onSearchChange(event.target.value)}
+        value={searchInputValue}
+        onChange={(event) => {
+          const next = event.target.value;
+
+          setSearchInputValue(next);
+          if (!isComposing.current) onSearchChange(next);
+        }}
+        onCompositionStart={() => {
+          isComposing.current = true;
+        }}
+        onCompositionEnd={(event) => {
+          isComposing.current = false;
+          setSearchInputValue(event.currentTarget.value);
+          onSearchChange(event.currentTarget.value);
+        }}
         placeholder={searchPlaceholder}
         aria-label={searchPlaceholder}
       />

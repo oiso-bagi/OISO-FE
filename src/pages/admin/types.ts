@@ -105,6 +105,8 @@ export interface AdminRouteStop {
   /** 수정 화면에서 장소를 다시 조회하지 않도록 서버가 함께 내려줍니다. */
   placeName: string;
   address: string;
+  /** 서버 기본값은 60분이며, 현재 화면에서는 별도로 편집하지 않습니다. */
+  stayTimeMinutes?: number;
   /** 다음 경유지까지의 정보. 마지막 경유지는 모두 null 입니다. */
   nextTransportType: TransportType | null;
   nextTravelTimeMinutes: number | null;
