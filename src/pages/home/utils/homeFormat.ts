@@ -9,3 +9,12 @@ export const formatSavedDate = (isoDate: string): string => {
 
   return `${year}. ${Number(month)}. ${Number(day)}.`;
 };
+
+/**
+ * 전단지 표기용 금액. `formatPrice` 의 "42,000원" 대신 "₩42,000" 으로 씁니다.
+ */
+export const formatWonSign = (value: number | null): string => {
+  if (value === null) return "-";
+
+  return `₩${value.toLocaleString("ko-KR")}`;
+};
