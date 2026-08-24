@@ -102,12 +102,6 @@ export function RouteBox({
       <div className={styles.titleRow} data-recommended={isRecommended}>
         <h3 className={styles.title}>{title}</h3>
 
-        {hasRecommendationRate && (
-          <span className={styles.recommendationRate}>
-            추천도 {recommendationRate}%
-          </span>
-        )}
-
         {isRecommended && (
           <RecommendBadgeIcon
             className={styles.recommendBadge}
@@ -126,6 +120,12 @@ export function RouteBox({
         <span>{distance}</span>
 
         <span className={styles.transportation}>{transportation}</span>
+
+        {hasRecommendationRate && (
+          <span className={styles.recommendationRate}>
+            추천도 {recommendationRate}%
+          </span>
+        )}
       </div>
 
       <div className={styles.summaryList}>
