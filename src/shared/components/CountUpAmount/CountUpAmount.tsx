@@ -20,7 +20,9 @@ const STAGGER_SECONDS = 0.07;
 interface CountUpAmountProps {
   /** 표시할 최종 금액. 세 자리마다 쉼표를 넣어 보여 줍니다. */
   value: number;
-  /** 숫자 뒤에 붙는 단위 */
+  /** 숫자 앞에 붙는 기호. 예: "₩" */
+  prefix?: string;
+  /** 숫자 뒤에 붙는 단위. 빈 문자열이면 표시하지 않습니다. */
   unit?: string;
   className?: string;
 }
@@ -33,6 +35,7 @@ interface CountUpAmountProps {
  */
 export function CountUpAmount({
   value,
+  prefix = "",
   unit = "원",
   className,
 }: CountUpAmountProps) {
@@ -45,7 +48,13 @@ export function CountUpAmount({
     <span
       className={className ? `${styles.amount} ${className}` : styles.amount}
     >
-      <span className={styles.srOnly}>{`${text}${unit}`}</span>
+      <span className={styles.srOnly}>{`${prefix}${text}${unit}`}</span>
+
+      {prefix && (
+        <span className={styles.staticCell} aria-hidden="true">
+          {prefix}
+        </span>
+      )}
 
       {[...text].map((character, index) => {
         if (character === ",") {
@@ -83,9 +92,11 @@ export function CountUpAmount({
         );
       })}
 
-      <span className={styles.staticCell} aria-hidden="true">
-        {unit}
-      </span>
+      {unit && (
+        <span className={styles.staticCell} aria-hidden="true">
+          {unit}
+        </span>
+      )}
     </span>
   );
 }
