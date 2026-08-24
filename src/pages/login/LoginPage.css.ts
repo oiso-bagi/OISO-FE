@@ -3,114 +3,105 @@ import { vars } from "@/shared/styles/theme.css";
 
 import { largeTitleR32 } from "@/shared/styles/typography.css";
 import { body2 } from "@/shared/styles/typography.css";
+import { body3 } from "@/shared/styles/typography.css";
 import { body7 } from "@/shared/styles/typography.css";
 import { body9 } from "@/shared/styles/typography.css";
 
 export const page = style({
   minHeight: "100vh",
-  padding: "clamp(80px, 16vh, 164px) 24px 48px",
+
+  // 절약액 띠가 화면 폭을 꽉 채워야 해서 좌우 여백은 각 영역이 직접 가집니다.
+  padding: "clamp(48px, 9vh, 88px) 0 40px",
+
   display: "flex",
   flexDirection: "column",
-  alignItems: "center",
   backgroundColor: vars.color.bg,
 });
 
 export const intro = style({
-  width: "100%",
+  paddingInline: "24px",
+
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
 });
 
-export const brandLogoSlot = style({
-  width: "145px",
-  height: "145px",
-  flexShrink: 0,
-  display: "grid",
-  placeItems: "center",
-  overflow: "hidden",
-  border: "3px solid #111111",
-  backgroundColor: vars.color.white,
-});
-
 export const brandLogo = style({
-  width: "131px",
-  height: "132px",
+  width: "104px",
+  height: "104px",
+  flexShrink: 0,
   display: "block",
 });
 
 export const title = style([
   largeTitleR32,
   {
-    marginTop: "24px",
+    marginTop: "26px",
+    textAlign: "center",
+    letterSpacing: "-0.01em",
   },
 ]);
 
-export const description = style([
-  body2,
-  {
-    marginTop: "20px",
-  },
-]);
-
-export const accent = style({
+export const titleAccent = style({
   color: vars.color.secondary500,
 });
 
-export const benefitList = style({
-  width: "100%",
-  marginTop: "35px",
-  display: "grid",
-  gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-  gap: "14px",
-});
+export const description = style([
+  body3,
+  {
+    marginTop: "12px",
+    textAlign: "center",
+    color: vars.color.neutral900,
+  },
+]);
 
-const benefitBase = style({
-  height: "92px",
-  border: "2px solid #111111",
+/* ── 누적 절약액 ───────────────────────────────────── */
+
+/**
+ * 카드가 아니라 화면을 가르는 띠입니다.
+ *
+ * 좌우 테두리와 오프셋 그림자를 두면 이 화면에서 유일한 박스가 되어 위 문단과
+ * 떨어져 떠 보입니다. 상하 선만 남겨 글 흐름에 붙여 둡니다.
+ */
+export const savingsBand = style({
+  marginTop: "22px",
+  padding: "14px 24px 16px",
+
+  backgroundColor: vars.color.primary500,
+  borderTop: "3px solid #111111",
+  borderBottom: "3px solid #111111",
+
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  justifyContent: "center",
-  gap: "8px",
-  backgroundColor: vars.color.white,
-  fontSize: "14px",
-  fontWeight: vars.fontWeight.bold,
-  lineHeight: 1.3,
-  whiteSpace: "nowrap",
+  gap: "6px",
+
+  boxSizing: "border-box",
 });
 
-export const benefit = style([benefitBase]);
+export const savingsLabel = style([body7]);
 
-export const highlightedBenefit = style([
-  benefitBase,
-  {
-    backgroundColor: vars.color.secondary500,
-    color: vars.color.white,
-  },
-]);
+export const savingsAmount = style({
+  fontFamily: vars.font.heading,
+  fontWeight: vars.fontWeight.regular,
 
-export const benefitIcon = style([
-  body7,
-  {
-    height: "24px",
-    display: "grid",
-    placeItems: "center",
-  },
-]);
+  // 타이포 스케일에 32px 위 크기가 없어 직접 지정합니다. 제목(32px)보다 커야
+  // 이 숫자가 화면의 주인공이 됩니다.
+  fontSize: "36px",
+
+  color: vars.color.black,
+});
+
+/* ── 로그인 버튼 ───────────────────────────────────── */
 
 export const actions = style({
-  width: "calc(100% - 60px)",
-  marginTop: "40px",
+  // 위 영역과 버튼 사이를 벌려 버튼을 화면 아래쪽에 붙입니다.
+  marginTop: "auto",
+  paddingInline: "24px",
+
   display: "flex",
   flexDirection: "column",
   gap: "16px",
-
-  "@media": {
-    "screen and (max-width: 390px)": {
-      width: "100%",
-    },
-  },
 });
 
 const loginButton = style([
@@ -156,7 +147,9 @@ export const logoSlot = style({
 export const footer = style([
   body9,
   {
-    marginTop: "40px",
+    marginTop: "24px",
+    paddingInline: "24px",
+
     display: "flex",
     flexDirection: "column",
     alignItems: "center",

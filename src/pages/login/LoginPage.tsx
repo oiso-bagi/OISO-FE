@@ -3,20 +3,20 @@ import { useSearchParams } from "react-router-dom";
 
 import { API_BASE_URL } from "@/shared/config/env";
 import { useToast } from "@/shared/components/Toast/toastContext";
+import { CountUpAmount } from "@/shared/components/CountUpAmount/CountUpAmount";
 import OisoLogo from "@/shared/icons/oiso_logo.svg?react";
-import Cost from "@/shared/icons/cost.svg?react";
-import BestRoute from "@/shared/icons/best_route.svg?react";
-import LocalBalance from "@/shared/icons/local.svg?react";
 import KakaoLogo from "@/shared/icons/kakao.svg?react";
 import GoogleLogo from "@/shared/icons/google.svg?react";
 
 import * as styles from "./LoginPage.css";
 
-const benefits = [
-  { icon: <Cost />, label: "가성비 분석", isHighlighted: false },
-  { icon: <BestRoute />, label: "동선 최적화", isHighlighted: true },
-  { icon: <LocalBalance />, label: "지역 균형", isHighlighted: false },
-] as const;
+/**
+ * 서비스 전체 누적 절약액(만원).
+ *
+ * TODO(API 연동 대기): 관리자 통계의 `totalSavingsWon` 을 비로그인도 볼 수 있는
+ * 엔드포인트로 열면 실제 값으로 교체합니다. 지금은 화면 확인용 고정값입니다.
+ */
+const TOTAL_SAVINGS_MAN_WON = 5234;
 
 type OAuthProvider = "kakao" | "google";
 
@@ -71,34 +71,27 @@ export function LoginPage() {
   return (
     <div className={styles.page}>
       <section className={styles.intro} aria-labelledby="login-title">
-        <div className={styles.brandLogoSlot} aria-hidden="true">
-          <OisoLogo className={styles.brandLogo} aria-label="오이소 로고" />
-        </div>
+        <OisoLogo className={styles.brandLogo} role="img" aria-label="오이소" />
 
         <h1 id="login-title" className={styles.title}>
-          오이소
+          관광지 물가 말고
+          <br />
+          부산 <span className={styles.titleAccent}>현지 물가</span>로
         </h1>
         <p className={styles.description}>
-          <strong className={styles.accent}>예산</strong>부터{" "}
-          <strong className={styles.accent}>동선</strong>까지, 데이터로 똑똑한
-          부산 여행
+          예산부터 동선까지, 데이터로 똑똑한 부산 여행
         </p>
+      </section>
 
-        <ul className={styles.benefitList} aria-label="서비스 특징">
-          {benefits.map(({ icon, label, isHighlighted }) => (
-            <li
-              key={label}
-              className={
-                isHighlighted ? styles.highlightedBenefit : styles.benefit
-              }
-            >
-              <span className={styles.benefitIcon} aria-hidden="true">
-                {icon}
-              </span>
-              <span>{label}</span>
-            </li>
-          ))}
-        </ul>
+      <section className={styles.savingsBand} aria-label="누적 절약액">
+        <span className={styles.savingsLabel}>
+          오이소 여행자들이 지금까지 아낀 돈
+        </span>
+        <CountUpAmount
+          className={styles.savingsAmount}
+          value={TOTAL_SAVINGS_MAN_WON}
+          unit="만원"
+        />
       </section>
 
       <section className={styles.actions} aria-label="로그인 방법">
@@ -107,7 +100,6 @@ export function LoginPage() {
           className={styles.kakaoButton}
           onClick={() => handleLogin("kakao")}
         >
-          {/* TODO: 카카오 SVG 로고를 logoSlot 안에 넣어 주세요. */}
           <KakaoLogo className={styles.logoSlot} aria-hidden="true" />
           카카오로 시작하기
         </button>
@@ -116,7 +108,6 @@ export function LoginPage() {
           className={styles.googleButton}
           onClick={() => handleLogin("google")}
         >
-          {/* TODO: 구글 SVG 로고를 logoSlot 안에 넣어 주세요. */}
           <GoogleLogo className={styles.logoSlot} aria-hidden="true" />
           Google로 계속하기
         </button>
