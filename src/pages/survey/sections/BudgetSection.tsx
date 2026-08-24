@@ -29,6 +29,10 @@ export function BudgetSection({ optionsQuery, budget }: BudgetSectionProps) {
     budget.tripDays === 0 &&
     budget.budget > 0;
 
+  /** 안내와 오류는 둘 다 눈에 띄어야 해서 같은 강조색을 씁니다. */
+  const isHintHighlighted =
+    budget.hasNegativeBudgetInput || isTripDaysNoticeVisible;
+
   return (
     <>
       <SurveyQuestion
@@ -79,7 +83,7 @@ export function BudgetSection({ optionsQuery, budget }: BudgetSectionProps) {
 
         <p
           className={
-            isTripDaysNoticeVisible ? styles.fieldHintNotice : styles.fieldHint
+            isHintHighlighted ? styles.fieldHintNotice : styles.fieldHint
           }
         >
           {budget.hasNegativeBudgetInput

@@ -91,7 +91,7 @@ export const fieldHint = style({
   ...typographyStyles.detail1,
 });
 
-/** 기간을 먼저 고르라는 안내. 눈에 띄어야 해서 강조색을 씁니다. */
+/** 기간 안내와 음수 입력 오류. 눈에 띄어야 해서 강조색을 씁니다. */
 export const fieldHintNotice = style({
   color: vars.color.secondary500,
   ...typographyStyles.detail1,
