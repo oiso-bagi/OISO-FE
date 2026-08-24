@@ -44,7 +44,7 @@ export function SurveyPage() {
       const areConditionsSaved = saveRecommendationConditions({
         travelStyleSlugs: surveyForm.travelStyle.selectedStyleIds,
         durationDays: surveyForm.budget.tripDays,
-        dailyBudgetWon: surveyForm.budget.budget,
+        dailyBudgetWon: surveyForm.budget.dailyBudget,
       });
       const isSurveyCompleted = areConditionsSaved && completeSurvey();
 

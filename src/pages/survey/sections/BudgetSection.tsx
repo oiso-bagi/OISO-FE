@@ -24,7 +24,7 @@ export function BudgetSection({ optionsQuery, budget }: BudgetSectionProps) {
     <>
       <SurveyQuestion
         indexLabel="Q2"
-        title="하루 예산은 얼마인가요?"
+        title="여행 예산은 얼마인가요?"
         hint="입력한 예산을 항목별로 자동 배분해드려요"
       />
 
@@ -63,7 +63,7 @@ export function BudgetSection({ optionsQuery, budget }: BudgetSectionProps) {
             inputMode="numeric"
             value={budget.formattedBudget}
             onChange={(event) => budget.updateBudgetText(event.target.value)}
-            aria-label="하루 예산"
+            aria-label="여행 총 예산"
           />
           <span className={styles.currencyUnit}>원</span>
         </label>
@@ -75,29 +75,32 @@ export function BudgetSection({ optionsQuery, budget }: BudgetSectionProps) {
         </p>
       </section>
 
-      <section className={styles.presetSection}>
-        <p className={styles.presetTitle}>
-          예산이 고민된다면 아래 옵션을 선택해보세요.
-        </p>
-        <div className={styles.presetGrid}>
-          {budgetPresets.map((preset) => (
-            <button
-              key={preset.id}
-              type="button"
-              className={styles.presetButton}
-              aria-pressed={budget.budget === preset.value}
-              onClick={() => budget.selectBudget(preset.value)}
-            >
-              {preset.label}
-            </button>
-          ))}
-        </div>
-      </section>
+      {/* 일수를 고르기 전에는 프리셋이 뜻을 갖지 못해 숨깁니다. */}
+      {budget.tripDays > 0 && (
+        <section className={styles.presetSection}>
+          <p className={styles.presetTitle}>
+            예산이 고민된다면 아래 옵션을 선택해보세요. (하루 기준)
+          </p>
+          <div className={styles.presetGrid}>
+            {budgetPresets.map((preset) => (
+              <button
+                key={preset.id}
+                type="button"
+                className={styles.presetButton}
+                aria-pressed={budget.selectedPresetDaily === preset.value}
+                onClick={() => budget.selectBudget(preset.value)}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
 
       {budget.isBudgetAllocationVisible && (
         <section className={styles.allocationCard}>
           <h2 className={styles.allocationTitle}>
-            권장 예산 배분 (1일 기준: {budget.formattedBudget}원)
+            권장 예산 배분 (1일 기준: {budget.formattedDailyBudget}원)
           </h2>
 
           {budget.allocationItems.length > 0 ? (

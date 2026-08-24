@@ -20,8 +20,18 @@ type UseBudgetSelectionOptions = {
 export function useBudgetSelection({
   budgetAllocationOptions,
 }: UseBudgetSelectionOptions = {}) {
-  const [tripDays, setTripDays] = useState(initialTripDays);
+  const [tripDays, setTripDaysState] = useState(initialTripDays);
+
+  /** 화면에 보이는 큰 숫자칸의 값. 여행 전체 기간의 총 예산입니다. */
   const [budget, setBudget] = useState(initialBudget);
+
+  /**
+   * 고른 프리셋의 하루 금액. 프리셋은 하루 기준이라 총액과 따로 들고 있어야
+   * 여행 기간이 바뀔 때 다시 곱할 수 있고, 눌린 버튼도 표시할 수 있습니다.
+   */
+  const [selectedPresetDaily, setSelectedPresetDaily] = useState<number | null>(
+    null,
+  );
   const [hasNegativeBudgetInput, setHasNegativeBudgetInput] = useState(false);
   const [allocationPercents, setAllocationPercents] = useState<
     Record<string, number>
@@ -30,6 +40,20 @@ export function useBudgetSelection({
   const formattedBudget = useMemo(() => {
     return budget.toLocaleString("ko-KR");
   }, [budget]);
+
+  /**
+   * 총 예산을 여행 기간으로 나눈 하루 예산. 추천 API 가 받는 값이고, 예산 배분
+   * 카드도 이 값을 기준으로 보여 줍니다.
+   */
+  const dailyBudget = useMemo(() => {
+    if (tripDays <= 0) return 0;
+
+    return Math.round(budget / tripDays);
+  }, [budget, tripDays]);
+
+  const formattedDailyBudget = useMemo(() => {
+    return dailyBudget.toLocaleString("ko-KR");
+  }, [dailyBudget]);
 
   const allocationItems = useMemo(() => {
     const allocations = budgetAllocationOptions ?? [];
@@ -42,30 +66,42 @@ export function useBudgetSelection({
       return {
         ...allocation,
         percent,
-        amount: Math.round((budget * percent) / 100),
+        amount: Math.round((dailyBudget * percent) / 100),
       };
     });
-  }, [allocationPercents, budget, budgetAllocationOptions]);
+  }, [allocationPercents, dailyBudget, budgetAllocationOptions]);
 
-  const isBudgetAllocationVisible = budget > 0 && !hasNegativeBudgetInput;
+  const isBudgetAllocationVisible = dailyBudget > 0 && !hasNegativeBudgetInput;
 
   const updateBudgetText = (budgetText: string) => {
     setHasNegativeBudgetInput(budgetText.includes("-"));
 
     const nextBudget = Number(budgetText.replace(/\D/g, ""));
     setBudget(Number.isNaN(nextBudget) ? 0 : nextBudget);
+    setSelectedPresetDaily(null);
   };
 
   const resetBudget = () => {
-    setTripDays(initialTripDays);
+    setTripDaysState(initialTripDays);
     setBudget(initialBudget);
+    setSelectedPresetDaily(null);
     setHasNegativeBudgetInput(false);
     setAllocationPercents({});
   };
 
-  const selectBudget = (nextBudget: number) => {
-    setBudget(nextBudget);
+  const selectBudget = (dailyAmount: number) => {
+    setSelectedPresetDaily(dailyAmount);
+    setBudget(dailyAmount * tripDays);
     setHasNegativeBudgetInput(false);
+  };
+
+  /** 기간을 바꾸면 골라 둔 프리셋을 새 기간으로 다시 곱합니다. */
+  const setTripDays = (nextTripDays: number) => {
+    setTripDaysState(nextTripDays);
+
+    if (selectedPresetDaily !== null) {
+      setBudget(selectedPresetDaily * nextTripDays);
+    }
   };
 
   const updateAllocationPercent = (
@@ -136,7 +172,10 @@ export function useBudgetSelection({
   return {
     tripDays,
     budget,
+    dailyBudget,
+    selectedPresetDaily,
     formattedBudget,
+    formattedDailyBudget,
     hasNegativeBudgetInput,
     isBudgetAllocationVisible,
     allocationItems,
