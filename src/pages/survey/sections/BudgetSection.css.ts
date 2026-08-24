@@ -50,11 +50,14 @@ export const budgetInputCard = style({
   boxShadow: `0.25rem 0.25rem 0 ${vars.color.black}`,
   display: "flex",
   alignItems: "center",
-  gap: vars.space.xs,
+
+  // 입력칸 포커스 테두리가 오프셋 0.25rem + 두께 0.125rem 만큼 바깥으로
+  // 나오므로, ₩ 와 닿지 않도록 그보다 넓게 띄웁니다.
+  gap: vars.space.sm,
 });
 
 export const currencySymbol = style({
-  width: "1.5rem",
+  // 고정 폭을 두면 ₩ 글자가 상자를 넘쳐 옆 요소와 겹칩니다.
   flexShrink: 0,
   color: vars.color.black,
   fontFamily: vars.font.heading,
