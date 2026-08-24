@@ -19,6 +19,13 @@ interface RouteMapStop {
   sequence: number;
   /** 몇 일차 경유지인지. 일차별 마커/Polyline 색상 구분에 사용합니다. */
   dayNumber: number;
+
+  /**
+   * 이전 경유지에서 이 경유지까지의 실제 도로 좌표. 없으면 직선으로 잇습니다.
+   * 일차의 첫 경유지가 들고 있는 값은 전날 마지막 경유지에서 넘어오는 구간이라
+   * 쓰지 않습니다.
+   */
+  pathFromPrevious?: RouteMapPoint[];
 }
 
 type PlottableStop = RouteMapStop & RouteMapPoint;
@@ -26,13 +33,6 @@ type PlottableStop = RouteMapStop & RouteMapPoint;
 interface RouteMapProps {
   /** 선택된 코스의 경유지. 비어 있으면 부산 기본 지도만 표시합니다. */
   stops: RouteMapStop[];
-
-  /**
-   * 실제 도로/이동 경로 좌표. 백엔드 pathCoordinates 가 준비되면 전달합니다.
-   * 없으면 경유지 좌표를 직선으로 연결합니다(Phase 1 임시).
-   * 다일 코스(일차별 분리 렌더링)에서는 사용하지 않습니다.
-   */
-  path?: RouteMapPoint[];
 
   /** 지정한 일차의 경유지만 표시합니다. 생략하면 전체 일차를 함께 표시합니다. */
   selectedDay?: number;
@@ -50,7 +50,27 @@ const getDayColor = (dayNumber: number) =>
 // 경유지가 없을 때 기본 중심 (부산 시청 인근)
 const BUSAN_CENTER = { latitude: 35.1798, longitude: 129.075 };
 
-export function RouteMap({ stops, path, selectedDay }: RouteMapProps) {
+/**
+ * 한 일차의 경로선을 이루는 좌표.
+ *
+ * 경유지마다 들어 있는 도로 좌표를 순서대로 이어 붙입니다. 도로 좌표의 끝점이
+ * 경유지에서 10~20m 떨어져 있어, 선이 마커에 닿도록 경유지 좌표를 뒤에
+ * 덧붙입니다.
+ */
+const toDayLinePoints = (dayStops: PlottableStop[]): RouteMapPoint[] => {
+  const points: RouteMapPoint[] = [];
+
+  dayStops.forEach((stop, index) => {
+    // 첫 경유지의 구간은 전날에서 넘어오는 길이라 건너뜁니다.
+    if (index > 0) points.push(...(stop.pathFromPrevious ?? []));
+
+    points.push({ latitude: stop.latitude, longitude: stop.longitude });
+  });
+
+  return points;
+};
+
+export function RouteMap({ stops, selectedDay }: RouteMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<kakao.maps.Map | null>(null);
   const overlaysRef = useRef<
@@ -121,6 +141,9 @@ export function RouteMap({ stops, path, selectedDay }: RouteMapProps) {
     ).sort((a, b) => a - b);
     const isMultiDay = dayNumbers.length > 1;
 
+    // 도로 경로가 경유지 바깥으로 나갈 수 있어 범위 계산에 함께 넣습니다.
+    const linePointsForBounds: RouteMapPoint[] = [];
+
     // 일차별로 완전히 분리해서 경로선/마커를 그립니다 (서로 다른 일차는 연결하지 않음)
     dayNumbers.forEach((dayNumber) => {
       const dayStops = visibleStops
@@ -130,7 +153,10 @@ export function RouteMap({ stops, path, selectedDay }: RouteMapProps) {
       const color = isMultiDay ? getDayColor(dayNumber) : SINGLE_DAY_LINE_COLOR;
 
       // 경로선: 검정 케이싱(아래) + 일차 색상 실선(위)
-      const linePoints = (!isMultiDay && path ? path : dayStops).map(
+      const dayLinePoints = toDayLinePoints(dayStops);
+      linePointsForBounds.push(...dayLinePoints);
+
+      const linePoints = dayLinePoints.map(
         (point) => new kakao.maps.LatLng(point.latitude, point.longitude),
       );
 
@@ -168,13 +194,13 @@ export function RouteMap({ stops, path, selectedDay }: RouteMapProps) {
       });
     });
 
-    // 화면에 보이는 경유지 전체가 보이도록 범위 맞춤
+    // 화면에 보이는 경유지와 경로선 전체가 들어오도록 범위 맞춤
     const bounds = new kakao.maps.LatLngBounds();
-    visibleStops.forEach((stop) =>
-      bounds.extend(new kakao.maps.LatLng(stop.latitude, stop.longitude)),
+    [...visibleStops, ...linePointsForBounds].forEach((point) =>
+      bounds.extend(new kakao.maps.LatLng(point.latitude, point.longitude)),
     );
     map.setBounds(bounds);
-  }, [stops, path, status, selectedDay]);
+  }, [stops, status, selectedDay]);
 
   return (
     <div className={styles.wrapper}>

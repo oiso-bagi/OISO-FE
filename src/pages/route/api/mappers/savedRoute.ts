@@ -33,6 +33,7 @@ const toSavedRouteStop = (
   longitude: stop.longitude,
   transportationToNext: stop.nextTransportType,
   durationToNextMinutes: stop.nextTravelTimeMinutes,
+  pathFromPrevious: stop.pathCoordinates ?? [],
 });
 
 const toSavedRouteListItem = (
