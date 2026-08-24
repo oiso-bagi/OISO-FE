@@ -20,6 +20,15 @@ export function BudgetSection({ optionsQuery, budget }: BudgetSectionProps) {
     !optionsQuery.isError &&
     (tripDayOptions.length === 0 || budgetPresets.length === 0);
 
+  /**
+   * 기간을 고르기 전에 금액부터 넣으면 총액을 하루 예산으로 나눌 수 없어
+   * 배분도 계산되지 않습니다. 그때는 기간을 먼저 고르도록 안내합니다.
+   */
+  const isTripDaysNoticeVisible =
+    !budget.hasNegativeBudgetInput &&
+    budget.tripDays === 0 &&
+    budget.budget > 0;
+
   return (
     <>
       <SurveyQuestion
@@ -68,10 +77,16 @@ export function BudgetSection({ optionsQuery, budget }: BudgetSectionProps) {
           <span className={styles.currencyUnit}>원</span>
         </label>
 
-        <p className={styles.fieldHint}>
+        <p
+          className={
+            isTripDaysNoticeVisible ? styles.fieldHintNotice : styles.fieldHint
+          }
+        >
           {budget.hasNegativeBudgetInput
             ? "음수는 입력할 수 없어요."
-            : "숙박비를 제외한 가격을 입력해주세요!"}
+            : isTripDaysNoticeVisible
+              ? "여행 기간을 먼저 골라주세요!"
+              : "숙박비를 제외한 가격을 입력해주세요!"}
         </p>
       </section>
 
