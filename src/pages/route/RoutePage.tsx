@@ -8,15 +8,13 @@ import { toErrorMessage } from "@/shared/api/apiError";
 
 import { RouteMap } from "./components/RouteMap";
 import { RouteStopList } from "./components/RouteStopList";
+import { TransportationLabel } from "./components/TransportationLabel";
+
 import * as styles from "./components/routeLayout.css";
 import { useRecommendedRouteDetail } from "./hooks/useRecommendedRouteDetail";
 import { useRecommendedRoutes } from "./hooks/useRecommendedRoutes";
 import { useCreateSavedRoute } from "./hooks/useSavedRoutes";
-import {
-  formatDistance,
-  formatTransportation,
-  toRouteSummaryItems,
-} from "./utils/routeFormat";
+import { formatDistance, toRouteSummaryItems } from "./utils/routeFormat";
 
 export function RoutePage() {
   const [expandedRouteId, setExpandedRouteId] = useState<string | null>(null);
@@ -92,7 +90,9 @@ export function RoutePage() {
                 title={route.name}
                 placeCount={route.stopCount}
                 distance={formatDistance(route.distanceKm)}
-                transportation={formatTransportation(route.transportationTypes)}
+                transportation={
+                  <TransportationLabel types={route.transportationTypes} />
+                }
                 summaryItems={toRouteSummaryItems(route)}
                 recommendationRate={route.recommendationScore}
                 isRecommended={route.isRecommended}
