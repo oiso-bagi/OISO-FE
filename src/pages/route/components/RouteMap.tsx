@@ -4,8 +4,6 @@ import { loadKakaoMap } from "@/shared/lib/loadKakaoMap";
 
 import type { TransportationType } from "../api/types/recommendedRoute";
 import { getDayColor } from "../utils/dayColor";
-import { formatDuration, formatStopTransportation } from "../utils/routeFormat";
-import { TRANSPORTATION_ICONS } from "../utils/transportationIcon";
 
 import * as styles from "./RouteMap.css";
 
@@ -48,67 +46,10 @@ interface RouteMapProps {
 }
 
 // Polyline 은 CSS 변수를 못 받으므로 디자인 토큰 값을 직접 지정합니다.
-const SINGLE_DAY_LINE_COLOR = "#FD1187"; // secondary500 — 당일치기 코스 기존 색상
-const CASING_COLOR = "#000000";
+const CASING_COLOR = "#FFFFFF";
 
 // 경유지가 없을 때 기본 중심 (부산 시청 인근)
 const BUSAN_CENTER = { latitude: 35.1798, longitude: 129.075 };
-
-/**
- * 한 일차의 구간 목록. 구간 하나는 이전 경유지에서 다음 경유지까지입니다.
- *
- * 도로 좌표가 있으면 그 좌표를, 없으면 두 경유지를 직선으로 잇습니다.
- */
-const toDaySegments = (dayStops: PlottableStop[]) =>
-  dayStops.slice(1).map((stop, index) => {
-    const previous = dayStops[index];
-    const path = stop.pathFromPrevious ?? [];
-
-    return {
-      stop,
-      points: [
-        { latitude: previous.latitude, longitude: previous.longitude },
-        ...path,
-        { latitude: stop.latitude, longitude: stop.longitude },
-      ],
-    };
-  });
-
-/**
- * 구간의 길이 기준 한가운데 좌표.
- *
- * 배열의 가운데를 쓰면 좌표가 촘촘한 쪽으로 라벨이 쏠립니다.
- */
-const getMidpoint = (points: RouteMapPoint[]): RouteMapPoint => {
-  const lengths = points
-    .slice(1)
-    .map((point, index) =>
-      Math.hypot(
-        point.longitude - points[index].longitude,
-        point.latitude - points[index].latitude,
-      ),
-    );
-  const half = lengths.reduce((total, length) => total + length, 0) / 2;
-
-  let walked = 0;
-
-  for (let index = 0; index < lengths.length; index += 1) {
-    if (walked + lengths[index] >= half) {
-      const ratio = lengths[index] === 0 ? 0 : (half - walked) / lengths[index];
-      const from = points[index];
-      const to = points[index + 1];
-
-      return {
-        latitude: from.latitude + (to.latitude - from.latitude) * ratio,
-        longitude: from.longitude + (to.longitude - from.longitude) * ratio,
-      };
-    }
-
-    walked += lengths[index];
-  }
-
-  return points[points.length - 1];
-};
 
 /**
  * 한 일차의 경로선을 이루는 좌표.
@@ -200,14 +141,6 @@ export function RouteMap({ stops, selectedDay }: RouteMapProps) {
       new Set(visibleStops.map((stop) => stop.dayNumber)),
     ).sort((a, b) => a - b);
 
-    /**
-     * 색은 보이는 일차가 아니라 코스 전체를 기준으로 정합니다. 보이는 것만
-     * 세면 2박 3일 코스에서 1일차만 골랐을 때 당일치기 색(핑크)으로 바뀌어,
-     * 탭을 옮길 때마다 같은 일차가 다른 색으로 보입니다.
-     */
-    const isMultiDay =
-      new Set(plottableStops.map((stop) => stop.dayNumber)).size > 1;
-
     // 도로 경로가 경유지 바깥으로 나갈 수 있어 범위 계산에 함께 넣습니다.
     const linePointsForBounds: RouteMapPoint[] = [];
 
@@ -217,7 +150,7 @@ export function RouteMap({ stops, selectedDay }: RouteMapProps) {
         .filter((stop) => stop.dayNumber === dayNumber)
         .sort((a, b) => a.sequence - b.sequence);
 
-      const color = isMultiDay ? getDayColor(dayNumber) : SINGLE_DAY_LINE_COLOR;
+      const color = getDayColor(dayNumber);
 
       // 경로선: 검정 케이싱(아래) + 일차 색상 실선(위)
       const dayLinePoints = toDayLinePoints(dayStops);
@@ -227,16 +160,20 @@ export function RouteMap({ stops, selectedDay }: RouteMapProps) {
         (point) => new kakao.maps.LatLng(point.latitude, point.longitude),
       );
 
+      /**
+       * 흰 케이싱이 지도 도로와 경로선을 갈라 줍니다. 검정으로 두면 케이싱이
+       * 색 선을 거의 덮어 일차 색이 실루엣으로만 보였습니다.
+       */
       const casing = new kakao.maps.Polyline({
         path: linePoints,
-        strokeWeight: 6,
+        strokeWeight: 5,
         strokeColor: CASING_COLOR,
         strokeOpacity: 1,
         strokeStyle: "solid",
       });
       const line = new kakao.maps.Polyline({
         path: linePoints,
-        strokeWeight: 4,
+        strokeWeight: 3.5,
         strokeColor: color,
         strokeOpacity: 1,
         strokeStyle: "solid",
@@ -245,45 +182,11 @@ export function RouteMap({ stops, selectedDay }: RouteMapProps) {
       line.setMap(map);
       overlaysRef.current.push(casing, line);
 
-      // 구간 정보를 경로선 한가운데에 얹습니다. 예: "도보 8분"
-      toDaySegments(dayStops).forEach((segment) => {
-        const transportation = segment.stop.transportationFromPrevious;
-        if (!transportation) return;
-
-        const minutes = segment.stop.durationFromPreviousMinutes;
-        const label =
-          minutes === null || minutes === undefined
-            ? formatStopTransportation(transportation)
-            : `${formatStopTransportation(transportation)} ${formatDuration(minutes)}`;
-
-        const icon = TRANSPORTATION_ICONS[transportation];
-        const iconTag = icon
-          ? `<img class="${styles.pathLabelIcon}" src="${icon}" alt="" />`
-          : "";
-
-        const midpoint = getMidpoint(segment.points);
-        const overlay = new kakao.maps.CustomOverlay({
-          position: new kakao.maps.LatLng(
-            midpoint.latitude,
-            midpoint.longitude,
-          ),
-          content: `<div class="${styles.pathLabel}">${iconTag}${label}</div>`,
-          xAnchor: 0.5,
-          yAnchor: 0.5,
-          // 마커(3) 아래, 경로선 위에 둡니다.
-          zIndex: 2,
-        });
-        overlay.setMap(map);
-        overlaysRef.current.push(overlay);
-      });
-
       // 경유지 순번 마커 — 해당 일차 안에서의 방문 순서로 표시
       dayStops.forEach((stop, index) => {
         const overlay = new kakao.maps.CustomOverlay({
           position: new kakao.maps.LatLng(stop.latitude, stop.longitude),
-          content: isMultiDay
-            ? `<div class="${styles.marker}" style="background-color:${color};color:#fff">${index + 1}</div>`
-            : `<div class="${styles.marker}">${index + 1}</div>`,
+          content: `<div class="${styles.marker}" style="background-color:${color}">${index + 1}</div>`,
           xAnchor: 0.5,
           yAnchor: 0.5,
           zIndex: 3,
