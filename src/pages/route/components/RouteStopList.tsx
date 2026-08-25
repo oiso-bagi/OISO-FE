@@ -1,3 +1,4 @@
+import CheckIcon from "@/shared/assets/svg/check.svg?react";
 import SaveIcon from "@/shared/assets/svg/save.svg?react";
 
 import type { RecommendedRouteStop } from "../api/types/recommendedRoute";
@@ -12,6 +13,8 @@ interface RouteStopListProps {
   onSave?: () => void;
   /** 저장 진행 중이면 버튼을 비활성화해 중복 저장을 막습니다. */
   isSaving?: boolean;
+  /** 이미 저장한 코스면 버튼을 "저장됨" 상태로 굳힙니다. */
+  isSaved?: boolean;
 }
 
 /** 다일 코스일 때만 일차별로 묶습니다. 단일 일차는 기존처럼 평면 리스트로 표시합니다. */
@@ -27,7 +30,12 @@ const groupStopsByDay = (stops: RecommendedRouteStop[]) => {
     }));
 };
 
-export function RouteStopList({ stops, onSave, isSaving }: RouteStopListProps) {
+export function RouteStopList({
+  stops,
+  onSave,
+  isSaving,
+  isSaved,
+}: RouteStopListProps) {
   const dayGroups = groupStopsByDay(stops);
 
   return (
@@ -108,11 +116,19 @@ export function RouteStopList({ stops, onSave, isSaving }: RouteStopListProps) {
         <button
           type="button"
           className={styles.saveButton}
+          data-saved={isSaved}
           onClick={onSave}
-          disabled={isSaving}
+          disabled={isSaving || isSaved}
         >
-          <SaveIcon className={styles.saveIcon} aria-hidden />
-          저장
+          {isSaved ? (
+            <CheckIcon className={styles.saveIcon} aria-hidden />
+          ) : (
+            <SaveIcon
+              className={`${styles.saveIcon} ${styles.saveIconSolid}`}
+              aria-hidden
+            />
+          )}
+          {isSaved ? "저장됨" : "저장"}
         </button>
       )}
     </section>

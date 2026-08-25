@@ -173,6 +173,14 @@ export const stopConnection = style([
 ]);
 
 // 저장 버튼
+/**
+ * 저장 버튼.
+ *
+ * 이전에는 미저장 상태가 분홍 채움이라 이미 저장한 것처럼 보였습니다. 누를 수
+ * 있는 상태를 라임 채움 + 튀어나온 그림자로 두고, 저장된 상태는 검정 채움 +
+ * 눌린 모양으로 뒤집어 한눈에 갈리게 합니다. 테두리·그림자 굵기도 다이얼로그
+ * 버튼과 맞췄습니다.
+ */
 export const saveButton = style([
   typo.body7,
   {
@@ -180,25 +188,41 @@ export const saveButton = style([
     alignSelf: "center",
     alignItems: "center",
     justifyContent: "center",
-    margin: "4px 0 0 0",
-    gap: "4px",
+    gap: "5px",
 
-    width: "63px",
-    height: "30px",
+    minWidth: "84px",
+    height: "34px",
 
-    padding: 0,
+    margin: "8px 0 0 0",
+    padding: "0 12px",
 
-    color: vars.color.white,
-    backgroundColor: vars.color.secondary500,
+    color: vars.color.ink,
+    backgroundColor: vars.color.primary500,
 
-    border: `1.5px solid ${vars.color.black}`,
-    boxShadow: `1px 1px 0 0 ${vars.color.black}`,
+    border: `2px solid ${vars.color.black}`,
+    boxShadow: `2px 2px 0 0 ${vars.color.black}`,
 
     cursor: "pointer",
     boxSizing: "border-box",
 
     selectors: {
-      "&:disabled": {
+      // 눌리는 느낌. 그림자만큼 밀어 넣습니다.
+      "&:active:not(:disabled)": {
+        transform: "translate(2px, 2px)",
+        boxShadow: "none",
+      },
+
+      // 저장 완료: 색이 반전되고 그림자가 사라져 눌린 상태로 남습니다.
+      '&[data-saved="true"]': {
+        color: vars.color.white,
+        backgroundColor: vars.color.black,
+        boxShadow: "none",
+        transform: "translate(2px, 2px)",
+        cursor: "default",
+      },
+
+      // 저장 요청 중에만 흐려집니다. 저장 완료는 흐려지면 안 됩니다.
+      '&:disabled:not([data-saved="true"])': {
         opacity: 0.5,
         cursor: "default",
       },
@@ -209,11 +233,21 @@ export const saveButton = style([
 export const saveIcon = style({
   display: "block",
 
-  width: "14px",
-  height: "14px",
+  width: "16px",
+  height: "16px",
 });
 
-// save.svg 는 stroke="black" 이 하드코딩되어 있어, 버튼 글자색(흰색)을 따라가도록 덮어씁니다.
+/**
+ * 두 아이콘 모두 `stroke="black"` 이 하드코딩돼 있어 글자색을 따라가게
+ * 덮어씁니다.
+ */
 globalStyle(`${saveIcon} path`, {
   stroke: "currentColor",
+});
+
+/** 북마크는 이 크기에서 선만으로는 가늘어 보여 면까지 채웁니다. */
+export const saveIconSolid = style({});
+
+globalStyle(`${saveIconSolid} path`, {
+  fill: "currentColor",
 });

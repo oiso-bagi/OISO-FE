@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { RouteBox } from "@/shared/components/RouteBox";
-import { ConfirmDialog } from "@/shared/components/ConfirmDialog/ConfirmDialog";
 import { Header } from "@/shared/components/header/Header";
 import { RouteListSkeleton } from "@/shared/components/Skeleton/RouteCardSkeleton";
 import { useToast } from "@/shared/components/Toast/toastContext";
@@ -50,9 +49,9 @@ export function RoutePage() {
   const showToast = useToast();
 
   /**
-   * 같은 코스를 두 번 저장하기 전에 한 번 묻습니다.
+   * 이미 저장한 코스인지 판단합니다.
    *
-   * 저장 목록의 id 는 추천 루트 id 와 같아서 목록만으로 중복을 알 수 있습니다.
+   * 저장 목록의 id 는 추천 루트 id 와 같아서 목록만으로 알 수 있습니다.
    * 목록을 아직 못 받았을 때를 대비해 서버가 주는 `isSaved` 도 함께 봅니다.
    */
   const { data: savedRouteList } = useSavedRoutes();
@@ -61,9 +60,19 @@ export function RoutePage() {
     [savedRouteList],
   );
 
-  const [duplicateTargetId, setDuplicateTargetId] = useState<string | null>(
-    null,
+  /**
+   * 방금 저장한 id. 서버 목록만 보면 재조회가 끝날 때까지 버튼이 "저장" 으로
+   * 남아, 저장이 안 된 것처럼 보입니다. 요청을 보내는 순간 먼저 반영하고
+   * 실패하면 되돌립니다.
+   */
+  const [justSavedIds, setJustSavedIds] = useState<ReadonlySet<string>>(
+    new Set(),
   );
+
+  const isRouteSaved = (routeId: string) =>
+    justSavedIds.has(routeId) ||
+    savedRouteIds.has(routeId) ||
+    (routeDetail?.id === routeId && routeDetail.isSaved);
 
   /**
    * 지도가 화면의 45% 를 차지하는데 들어오자마자 비어 있어, 첫 추천 코스를
@@ -83,37 +92,34 @@ export function RoutePage() {
     setSelectedDay("all");
   };
 
-  const saveRoute = (routeId: string) => {
-    if (createSavedRoute.isPending) return;
+  /**
+   * 서버는 같은 루트를 두 번 저장해도 목록에 하나만 남깁니다(저장 목록 응답의
+   * 식별자가 routeId 하나뿐이라 중복을 표현할 수 없습니다). 그래서 이미 저장한
+   * 코스는 버튼을 "저장됨" 으로 굳히고 요청 자체를 보내지 않습니다.
+   */
+  const handleSave = (routeId: string) => {
+    if (createSavedRoute.isPending || isRouteSaved(routeId)) return;
+
+    setJustSavedIds((previous) => new Set(previous).add(routeId));
 
     createSavedRoute.mutate(routeId, {
       onSuccess: () => showToast({ message: "저장되었습니다" }),
-      onError: (saveError) =>
+      onError: (saveError) => {
+        // 실패했으면 다시 누를 수 있도록 되돌립니다.
+        setJustSavedIds((previous) => {
+          const next = new Set(previous);
+          next.delete(routeId);
+          return next;
+        });
+
         showToast({
           message: toErrorMessage(
             saveError,
             "저장하지 못했어요. 잠시 후 다시 시도해 주세요.",
           ),
-        }),
+        });
+      },
     });
-  };
-
-  const handleSave = (routeId: string) => {
-    const isAlreadySaved =
-      savedRouteIds.has(routeId) ||
-      (routeDetail?.id === routeId && routeDetail.isSaved);
-
-    if (isAlreadySaved) {
-      setDuplicateTargetId(routeId);
-      return;
-    }
-
-    saveRoute(routeId);
-  };
-
-  const handleConfirmDuplicateSave = () => {
-    if (duplicateTargetId !== null) saveRoute(duplicateTargetId);
-    setDuplicateTargetId(null);
   };
 
   // 펼쳐진 코스의 경유지를 상단 지도에 표시 (없으면 부산 기본 지도)
@@ -215,8 +221,8 @@ export function RoutePage() {
                     {routeDetail?.id === route.id && (
                       <RouteStopList
                         stops={visibleStops}
-                        // 이미 저장한 코스에서도 눌러야 확인 모달이 뜹니다.
                         onSave={() => handleSave(route.id)}
+                        isSaved={isRouteSaved(route.id)}
                         isSaving={createSavedRoute.isPending}
                       />
                     )}
@@ -227,16 +233,6 @@ export function RoutePage() {
           </div>
         )}
       </div>
-
-      {/* 어느 코스인지는 방금 누른 카드라 분명해서 이름은 넣지 않습니다. */}
-      <ConfirmDialog
-        isOpen={duplicateTargetId !== null}
-        title="이미 저장한 코스예요"
-        description="저장 목록에 똑같은 코스가 하나 더 생겨요."
-        confirmLabel="저장"
-        onCancel={() => setDuplicateTargetId(null)}
-        onConfirm={handleConfirmDuplicateSave}
-      />
     </div>
   );
 }
