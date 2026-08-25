@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { RouteBox } from "@/shared/components/RouteBox";
+import { ConfirmDialog } from "@/shared/components/ConfirmDialog/ConfirmDialog";
 import { Header } from "@/shared/components/header/Header";
 import { RouteListSkeleton } from "@/shared/components/Skeleton/RouteCardSkeleton";
 import { useToast } from "@/shared/components/Toast/toastContext";
@@ -16,7 +17,7 @@ import { TransportationLabel } from "./components/TransportationLabel";
 import { useRecommendedRouteDetail } from "./hooks/useRecommendedRouteDetail";
 import { useRecommendedRoutes } from "./hooks/useRecommendedRoutes";
 import { useMapResize } from "./hooks/useMapResize";
-import { useCreateSavedRoute } from "./hooks/useSavedRoutes";
+import { useCreateSavedRoute, useSavedRoutes } from "./hooks/useSavedRoutes";
 import { formatDistance, toRouteSummaryItems } from "./utils/routeFormat";
 
 import * as styles from "./components/routeLayout.css";
@@ -49,6 +50,22 @@ export function RoutePage() {
   const showToast = useToast();
 
   /**
+   * 같은 코스를 두 번 저장하기 전에 한 번 묻습니다.
+   *
+   * 저장 목록의 id 는 추천 루트 id 와 같아서 목록만으로 중복을 알 수 있습니다.
+   * 목록을 아직 못 받았을 때를 대비해 서버가 주는 `isSaved` 도 함께 봅니다.
+   */
+  const { data: savedRouteList } = useSavedRoutes();
+  const savedRouteIds = useMemo(
+    () => new Set((savedRouteList?.routes ?? []).map((route) => route.id)),
+    [savedRouteList],
+  );
+
+  const [duplicateTargetId, setDuplicateTargetId] = useState<string | null>(
+    null,
+  );
+
+  /**
    * 지도가 화면의 45% 를 차지하는데 들어오자마자 비어 있어, 첫 추천 코스를
    * 펼쳐 둡니다.
    */
@@ -66,7 +83,7 @@ export function RoutePage() {
     setSelectedDay("all");
   };
 
-  const handleSave = (routeId: string) => {
+  const saveRoute = (routeId: string) => {
     if (createSavedRoute.isPending) return;
 
     createSavedRoute.mutate(routeId, {
@@ -79,6 +96,24 @@ export function RoutePage() {
           ),
         }),
     });
+  };
+
+  const handleSave = (routeId: string) => {
+    const isAlreadySaved =
+      savedRouteIds.has(routeId) ||
+      (routeDetail?.id === routeId && routeDetail.isSaved);
+
+    if (isAlreadySaved) {
+      setDuplicateTargetId(routeId);
+      return;
+    }
+
+    saveRoute(routeId);
+  };
+
+  const handleConfirmDuplicateSave = () => {
+    if (duplicateTargetId !== null) saveRoute(duplicateTargetId);
+    setDuplicateTargetId(null);
   };
 
   // 펼쳐진 코스의 경유지를 상단 지도에 표시 (없으면 부산 기본 지도)
@@ -180,11 +215,8 @@ export function RoutePage() {
                     {routeDetail?.id === route.id && (
                       <RouteStopList
                         stops={visibleStops}
-                        onSave={
-                          routeDetail.isSaved
-                            ? undefined
-                            : () => handleSave(route.id)
-                        }
+                        // 이미 저장한 코스에서도 눌러야 확인 모달이 뜹니다.
+                        onSave={() => handleSave(route.id)}
                         isSaving={createSavedRoute.isPending}
                       />
                     )}
@@ -195,6 +227,16 @@ export function RoutePage() {
           </div>
         )}
       </div>
+
+      {/* 어느 코스인지는 방금 누른 카드라 분명해서 이름은 넣지 않습니다. */}
+      <ConfirmDialog
+        isOpen={duplicateTargetId !== null}
+        title="이미 저장한 코스예요"
+        description="저장 목록에 똑같은 코스가 하나 더 생겨요."
+        confirmLabel="저장"
+        onCancel={() => setDuplicateTargetId(null)}
+        onConfirm={handleConfirmDuplicateSave}
+      />
     </div>
   );
 }

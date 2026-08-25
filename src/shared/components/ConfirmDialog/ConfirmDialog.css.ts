@@ -49,10 +49,16 @@ export const dialog = style({
   animation: `${popIn} 140ms ease`,
 });
 
+/**
+ * 한글이 단어 중간에서 끊기지 않게 합니다. 띄어쓰기 없는 긴 루트 이름이
+ * 상자를 밀고 나가지 않도록 `overflow-wrap` 을 함께 둡니다.
+ */
 export const title = style([
   typo.body1,
   {
     color: vars.color.black,
+    wordBreak: "keep-all",
+    overflowWrap: "anywhere",
   },
 ]);
 
@@ -60,6 +66,8 @@ export const description = style([
   typo.body6,
   {
     color: vars.color.neutral500,
+    wordBreak: "keep-all",
+    overflowWrap: "anywhere",
   },
 ]);
 
