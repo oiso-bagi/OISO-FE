@@ -7,19 +7,18 @@ import { Header } from "@/shared/components/header/Header";
 import { RouteListSkeleton } from "@/shared/components/Skeleton/RouteCardSkeleton";
 import { useToast } from "@/shared/components/Toast/toastContext";
 import { toErrorMessage } from "@/shared/api/apiError";
-import { pageContent } from "@/shared/styles/layout.css";
 
+import { SavedRouteSummary } from "./components/SavedRouteSummary";
 import { TransportationLabel } from "./components/TransportationLabel";
-
-import * as styles from "./components/routeLayout.css";
-
 import {
   useDeleteSavedRoute,
   useSavedRoutes,
   useUpdateSavedRouteCompleted,
 } from "./hooks/useSavedRoutes";
 import { formatDistance, toRouteSummaryItems } from "./utils/routeFormat";
-import { SavedRouteSummary } from "./components/SavedRouteSummary";
+
+import { pageContent } from "@/shared/styles/layout.css";
+import * as styles from "./components/routeLayout.css";
 
 export function SavedRoutePage() {
   const navigate = useNavigate();

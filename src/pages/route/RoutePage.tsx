@@ -10,11 +10,12 @@ import { RouteMap } from "./components/RouteMap";
 import { RouteStopList } from "./components/RouteStopList";
 import { TransportationLabel } from "./components/TransportationLabel";
 
-import * as styles from "./components/routeLayout.css";
 import { useRecommendedRouteDetail } from "./hooks/useRecommendedRouteDetail";
 import { useRecommendedRoutes } from "./hooks/useRecommendedRoutes";
 import { useCreateSavedRoute } from "./hooks/useSavedRoutes";
 import { formatDistance, toRouteSummaryItems } from "./utils/routeFormat";
+
+import * as styles from "./components/routeLayout.css";
 
 export function RoutePage() {
   const [expandedRouteId, setExpandedRouteId] = useState<string | null>(null);
