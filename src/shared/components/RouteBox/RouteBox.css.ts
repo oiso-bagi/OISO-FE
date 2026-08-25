@@ -113,6 +113,13 @@ export const titleRow = style({
     // 배지 아래로 들어가지 않게 합니다.
     '&[data-recommended="true"]': {
       paddingRight: "49px",
+
+      /**
+       * 배지는 `top: -12px` + `marginTop: 12px` 라 이 줄의 0~41px 를 차지합니다.
+       * 제목이 한 줄이면 줄 높이가 28px 뿐이라 배지가 13px 삐져나와 아래
+       * 정보 줄(추천도)을 덮었습니다. 최소 높이를 배지에 맞춥니다.
+       */
+      minHeight: "41px",
     },
   },
 });
