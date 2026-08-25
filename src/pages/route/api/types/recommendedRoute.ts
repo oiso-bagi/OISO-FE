@@ -52,8 +52,15 @@ export interface RecommendedRouteStop {
   latitude: number | null;
   longitude: number | null;
 
-  transportationToNext: TransportationType | null;
-  durationToNextMinutes: number | null;
+  /**
+   * 이전 경유지에서 이 경유지까지의 이동수단과 소요시간.
+   *
+   * 서버 필드명은 `nextTransportType` / `nextTravelTimeMinutes` 지만 실제 값은
+   * `pathCoordinates` 와 같은 방향입니다. 첫 경유지는 출발점이라 시간이 항상 0
+   * 이고, 마지막 경유지에도 값이 들어 있습니다.
+   */
+  transportationFromPrevious: TransportationType | null;
+  durationFromPreviousMinutes: number | null;
 
   /**
    * 이전 경유지에서 이 경유지까지의 실제 도로 좌표. 지도 경로선에 씁니다.

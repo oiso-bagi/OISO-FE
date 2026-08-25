@@ -53,41 +53,53 @@ export function RouteStopList({ stops, onSave, isSaving }: RouteStopListProps) {
           )}
 
           <ol className={styles.stopList}>
-            {group.stops.map((stop, index) => (
-              <li key={stop.sequence} className={styles.stopListItem}>
-                <div className={styles.stopBox}>
-                  <span className={styles.stopOrder}>{stop.sequence}</span>
+            {group.stops.map((stop, index) => {
+              /**
+               * 구간 정보(이동수단·소요시간)는 도착하는 경유지가 들고 있습니다.
+               * 그래서 이 경유지와 다음 경유지 사이 연결선에는 다음 경유지의
+               * 값을 그립니다.
+               */
+              const nextStop = group.stops[index + 1];
 
-                  <div className={styles.stopContent}>
-                    <strong className={styles.stopName}>
-                      {stop.placeName}
-                    </strong>
+              return (
+                <li key={stop.sequence} className={styles.stopListItem}>
+                  <div className={styles.stopBox}>
+                    <span className={styles.stopOrder}>{stop.sequence}</span>
 
-                    <div className={styles.stopTagList}>
-                      {stop.category && (
-                        <span className={styles.stopTag}>{stop.category}</span>
-                      )}
+                    <div className={styles.stopContent}>
+                      <strong className={styles.stopName}>
+                        {stop.placeName}
+                      </strong>
 
-                      <span className={styles.stopTag}>
-                        {stop.operatingHours ?? "운영시간 정보 없음"}
-                      </span>
+                      <div className={styles.stopTagList}>
+                        {stop.category && (
+                          <span className={styles.stopTag}>
+                            {stop.category}
+                          </span>
+                        )}
+
+                        <span className={styles.stopTag}>
+                          {stop.operatingHours ?? "운영시간 정보 없음"}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {index < group.stops.length - 1 &&
-                  stop.transportationToNext && (
+                  {nextStop?.transportationFromPrevious && (
                     <div className={styles.stopConnection}>
                       <span aria-hidden>↓</span>
 
                       <span>
-                        {formatStopTransportation(stop.transportationToNext)}{" "}
-                        {formatDuration(stop.durationToNextMinutes)}
+                        {formatStopTransportation(
+                          nextStop.transportationFromPrevious,
+                        )}{" "}
+                        {formatDuration(nextStop.durationFromPreviousMinutes)}
                       </span>
                     </div>
                   )}
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ol>
         </div>
       ))}
