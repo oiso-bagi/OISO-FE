@@ -52,8 +52,32 @@ export interface RecommendedRouteStop {
   latitude: number | null;
   longitude: number | null;
 
-  transportationToNext: TransportationType | null;
-  durationToNextMinutes: number | null;
+  /**
+   * 이전 경유지에서 이 경유지까지의 이동수단과 소요시간.
+   *
+   * 서버 필드명은 `nextTransportType` / `nextTravelTimeMinutes` 지만 실제 값은
+   * `pathCoordinates` 와 같은 방향입니다. 첫 경유지는 출발점이라 시간이 항상 0
+   * 이고, 마지막 경유지에도 값이 들어 있습니다.
+   */
+  transportationFromPrevious: TransportationType | null;
+  durationFromPreviousMinutes: number | null;
+
+  /**
+   * 이전 경유지에서 이 경유지까지의 실제 도로 좌표. 지도 경로선에 씁니다.
+   *
+   * 스웨거 설명은 "이 경유지부터 다음 경유지까지"라고 되어 있으나 실제 응답은
+   * 반대입니다(첫 경유지는 항상 빈 배열, 마지막 경유지는 값이 있음). 헷갈리지
+   * 않도록 이름에 방향을 박아 둡니다.
+   *
+   * 목 데이터에는 없어 optional 이며, 없으면 지도가 직선으로 잇습니다.
+   */
+  pathFromPrevious?: RoutePathPoint[];
+}
+
+/** 도로 굴곡을 이루는 좌표 하나 */
+export interface RoutePathPoint {
+  latitude: number;
+  longitude: number;
 }
 
 export interface RecommendedRouteDetail extends RecommendedRouteListItem {

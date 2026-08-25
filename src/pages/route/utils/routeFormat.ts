@@ -42,10 +42,6 @@ const transportationMap: Record<TransportationType, string> = {
   BIKING: "자전거",
 };
 
-/** 루트 카드 상단 교통수단 표기. 예: "도보 + 지하철" */
-export const formatTransportation = (values: TransportationType[]): string =>
-  values.map((value) => transportationMap[value]).join(" + ");
-
 /** 경유지 사이 이동 정보 표기. 예: "↓ 지하철 12분" */
 export const formatStopTransportation = (value: TransportationType): string =>
   transportationMap[value];

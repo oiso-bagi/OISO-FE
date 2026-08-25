@@ -15,8 +15,14 @@ export const page = style({
 export const mapArea = style({
   flex: "0 0 auto",
 
-  // 시안보다 크게 — 지도가 화면의 약 45%
-  height: "45vh",
+  /**
+   * 시안보다 크게 — 지도가 화면의 약 45%.
+   *
+   * 부모(`page`)가 `dvh` 기준인데 여기만 `vh` 였습니다. 모바일에서 주소창이
+   * 보이면 `vh` 는 주소창이 숨은 큰 뷰포트를 쓰므로 지도가 부모보다 큰 비율을
+   * 차지해 아래 목록이 눌립니다. 단위를 부모와 맞춥니다.
+   */
+  height: "45dvh",
   minHeight: "260px",
 
   width: "100%",

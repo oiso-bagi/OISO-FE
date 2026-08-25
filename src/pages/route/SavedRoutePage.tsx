@@ -7,21 +7,18 @@ import { Header } from "@/shared/components/header/Header";
 import { RouteListSkeleton } from "@/shared/components/Skeleton/RouteCardSkeleton";
 import { useToast } from "@/shared/components/Toast/toastContext";
 import { toErrorMessage } from "@/shared/api/apiError";
-import { pageContent } from "@/shared/styles/layout.css";
 
-import * as styles from "./components/routeLayout.css";
-
+import { SavedRouteSummary } from "./components/SavedRouteSummary";
+import { TransportationLabel } from "./components/TransportationLabel";
 import {
   useDeleteSavedRoute,
   useSavedRoutes,
   useUpdateSavedRouteCompleted,
 } from "./hooks/useSavedRoutes";
-import {
-  formatDistance,
-  formatTransportation,
-  toRouteSummaryItems,
-} from "./utils/routeFormat";
-import { SavedRouteSummary } from "./components/SavedRouteSummary";
+import { formatDistance, toRouteSummaryItems } from "./utils/routeFormat";
+
+import { pageContent } from "@/shared/styles/layout.css";
+import * as styles from "./components/routeLayout.css";
 
 export function SavedRoutePage() {
   const navigate = useNavigate();
@@ -130,7 +127,9 @@ export function SavedRoutePage() {
                 title={route.name}
                 placeCount={route.stopCount}
                 distance={formatDistance(route.distanceKm)}
-                transportation={formatTransportation(route.transportationTypes)}
+                transportation={
+                  <TransportationLabel types={route.transportationTypes} />
+                }
                 summaryItems={toRouteSummaryItems(route, "editable")}
                 isCompleted={route.isCompleted}
                 isDisabled={updateCompleted.isPending || deleteRoute.isPending}

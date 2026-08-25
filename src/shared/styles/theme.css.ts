@@ -18,6 +18,17 @@ export const vars = createGlobalTheme(":root", {
     neutral900: "#2E2836",
     neutral500: "#646668",
     neutral100: "#DCDDDE",
+
+    /**
+     * 홈 전단지 팔레트.
+     *
+     * 인쇄물 톤이라 순검정·순흰색 대신 따뜻한 쪽을 씁니다. 라임(primary500)과
+     * 주홍(red500)이 보색이라 세게 부딪히는 자리를 크림·버터가 받아 줍니다.
+     */
+    red500: "#FF4B1F",
+    yellow500: "#FFD84A",
+    ink: "#191512",
+    cream: "#FFFCF2",
   },
 
   font: {

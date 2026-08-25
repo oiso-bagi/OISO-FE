@@ -100,7 +100,7 @@ export const titleRow = style({
   position: "relative",
 
   display: "flex",
-  alignItems: "center",
+  alignItems: "flex-start",
   justifyContent: "space-between",
   gap: "8px",
 
@@ -113,6 +113,13 @@ export const titleRow = style({
     // 배지 아래로 들어가지 않게 합니다.
     '&[data-recommended="true"]': {
       paddingRight: "49px",
+
+      /**
+       * 배지는 `top: -12px` + `marginTop: 12px` 라 이 줄의 0~41px 를 차지합니다.
+       * 제목이 한 줄이면 줄 높이가 28px 뿐이라 배지가 13px 삐져나와 아래
+       * 정보 줄(추천도)을 덮었습니다. 최소 높이를 배지에 맞춥니다.
+       */
+      minHeight: "41px",
     },
   },
 });
@@ -123,9 +130,20 @@ export const title = style([
     minWidth: 0,
     margin: 0,
 
+    /**
+     * 서버가 주는 코스 이름이 길어(중앙값 28자, 최대 49자) 한 줄로는 뒤쪽이
+     * 잘립니다. 구분되는 부분이 뒤에 있어 잘리면 서로 다른 루트가 같은 이름으로
+     * 보입니다. 두 줄까지 허용하고, 그래도 넘치면 말줄임합니다.
+     */
+    display: "-webkit-box",
+    WebkitBoxOrient: "vertical",
+    WebkitLineClamp: 2,
     overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
+
+    // 낱말이 중간에서 갈리지 않게 어절 단위로 끊고, 한 어절이 줄보다 길면
+    // 그때만 안에서 끊습니다.
+    wordBreak: "keep-all",
+    overflowWrap: "anywhere",
 
     color: vars.color.black,
   },
@@ -136,7 +154,9 @@ export const routeInfo = style([
   {
     display: "flex",
     alignItems: "center",
+    flexWrap: "wrap",
     gap: "6px",
+    rowGap: "2px",
 
     minHeight: "20px",
 
@@ -263,8 +283,9 @@ export const locationIcon = style({
 export const recommendationRate = style({
   flexShrink: 0,
 
-  // 고정 폭을 두면 "추천도 100%"(57px)가 박스를 넘쳐 추천 배지에 닿습니다.
-  // 내용에 맞춰 늘어나게 두고, 배지와의 간격은 titleRow 의 paddingRight 가 보장합니다.
+  // 정보 줄 오른쪽 끝에 붙입니다.
+  marginLeft: "auto",
+
   height: "21px",
 
   color: vars.color.black,
