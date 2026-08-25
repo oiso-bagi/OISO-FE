@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 
 import { loadKakaoMap } from "@/shared/lib/loadKakaoMap";
 
+import { getDayColor } from "../utils/dayColor";
+
 import * as styles from "./RouteMap.css";
 
 interface RouteMapPoint {
@@ -41,11 +43,6 @@ interface RouteMapProps {
 // Polyline 은 CSS 변수를 못 받으므로 디자인 토큰 값을 직접 지정합니다.
 const SINGLE_DAY_LINE_COLOR = "#FD1187"; // secondary500 — 당일치기 코스 기존 색상
 const CASING_COLOR = "#000000";
-
-// 최대 5일차까지 서로 구분되는 마커/Polyline 색상
-const DAY_COLORS = ["#1E88E5", "#FB8C00", "#8E24AA", "#43A047", "#00ACC1"];
-const getDayColor = (dayNumber: number) =>
-  DAY_COLORS[(dayNumber - 1) % DAY_COLORS.length];
 
 // 경유지가 없을 때 기본 중심 (부산 시청 인근)
 const BUSAN_CENTER = { latitude: 35.1798, longitude: 129.075 };
@@ -139,7 +136,14 @@ export function RouteMap({ stops, selectedDay }: RouteMapProps) {
     const dayNumbers = Array.from(
       new Set(visibleStops.map((stop) => stop.dayNumber)),
     ).sort((a, b) => a - b);
-    const isMultiDay = dayNumbers.length > 1;
+
+    /**
+     * 색은 보이는 일차가 아니라 코스 전체를 기준으로 정합니다. 보이는 것만
+     * 세면 2박 3일 코스에서 1일차만 골랐을 때 당일치기 색(핑크)으로 바뀌어,
+     * 탭을 옮길 때마다 같은 일차가 다른 색으로 보입니다.
+     */
+    const isMultiDay =
+      new Set(plottableStops.map((stop) => stop.dayNumber)).size > 1;
 
     // 도로 경로가 경유지 바깥으로 나갈 수 있어 범위 계산에 함께 넣습니다.
     const linePointsForBounds: RouteMapPoint[] = [];

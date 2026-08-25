@@ -14,6 +14,7 @@ import { RouteMap } from "./components/RouteMap";
 import { RouteStopList } from "./components/RouteStopList";
 import { useRecommendedRouteDetail } from "./hooks/useRecommendedRouteDetail";
 import { useSavedRouteDetail } from "./hooks/useSavedRouteDetail";
+import { DAY_COLOR_FOREGROUND, getDayColor } from "./utils/dayColor";
 
 import * as styles from "./MapDetailPage.css";
 
@@ -105,6 +106,7 @@ export function MapDetailPage() {
             전체
           </button>
 
+          {/* 활성 탭은 지도 마커·경로선과 같은 색을 써 "1일차 = 파랑" 을 맞춥니다. */}
           {dayNumbers.map((day) => (
             <button
               key={day}
@@ -113,6 +115,14 @@ export function MapDetailPage() {
               aria-selected={selectedDay === day}
               className={styles.dayTab}
               data-active={selectedDay === day}
+              style={
+                selectedDay === day
+                  ? {
+                      backgroundColor: getDayColor(day),
+                      color: DAY_COLOR_FOREGROUND,
+                    }
+                  : undefined
+              }
               onClick={() => setSelectedDay(day)}
             >
               {day}일차
