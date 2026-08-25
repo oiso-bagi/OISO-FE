@@ -14,10 +14,21 @@ export const formatPrice = (value: number | null): string => {
   return `${value.toLocaleString("ko-KR")}원`;
 };
 
+/**
+ * 소요 시간 표기. 예: 45 → "45분", 180 → "3시간", 1311 → "21시간 51분"
+ *
+ * 루트 카드의 "540분" 처럼 큰 값은 한눈에 가늠이 안 돼 시간 단위로 끊습니다.
+ */
 export const formatDuration = (value: number | null): string => {
   if (value === null) return "-";
 
-  return `${value}분`;
+  const hours = Math.floor(value / 60);
+  const minutes = value % 60;
+
+  if (hours === 0) return `${minutes}분`;
+  if (minutes === 0) return `${hours}시간`;
+
+  return `${hours}시간 ${minutes}분`;
 };
 
 export const formatDistance = (value: number): string => `${value}km`;
