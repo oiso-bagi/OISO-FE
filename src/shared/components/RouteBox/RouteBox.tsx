@@ -123,7 +123,8 @@ export function RouteBox({
 
         {hasRecommendationRate && (
           <span className={styles.recommendationRate}>
-            추천도 {recommendationRate}%
+            {/* 서버 점수는 88.23189391242434 처럼 내려와 소수 둘째 자리로 줄입니다. */}
+            추천도 {recommendationRate.toFixed(2)}%
           </span>
         )}
       </div>
