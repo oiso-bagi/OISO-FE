@@ -77,14 +77,18 @@ export function BudgetSection({ optionsQuery, budget }: BudgetSectionProps) {
             value={budget.formattedBudget}
             onChange={(event) => budget.updateBudgetText(event.target.value)}
             aria-label="여행 총 예산"
+            aria-describedby="budget-hint"
           />
           <span className={styles.currencyUnit}>원</span>
         </label>
 
+        {/* 기간 미선택·음수 입력에 따라 문구가 바뀌므로 화면 낭독기에 알립니다. */}
         <p
+          id="budget-hint"
           className={
             isHintHighlighted ? styles.fieldHintNotice : styles.fieldHint
           }
+          aria-live="polite"
         >
           {budget.hasNegativeBudgetInput
             ? "음수는 입력할 수 없어요."

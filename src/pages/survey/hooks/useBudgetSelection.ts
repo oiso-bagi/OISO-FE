@@ -58,16 +58,37 @@ export function useBudgetSelection({
   const allocationItems = useMemo(() => {
     const allocations = budgetAllocationOptions ?? [];
 
-    return allocations.map((allocation) => {
-      const percent =
+    const percents = allocations.map(
+      (allocation) =>
         allocationPercents[allocation.id] ??
-        normalizeAllocationPercent(allocation.percent);
+        normalizeAllocationPercent(allocation.percent),
+    );
 
-      return {
-        ...allocation,
-        percent,
-        amount: Math.round((dailyBudget * percent) / 100),
-      };
+    /**
+     * 항목마다 따로 반올림하면 합계가 하루 예산과 어긋납니다. 예산 1,000원을
+     * 3일로 나눈 333원을 50:50 으로 쪼개면 167 + 167 = 334 가 됩니다.
+     *
+     * 비율 합만큼의 금액을 먼저 구하고, 마지막 항목이 나머지를 흡수해 합계를
+     * 맞춥니다.
+     */
+    const percentTotal = percents.reduce(
+      (total, percent) => total + percent,
+      0,
+    );
+    const amountTotal = Math.round((dailyBudget * percentTotal) / 100);
+
+    let allocated = 0;
+
+    return allocations.map((allocation, index) => {
+      const percent = percents[index];
+      const isLast = index === allocations.length - 1;
+      const amount = isLast
+        ? amountTotal - allocated
+        : Math.round((dailyBudget * percent) / 100);
+
+      allocated += amount;
+
+      return { ...allocation, percent, amount };
     });
   }, [allocationPercents, dailyBudget, budgetAllocationOptions]);
 

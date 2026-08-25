@@ -48,20 +48,27 @@ export function HomePage() {
           <span className={styles.savingTag}>관광지 프리미엄 대비</span>
 
           <div className={styles.savingAmountRow}>
-            {isPending ? (
-              <Skeleton width="220px" height="50px" />
-            ) : (
+            {isPending && <Skeleton width="220px" height="50px" />}
+
+            {/* 못 불러온 걸 0원으로 보여 주면 아래 오류 문구와 어긋납니다. */}
+            {isError && <strong className={styles.savingAmount}>—</strong>}
+
+            {data && (
               <CountUpAmount
                 className={styles.savingAmount}
-                value={data?.totalSavingAmount ?? 0}
+                value={data.totalSavingAmount}
                 prefix="₩"
                 unit=""
               />
             )}
           </div>
 
+          {/* 아직 못 받았거나 실패한 걸 0개로 보여 주면 사실과 다릅니다. */}
           <p className={styles.savingCaption}>
-            저장한 루트 {data?.savedRouteCount ?? 0}개 기준 · 오늘도 아꼈습니다
+            {isPending && "저장한 루트를 불러오는 중이에요"}
+            {isError && "절약 정보를 불러오지 못했어요"}
+            {data &&
+              `저장한 루트 ${data.savedRouteCount}개 기준 · 오늘도 아꼈습니다`}
           </p>
 
           <ul className={styles.claimList}>
