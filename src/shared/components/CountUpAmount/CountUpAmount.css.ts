@@ -66,9 +66,12 @@ export const digitStrip = style({
 
   /**
    * 감속 곡선이 급하면 앞쪽에서 거리를 다 써 버려 순간이동처럼 보입니다.
-   * ease-out-quad 정도로 두면 1초 가까이 굴러가는 게 눈에 보입니다.
+   * ease-out-quad 정도로 두면 굴러가는 게 눈에 보입니다.
+   *
+   * 홈은 들어올 때마다 보는 화면이라 길면 거슬립니다. 마지막 자리까지 1초 안에
+   * 끝나도록 잡았습니다.
    */
-  animation: `${roll} 1.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) both`,
+  animation: `${roll} 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) both`,
 
   // 모션 민감 사용자에겐 굴리지 않고 최종 숫자만 보여 줍니다.
   "@media": {

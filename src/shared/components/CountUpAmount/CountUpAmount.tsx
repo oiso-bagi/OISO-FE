@@ -15,7 +15,7 @@ const REEL_DIGITS = Array.from(
 );
 
 /** 왼쪽 자리부터 순서대로 착지하도록 자리마다 늦추는 시간(초) */
-const STAGGER_SECONDS = 0.07;
+const STAGGER_SECONDS = 0.04;
 
 interface CountUpAmountProps {
   /** 표시할 최종 금액. 세 자리마다 쉼표를 넣어 보여 줍니다. */
