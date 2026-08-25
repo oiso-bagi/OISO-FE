@@ -109,7 +109,32 @@ export function RouteMap({ stops, selectedDay }: RouteMapProps) {
     };
   }, []);
 
-  // 2) 선택된 코스에 맞춰 마커/경로만 갱신 (지도는 재사용)
+  /**
+   * 2) 지도 영역의 크기가 바뀌면 다시 배치합니다.
+   *
+   * 사용자가 손잡이로 높이를 줄이면 카카오 지도는 이전 크기를 그대로 들고
+   * 있어 타일이 잘리거나 빈 칸이 생깁니다. `relayout()` 이 중심을 옮기므로
+   * 앞뒤로 중심을 저장했다 되돌립니다.
+   */
+  useEffect(() => {
+    const map = mapRef.current;
+    const element = containerRef.current;
+    if (status !== "ready" || !map || !element) return;
+
+    const observer = new ResizeObserver(() => {
+      // 접혀서 크기가 0 이면 중심 계산이 무너지므로 건너뜁니다.
+      if (element.clientWidth === 0 || element.clientHeight === 0) return;
+
+      const center = map.getCenter();
+      map.relayout();
+      map.setCenter(center);
+    });
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [status]);
+
+  // 3) 선택된 코스에 맞춰 마커/경로만 갱신 (지도는 재사용)
   useEffect(() => {
     const map = mapRef.current;
     if (status !== "ready" || !map || !window.kakao?.maps) return;

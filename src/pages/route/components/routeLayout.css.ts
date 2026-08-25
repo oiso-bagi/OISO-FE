@@ -37,6 +37,8 @@ export const mapArea = style({
   height: "45dvh",
   minHeight: "260px",
 
+  // 손잡이로 조절하면 인라인 높이가 이 값을 덮어씁니다.
+
   width: "100%",
 
   // 위쪽 선은 headerArea·일차 탭이 이미 그어 둡니다.

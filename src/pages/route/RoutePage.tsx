@@ -8,12 +8,14 @@ import { toErrorMessage } from "@/shared/api/apiError";
 
 import { DayTabs } from "./components/DayTabs";
 import type { SelectedDay } from "./components/DayTabs";
+import { MapResizeHandle } from "./components/MapResizeHandle";
 import { RouteMap } from "./components/RouteMap";
 import { RouteStopList } from "./components/RouteStopList";
 import { TransportationLabel } from "./components/TransportationLabel";
 
 import { useRecommendedRouteDetail } from "./hooks/useRecommendedRouteDetail";
 import { useRecommendedRoutes } from "./hooks/useRecommendedRoutes";
+import { useMapResize } from "./hooks/useMapResize";
 import { useCreateSavedRoute } from "./hooks/useSavedRoutes";
 import { formatDistance, toRouteSummaryItems } from "./utils/routeFormat";
 
@@ -28,6 +30,10 @@ export function RoutePage() {
    * 뒤에도 다시 펼쳐집니다.
    */
   const hasAutoExpandedRef = useRef(false);
+
+  // 지도/목록 비율은 사용자가 손잡이로 조절합니다.
+  const mapAreaRef = useRef<HTMLDivElement>(null);
+  const { mapStyle, resizeProps } = useMapResize(mapAreaRef);
 
   const { data: routes, isPending, isError, error } = useRecommendedRoutes();
   // 카드를 펼쳤을 때만 이 쿼리가 켜지므로, isPending 은 "아직 결과 없음"과 같습니다.
@@ -106,12 +112,19 @@ export function RoutePage() {
         />
       )}
 
-      <div className={styles.mapArea}>
+      <div
+        id="route-map-area"
+        ref={mapAreaRef}
+        className={styles.mapArea}
+        style={mapStyle}
+      >
         <RouteMap
           stops={mapStops}
           selectedDay={selectedDay === "all" ? undefined : selectedDay}
         />
       </div>
+
+      <MapResizeHandle controlsId="route-map-area" {...resizeProps} />
 
       <div className={styles.listArea}>
         {isPending && <RouteListSkeleton />}

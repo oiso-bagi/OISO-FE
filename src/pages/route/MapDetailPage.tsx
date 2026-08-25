@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   useLocation,
   useNavigate,
@@ -15,6 +15,8 @@ import { RouteStopList } from "./components/RouteStopList";
 import { useRecommendedRouteDetail } from "./hooks/useRecommendedRouteDetail";
 import { useSavedRouteDetail } from "./hooks/useSavedRouteDetail";
 import { DayTabs } from "./components/DayTabs";
+import { MapResizeHandle } from "./components/MapResizeHandle";
+import { useMapResize } from "./hooks/useMapResize";
 
 import * as styles from "./MapDetailPage.css";
 
@@ -67,6 +69,10 @@ export function MapDetailPage() {
 
   const [selectedDay, setSelectedDay] = useState<number | "all">("all");
 
+  // 지도/목록 비율은 사용자가 손잡이로 조절합니다.
+  const mapAreaRef = useRef<HTMLDivElement>(null);
+  const { mapStyle, resizeProps } = useMapResize(mapAreaRef);
+
   // 다른 루트로 이동하거나 조회 대상이 변경되면 일차 선택을 전체로 초기화합니다.
   useEffect(() => {
     setSelectedDay("all");
@@ -101,12 +107,19 @@ export function MapDetailPage() {
         />
       )}
 
-      <div className={styles.mapArea}>
+      <div
+        id="map-detail-map-area"
+        ref={mapAreaRef}
+        className={styles.mapArea}
+        style={mapStyle}
+      >
         <RouteMap
           stops={route?.stops ?? []}
           selectedDay={selectedDay === "all" ? undefined : selectedDay}
         />
       </div>
+
+      <MapResizeHandle controlsId="map-detail-map-area" {...resizeProps} />
 
       <div className={styles.listArea}>
         {!isInvalid && isPending && (

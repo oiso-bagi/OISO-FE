@@ -74,6 +74,8 @@ export const mapArea = style({
   height: "46dvh",
   minHeight: "280px",
 
+  // 손잡이로 조절하면 인라인 높이가 이 값을 덮어씁니다.
+
   borderBottom: `2.5px solid ${vars.color.black}`,
 });
 
