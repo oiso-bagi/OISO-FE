@@ -1,5 +1,6 @@
 import { style } from "@vanilla-extract/css";
 
+import { pageContent } from "@/shared/styles/layout.css";
 import { vars } from "@/shared/styles/theme.css";
 import * as typo from "@/shared/styles/typography.css";
 
@@ -58,17 +59,19 @@ export const bannerLogo = style({
   display: "block",
 });
 
-export const content = style({
-  flexGrow: 1,
+export const content = style([
+  pageContent,
+  {
+    flexGrow: 1,
 
-  display: "flex",
-  flexDirection: "column",
-  gap: "11px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "11px",
 
-  padding: "13px 16px 0",
-
-  boxSizing: "border-box",
-});
+    // 좌우 여백과 box-sizing 은 pageContent 가 담당합니다.
+    paddingTop: "13px",
+  },
+]);
 
 /* ── 아낀 돈 ───────────────────────────────────────── */
 
