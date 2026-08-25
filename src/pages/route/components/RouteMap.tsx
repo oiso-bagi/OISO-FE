@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from "react";
 
 import { loadKakaoMap } from "@/shared/lib/loadKakaoMap";
 
+import type { TransportationType } from "../api/types/recommendedRoute";
 import { getDayColor } from "../utils/dayColor";
+import { formatDuration, formatStopTransportation } from "../utils/routeFormat";
+import { TRANSPORTATION_ICONS } from "../utils/transportationIcon";
 
 import * as styles from "./RouteMap.css";
 
@@ -28,6 +31,10 @@ interface RouteMapStop {
    * 쓰지 않습니다.
    */
   pathFromPrevious?: RouteMapPoint[];
+
+  /** 이전 경유지에서 여기까지의 이동수단·소요시간. 경로선 위 라벨에 씁니다. */
+  transportationFromPrevious?: TransportationType | null;
+  durationFromPreviousMinutes?: number | null;
 }
 
 type PlottableStop = RouteMapStop & RouteMapPoint;
@@ -46,6 +53,62 @@ const CASING_COLOR = "#000000";
 
 // 경유지가 없을 때 기본 중심 (부산 시청 인근)
 const BUSAN_CENTER = { latitude: 35.1798, longitude: 129.075 };
+
+/**
+ * 한 일차의 구간 목록. 구간 하나는 이전 경유지에서 다음 경유지까지입니다.
+ *
+ * 도로 좌표가 있으면 그 좌표를, 없으면 두 경유지를 직선으로 잇습니다.
+ */
+const toDaySegments = (dayStops: PlottableStop[]) =>
+  dayStops.slice(1).map((stop, index) => {
+    const previous = dayStops[index];
+    const path = stop.pathFromPrevious ?? [];
+
+    return {
+      stop,
+      points: [
+        { latitude: previous.latitude, longitude: previous.longitude },
+        ...path,
+        { latitude: stop.latitude, longitude: stop.longitude },
+      ],
+    };
+  });
+
+/**
+ * 구간의 길이 기준 한가운데 좌표.
+ *
+ * 배열의 가운데를 쓰면 좌표가 촘촘한 쪽으로 라벨이 쏠립니다.
+ */
+const getMidpoint = (points: RouteMapPoint[]): RouteMapPoint => {
+  const lengths = points
+    .slice(1)
+    .map((point, index) =>
+      Math.hypot(
+        point.longitude - points[index].longitude,
+        point.latitude - points[index].latitude,
+      ),
+    );
+  const half = lengths.reduce((total, length) => total + length, 0) / 2;
+
+  let walked = 0;
+
+  for (let index = 0; index < lengths.length; index += 1) {
+    if (walked + lengths[index] >= half) {
+      const ratio = lengths[index] === 0 ? 0 : (half - walked) / lengths[index];
+      const from = points[index];
+      const to = points[index + 1];
+
+      return {
+        latitude: from.latitude + (to.latitude - from.latitude) * ratio,
+        longitude: from.longitude + (to.longitude - from.longitude) * ratio,
+      };
+    }
+
+    walked += lengths[index];
+  }
+
+  return points[points.length - 1];
+};
 
 /**
  * 한 일차의 경로선을 이루는 좌표.
@@ -181,6 +244,38 @@ export function RouteMap({ stops, selectedDay }: RouteMapProps) {
       casing.setMap(map);
       line.setMap(map);
       overlaysRef.current.push(casing, line);
+
+      // 구간 정보를 경로선 한가운데에 얹습니다. 예: "도보 8분"
+      toDaySegments(dayStops).forEach((segment) => {
+        const transportation = segment.stop.transportationFromPrevious;
+        if (!transportation) return;
+
+        const minutes = segment.stop.durationFromPreviousMinutes;
+        const label =
+          minutes === null || minutes === undefined
+            ? formatStopTransportation(transportation)
+            : `${formatStopTransportation(transportation)} ${formatDuration(minutes)}`;
+
+        const icon = TRANSPORTATION_ICONS[transportation];
+        const iconTag = icon
+          ? `<img class="${styles.pathLabelIcon}" src="${icon}" alt="" />`
+          : "";
+
+        const midpoint = getMidpoint(segment.points);
+        const overlay = new kakao.maps.CustomOverlay({
+          position: new kakao.maps.LatLng(
+            midpoint.latitude,
+            midpoint.longitude,
+          ),
+          content: `<div class="${styles.pathLabel}">${iconTag}${label}</div>`,
+          xAnchor: 0.5,
+          yAnchor: 0.5,
+          // 마커(3) 아래, 경로선 위에 둡니다.
+          zIndex: 2,
+        });
+        overlay.setMap(map);
+        overlaysRef.current.push(overlay);
+      });
 
       // 경유지 순번 마커 — 해당 일차 안에서의 방문 순서로 표시
       dayStops.forEach((stop, index) => {

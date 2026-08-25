@@ -54,3 +54,28 @@ export const marker = style([
     boxSizing: "border-box",
   },
 ]);
+
+/** 경로선 위에 얹는 구간 정보. 예: "도보 8분" */
+export const pathLabel = style([
+  typo.detail3,
+  {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "3px",
+
+    padding: "2px 6px",
+    whiteSpace: "nowrap",
+
+    color: vars.color.black,
+    backgroundColor: vars.color.white,
+
+    border: `2px solid ${vars.color.black}`,
+    boxShadow: `1.5px 1.5px 0 ${vars.color.black}`,
+  },
+]);
+
+export const pathLabelIcon = style({
+  width: "12px",
+  height: "12px",
+  display: "block",
+});
