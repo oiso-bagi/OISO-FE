@@ -67,42 +67,6 @@ export const title = style([
 ]);
 
 /** 일차 선택 탭 바 (다일 코스일 때만 노출) */
-export const dayTabs = style({
-  display: "flex",
-  flexShrink: 0,
-  gap: "8px",
-  overflowX: "auto",
-
-  padding: `${vars.space.xs} ${vars.space.md}`,
-
-  backgroundColor: vars.color.bg,
-  borderBottom: `2.5px solid ${vars.color.black}`,
-});
-
-export const dayTab = style([
-  typo.detail2,
-  {
-    flexShrink: 0,
-
-    height: "30px",
-    padding: "0 12px",
-
-    color: vars.color.black,
-    backgroundColor: vars.color.white,
-
-    border: `2px solid ${vars.color.black}`,
-    boxShadow: `1.5px 2px 0 ${vars.color.black}`,
-
-    cursor: "pointer",
-
-    selectors: {
-      '&[data-active="true"]': {
-        backgroundColor: vars.color.primary500,
-      },
-    },
-  },
-]);
-
 /** 지도: 상단 고정 높이 (페이지 전체가 스크롤됨) */
 export const mapArea = style({
   flexShrink: 0,

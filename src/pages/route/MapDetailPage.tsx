@@ -14,7 +14,7 @@ import { RouteMap } from "./components/RouteMap";
 import { RouteStopList } from "./components/RouteStopList";
 import { useRecommendedRouteDetail } from "./hooks/useRecommendedRouteDetail";
 import { useSavedRouteDetail } from "./hooks/useSavedRouteDetail";
-import { DAY_COLOR_FOREGROUND, getDayColor } from "./utils/dayColor";
+import { DayTabs } from "./components/DayTabs";
 
 import * as styles from "./MapDetailPage.css";
 
@@ -94,41 +94,11 @@ export function MapDetailPage() {
       </header>
 
       {isMultiDay && (
-        <div className={styles.dayTabs} role="tablist" aria-label="일차 선택">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={selectedDay === "all"}
-            className={styles.dayTab}
-            data-active={selectedDay === "all"}
-            onClick={() => setSelectedDay("all")}
-          >
-            전체
-          </button>
-
-          {/* 활성 탭은 지도 마커·경로선과 같은 색을 써 "1일차 = 파랑" 을 맞춥니다. */}
-          {dayNumbers.map((day) => (
-            <button
-              key={day}
-              type="button"
-              role="tab"
-              aria-selected={selectedDay === day}
-              className={styles.dayTab}
-              data-active={selectedDay === day}
-              style={
-                selectedDay === day
-                  ? {
-                      backgroundColor: getDayColor(day),
-                      color: DAY_COLOR_FOREGROUND,
-                    }
-                  : undefined
-              }
-              onClick={() => setSelectedDay(day)}
-            >
-              {day}일차
-            </button>
-          ))}
-        </div>
+        <DayTabs
+          dayNumbers={dayNumbers}
+          selectedDay={selectedDay}
+          onSelect={setSelectedDay}
+        />
       )}
 
       <div className={styles.mapArea}>
