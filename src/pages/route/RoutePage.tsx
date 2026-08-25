@@ -94,7 +94,9 @@ export function RoutePage() {
 
   return (
     <div className={styles.page}>
-      <Header backTo="/" title="추천 루트" />
+      <div className={styles.headerArea}>
+        <Header backTo="/" title="추천 루트" />
+      </div>
 
       {isMultiDay && (
         <DayTabs
