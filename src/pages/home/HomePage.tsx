@@ -107,7 +107,7 @@ export function HomePage() {
           <h2 className={styles.listTitle}>저장한 루트</h2>
           {savedRoutes && (
             <span className={styles.listCount}>
-              전 {data?.savedRouteCount ?? savedRoutes.length}건
+              {data?.savedRouteCount ?? savedRoutes.length}개
             </span>
           )}
         </div>
