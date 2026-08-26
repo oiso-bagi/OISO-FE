@@ -8,15 +8,18 @@ import {
 
 import backIcon from "@/shared/assets/svg/back.svg";
 import { Skeleton } from "@/shared/components/Skeleton/Skeleton";
+import { useToast } from "@/shared/components/Toast/toastContext";
 import { toErrorMessage } from "@/shared/api/apiError";
 
 import { RouteMap } from "./components/RouteMap";
 import { RouteStopList } from "./components/RouteStopList";
 import { useRecommendedRouteDetail } from "./hooks/useRecommendedRouteDetail";
 import { useSavedRouteDetail } from "./hooks/useSavedRouteDetail";
+import { CompletionBar } from "./components/CompletionBar";
 import { DayTabs } from "./components/DayTabs";
 import { MapResizeHandle } from "./components/MapResizeHandle";
 import { useMapResize } from "./hooks/useMapResize";
+import { useUpdateSavedRouteCompleted } from "./hooks/useSavedRoutes";
 import type { SelectedDay } from "./types/day";
 
 import * as styles from "./MapDetailPage.css";
@@ -28,6 +31,7 @@ import * as styles from "./MapDetailPage.css";
  */
 export function MapDetailPage() {
   const navigate = useNavigate();
+  const showToast = useToast();
   const location = useLocation();
   const { id } = useParams();
   const [searchParams] = useSearchParams();
@@ -57,6 +61,29 @@ export function MapDetailPage() {
   } = isSaved ? saved : recommended;
 
   const isInvalid = routeId === null;
+
+  /**
+   * 완료 체크는 저장 목록에만 있었는데, 여행 중에 실제로 열어 두는 화면은
+   * 여기입니다. 저장한 루트일 때만 노출합니다.
+   */
+  const updateCompleted = useUpdateSavedRouteCompleted();
+
+  const handleToggleCompleted = () => {
+    if (routeId === null || !saved.data || updateCompleted.isPending) return;
+
+    updateCompleted.mutate(
+      { routeId, isCompleted: !saved.data.isCompleted },
+      {
+        onError: (toggleError) =>
+          showToast({
+            message: toErrorMessage(
+              toggleError,
+              "상태를 변경하지 못했어요. 다시 시도해 주세요.",
+            ),
+          }),
+      },
+    );
+  };
 
   // 다일 코스일 때만 일차 선택 탭을 노출합니다. 기본값은 전체(All) 표시.
   const dayNumbers = useMemo(
@@ -100,6 +127,14 @@ export function MapDetailPage() {
 
         <h1 className={styles.title}>{route?.name ?? "루트 지도"}</h1>
       </header>
+
+      {isSaved && saved.data && (
+        <CompletionBar
+          isCompleted={saved.data.isCompleted}
+          isDisabled={updateCompleted.isPending}
+          onToggle={handleToggleCompleted}
+        />
+      )}
 
       {isMultiDay && (
         <DayTabs

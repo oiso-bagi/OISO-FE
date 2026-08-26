@@ -15,6 +15,8 @@ interface RouteStopListProps {
   isSaving?: boolean;
   /** 이미 저장한 코스면 버튼을 "저장됨" 상태로 굳힙니다. */
   isSaved?: boolean;
+  /** 저장한 뒤 이어서 할 일. 전달하면 저장됨 옆에 링크를 답니다. */
+  onViewSavedList?: () => void;
 }
 
 /** 다일 코스일 때만 일차별로 묶습니다. 단일 일차는 기존처럼 평면 리스트로 표시합니다. */
@@ -35,6 +37,7 @@ export function RouteStopList({
   onSave,
   isSaving,
   isSaved,
+  onViewSavedList,
 }: RouteStopListProps) {
   const dayGroups = groupStopsByDay(stops);
 
@@ -113,23 +116,36 @@ export function RouteStopList({
       ))}
 
       {onSave && (
-        <button
-          type="button"
-          className={styles.saveButton}
-          data-saved={isSaved}
-          onClick={onSave}
-          disabled={isSaving || isSaved}
-        >
-          {isSaved ? (
-            <CheckIcon className={styles.saveIcon} aria-hidden />
-          ) : (
-            <SaveIcon
-              className={`${styles.saveIcon} ${styles.saveIconSolid}`}
-              aria-hidden
-            />
+        <div className={styles.saveRow}>
+          <button
+            type="button"
+            className={styles.saveButton}
+            data-saved={isSaved}
+            onClick={onSave}
+            disabled={isSaving || isSaved}
+          >
+            {isSaved ? (
+              <CheckIcon className={styles.saveIcon} aria-hidden />
+            ) : (
+              <SaveIcon
+                className={`${styles.saveIcon} ${styles.saveIconSolid}`}
+                aria-hidden
+              />
+            )}
+            {isSaved ? "저장됨" : "저장"}
+          </button>
+
+          {/* 저장하고 나면 할 일이 없어 흐름이 끊깁니다. */}
+          {isSaved && onViewSavedList && (
+            <button
+              type="button"
+              className={styles.savedListLink}
+              onClick={onViewSavedList}
+            >
+              저장 목록 보기
+            </button>
           )}
-          {isSaved ? "저장됨" : "저장"}
-        </button>
+        </div>
       )}
     </section>
   );

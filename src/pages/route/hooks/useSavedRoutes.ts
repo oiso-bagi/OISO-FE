@@ -8,7 +8,10 @@ import {
   getSavedRoutes,
   updateSavedRouteCompletion,
 } from "../api/savedRouteApi";
-import type { SavedRouteListResponse } from "../api/types/savedRoute";
+import type {
+  SavedRouteDetail,
+  SavedRouteListResponse,
+} from "../api/types/savedRoute";
 import {
   USE_MOCK_DATA,
   getMockSavedRouteList,
@@ -123,15 +126,45 @@ export const useUpdateSavedRouteCompleted = () => {
       return updateSavedRouteCompletion(routeId, { isCompleted });
     },
 
-    onMutate: ({ routeId, isCompleted }) =>
-      apply((current) => ({
+    /**
+     * 목록과 상세를 함께 미리 반영합니다. 지도 상세 화면은 상세 캐시를 읽는데,
+     * 목록만 바꾸면 재조회가 끝날 때까지 토글이 그대로 있어 눌리지 않은 것처럼
+     * 보입니다.
+     */
+    onMutate: async ({ routeId, isCompleted }) => {
+      const detailKey = queryKeys.savedRoutes.detail(routeId);
+      await queryClient.cancelQueries({ queryKey: detailKey });
+
+      const previousDetail =
+        queryClient.getQueryData<SavedRouteDetail>(detailKey);
+
+      if (previousDetail) {
+        queryClient.setQueryData<SavedRouteDetail>(detailKey, {
+          ...previousDetail,
+          isCompleted,
+        });
+      }
+
+      const listContext = await apply((current) => ({
         ...current,
         routes: current.routes.map((route) =>
           route.id === routeId ? { ...route, isCompleted } : route,
         ),
-      })),
+      }));
 
-    onError: (_error, _variables, context) => rollback(context),
+      return { ...listContext, previousDetail };
+    },
+
+    onError: (_error, { routeId }, context) => {
+      rollback(context);
+
+      if (context?.previousDetail) {
+        queryClient.setQueryData(
+          queryKeys.savedRoutes.detail(routeId),
+          context.previousDetail,
+        );
+      }
+    },
 
     /**
      * 서버가 변경된 상태를 응답으로 돌려주므로 그 값으로 캐시를 맞춥니다.
