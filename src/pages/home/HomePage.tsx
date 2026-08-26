@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
 import { CountUpAmount } from "@/shared/components/CountUpAmount/CountUpAmount";
+import { EmptyState } from "@/shared/components/EmptyState";
 import { Skeleton } from "@/shared/components/Skeleton/Skeleton";
 import { MiniCardListSkeleton } from "@/shared/components/Skeleton/MiniCardSkeleton";
 import { toErrorMessage } from "@/shared/api/apiError";
@@ -139,7 +140,13 @@ export function HomePage() {
           )}
 
           {savedRoutes && savedRoutes.length === 0 && (
-            <p className={styles.statusText}>아직 저장한 루트가 없어요.</p>
+            // 바로 위에 큰 CTA 가 있어 버튼이 둘로 보이지 않게 링크로 둡니다.
+            <EmptyState
+              title="담은 코스가 없습니다!!"
+              actionLabel="추천 코스 보러 가기"
+              actionVariant="link"
+              onAction={() => navigate("/route")}
+            />
           )}
 
           {savedRoutes?.map((route) => (

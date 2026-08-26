@@ -1,5 +1,8 @@
+import { useNavigate } from "react-router-dom";
+
 import type { SavingsHistoryDto } from "@/shared/api/generated/types";
 import { Card } from "@/shared/components/Card";
+import { EmptyState } from "@/shared/components/EmptyState";
 
 import { formatDisplayDate, formatWon } from "../utils/dashboardFormat";
 import * as styles from "../DashboardPage.css";
@@ -11,6 +14,8 @@ interface SavingsHistorySectionProps {
 export function SavingsHistorySection({
   histories,
 }: SavingsHistorySectionProps) {
+  const navigate = useNavigate();
+
   return (
     <section className={styles.section} aria-labelledby="history-title">
       <h2 id="history-title" className={styles.sectionTitle}>
@@ -40,9 +45,13 @@ export function SavingsHistorySection({
           ))}
         </Card>
       ) : (
-        <Card className={styles.emptyCard}>
-          아직 완료한 여행의 절약 기록이 없어요.
-        </Card>
+        <EmptyState
+          className={styles.emptySection}
+          title="다녀온 여행이 없습니다!!"
+          description="저장한 루트에서 여행을 완료로 표시하면 절약이 쌓입니다."
+          actionLabel="저장한 루트 보기"
+          onAction={() => navigate("/saved")}
+        />
       )}
     </section>
   );

@@ -35,15 +35,9 @@ export const retryButton = style([
   },
 ]);
 
-export const emptyCard = style([
-  typographyStyles.body6,
-  {
-    marginTop: vars.space.sm,
-    padding: vars.space.md,
-    color: vars.color.neutral500,
-    textAlign: "center",
-  },
-]);
+export const emptySection = style({
+  marginTop: vars.space.sm,
+});
 
 export const summaryCard = style({
   marginTop: vars.space.xs,

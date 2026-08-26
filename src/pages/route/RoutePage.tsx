@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { RouteBox } from "@/shared/components/RouteBox";
+import { EmptyState } from "@/shared/components/EmptyState";
 import { Header } from "@/shared/components/header/Header";
 import { RouteListSkeleton } from "@/shared/components/Skeleton/RouteCardSkeleton";
 import { useToast } from "@/shared/components/Toast/toastContext";
@@ -231,7 +232,12 @@ export function RoutePage() {
         )}
 
         {routes && routes.length === 0 && (
-          <p className={styles.statusText}>추천할 수 있는 루트가 없어요.</p>
+          <EmptyState
+            title="조건에 맞는 코스가 없습니다!!"
+            description="조건을 바꾸면 다른 코스가 나올 수 있어요."
+            actionLabel="조건 바꿔서 다시 찾기"
+            onAction={() => navigate("/survey?mode=edit")}
+          />
         )}
 
         {routes && routes.length > 0 && (
