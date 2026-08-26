@@ -98,11 +98,15 @@ const toSurveyRecommendationOptions = (
   defaultDailyBudgetWon: data.budgetAllocation.defaultDailyBudgetWon,
 });
 
-export const useRecommendationOptions = () => {
+/**
+ * @param isEnabled 설문 밖에서는 필요할 때만 조회하도록 끌 수 있습니다.
+ */
+export const useRecommendationOptions = (isEnabled = true) => {
   return useQuery({
     queryKey: queryKeys.survey.recommendationOptions(),
     queryFn: getRecommendationOptions,
     select: toSurveyRecommendationOptions,
+    enabled: isEnabled,
   });
 };
 
