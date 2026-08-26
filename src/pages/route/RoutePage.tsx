@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { RouteBox } from "@/shared/components/RouteBox";
 import { Header } from "@/shared/components/header/Header";
 import { RouteListSkeleton } from "@/shared/components/Skeleton/RouteCardSkeleton";
 import { useToast } from "@/shared/components/Toast/toastContext";
 import { toErrorMessage } from "@/shared/api/apiError";
+import { readRecommendationConditions } from "@/shared/lib/recommendationConditions";
 
+import { ConditionSummary } from "./components/ConditionSummary";
 import { DayTabs } from "./components/DayTabs";
 import { MapResizeHandle } from "./components/MapResizeHandle";
 import { RouteMap } from "./components/RouteMap";
@@ -22,6 +25,8 @@ import { formatDistance, toRouteSummaryItems } from "./utils/routeFormat";
 import * as styles from "./components/routeLayout.css";
 
 export function RoutePage() {
+  const navigate = useNavigate();
+
   const [expandedRouteId, setExpandedRouteId] = useState<string | null>(null);
   const [selectedDay, setSelectedDay] = useState<SelectedDay>("all");
 
@@ -35,6 +40,12 @@ export function RoutePage() {
   const mapAreaRef = useRef<HTMLDivElement>(null);
   const listAreaRef = useRef<HTMLDivElement>(null);
   const { mapStyle, resizeProps } = useMapResize(mapAreaRef, listAreaRef);
+
+  /**
+   * 어떤 조건으로 찾은 결과인지 화면에 남깁니다. 설문을 마쳐야 이 화면에
+   * 닿으므로 보통 값이 있지만, 저장이 막힌 환경을 대비해 없을 수 있게 둡니다.
+   */
+  const conditions = readRecommendationConditions();
 
   const { data: routes, isPending, isError, error } = useRecommendedRoutes();
   // 카드를 펼쳤을 때만 이 쿼리가 켜지므로, isPending 은 "아직 결과 없음"과 같습니다.
@@ -146,6 +157,13 @@ export function RoutePage() {
         <Header backTo="/" title="추천 루트" />
       </div>
 
+      {conditions && (
+        <ConditionSummary
+          conditions={conditions}
+          onEdit={() => navigate("/survey")}
+        />
+      )}
+
       {isMultiDay && (
         <DayTabs
           dayNumbers={dayNumbers}
@@ -224,6 +242,7 @@ export function RoutePage() {
                         stops={visibleStops}
                         onSave={() => handleSave(route.id)}
                         isSaved={isRouteSaved(route.id)}
+                        onViewSavedList={() => navigate("/saved")}
                         isSaving={createSavedRoute.isPending}
                       />
                     )}
