@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   useLocation,
   useNavigate,
@@ -8,12 +8,19 @@ import {
 
 import backIcon from "@/shared/assets/svg/back.svg";
 import { Skeleton } from "@/shared/components/Skeleton/Skeleton";
+import { useToast } from "@/shared/components/Toast/toastContext";
 import { toErrorMessage } from "@/shared/api/apiError";
 
 import { RouteMap } from "./components/RouteMap";
 import { RouteStopList } from "./components/RouteStopList";
 import { useRecommendedRouteDetail } from "./hooks/useRecommendedRouteDetail";
 import { useSavedRouteDetail } from "./hooks/useSavedRouteDetail";
+import { CompletionBar } from "./components/CompletionBar";
+import { DayTabs } from "./components/DayTabs";
+import { MapResizeHandle } from "./components/MapResizeHandle";
+import { useMapResize } from "./hooks/useMapResize";
+import { useUpdateSavedRouteCompleted } from "./hooks/useSavedRoutes";
+import type { SelectedDay } from "./types/day";
 
 import * as styles from "./MapDetailPage.css";
 
@@ -24,6 +31,7 @@ import * as styles from "./MapDetailPage.css";
  */
 export function MapDetailPage() {
   const navigate = useNavigate();
+  const showToast = useToast();
   const location = useLocation();
   const { id } = useParams();
   const [searchParams] = useSearchParams();
@@ -54,6 +62,29 @@ export function MapDetailPage() {
 
   const isInvalid = routeId === null;
 
+  /**
+   * 완료 체크는 저장 목록에만 있었는데, 여행 중에 실제로 열어 두는 화면은
+   * 여기입니다. 저장한 루트일 때만 노출합니다.
+   */
+  const updateCompleted = useUpdateSavedRouteCompleted();
+
+  const handleToggleCompleted = () => {
+    if (routeId === null || !saved.data || updateCompleted.isPending) return;
+
+    updateCompleted.mutate(
+      { routeId, isCompleted: !saved.data.isCompleted },
+      {
+        onError: (toggleError) =>
+          showToast({
+            message: toErrorMessage(
+              toggleError,
+              "상태를 변경하지 못했어요. 다시 시도해 주세요.",
+            ),
+          }),
+      },
+    );
+  };
+
   // 다일 코스일 때만 일차 선택 탭을 노출합니다. 기본값은 전체(All) 표시.
   const dayNumbers = useMemo(
     () =>
@@ -64,7 +95,12 @@ export function MapDetailPage() {
   );
   const isMultiDay = dayNumbers.length > 1;
 
-  const [selectedDay, setSelectedDay] = useState<number | "all">("all");
+  const [selectedDay, setSelectedDay] = useState<SelectedDay>("all");
+
+  // 지도/목록 비율은 사용자가 손잡이로 조절합니다.
+  const mapAreaRef = useRef<HTMLDivElement>(null);
+  const listAreaRef = useRef<HTMLDivElement>(null);
+  const { mapStyle, resizeProps } = useMapResize(mapAreaRef, listAreaRef);
 
   // 다른 루트로 이동하거나 조회 대상이 변경되면 일차 선택을 전체로 초기화합니다.
   useEffect(() => {
@@ -92,43 +128,37 @@ export function MapDetailPage() {
         <h1 className={styles.title}>{route?.name ?? "루트 지도"}</h1>
       </header>
 
-      {isMultiDay && (
-        <div className={styles.dayTabs} role="tablist" aria-label="일차 선택">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={selectedDay === "all"}
-            className={styles.dayTab}
-            data-active={selectedDay === "all"}
-            onClick={() => setSelectedDay("all")}
-          >
-            전체
-          </button>
-
-          {dayNumbers.map((day) => (
-            <button
-              key={day}
-              type="button"
-              role="tab"
-              aria-selected={selectedDay === day}
-              className={styles.dayTab}
-              data-active={selectedDay === day}
-              onClick={() => setSelectedDay(day)}
-            >
-              {day}일차
-            </button>
-          ))}
-        </div>
+      {isSaved && saved.data && (
+        <CompletionBar
+          isCompleted={saved.data.isCompleted}
+          isDisabled={updateCompleted.isPending}
+          onToggle={handleToggleCompleted}
+        />
       )}
 
-      <div className={styles.mapArea}>
+      {isMultiDay && (
+        <DayTabs
+          dayNumbers={dayNumbers}
+          selectedDay={selectedDay}
+          onSelect={setSelectedDay}
+        />
+      )}
+
+      <div
+        id="map-detail-map-area"
+        ref={mapAreaRef}
+        className={styles.mapArea}
+        style={mapStyle}
+      >
         <RouteMap
           stops={route?.stops ?? []}
           selectedDay={selectedDay === "all" ? undefined : selectedDay}
         />
       </div>
 
-      <div className={styles.listArea}>
+      <MapResizeHandle controlsId="map-detail-map-area" {...resizeProps} />
+
+      <div ref={listAreaRef} className={styles.listArea}>
         {!isInvalid && isPending && (
           <div className={styles.listSkeleton}>
             <Skeleton width="30%" height="18px" />

@@ -15,22 +15,38 @@ const normalizeAllocationPercent = (percent: number) => {
 
 type UseBudgetSelectionOptions = {
   budgetAllocationOptions?: BudgetAllocation[];
+
+  /** 이미 정한 적이 있으면 그 값으로 시작합니다. */
+  initialTripDays?: number;
+  initialDailyBudgetWon?: number;
 };
 
 export function useBudgetSelection({
   budgetAllocationOptions,
+  initialTripDays: prefilledTripDays,
+  initialDailyBudgetWon,
 }: UseBudgetSelectionOptions = {}) {
-  const [tripDays, setTripDaysState] = useState(initialTripDays);
+  const [tripDays, setTripDaysState] = useState(
+    prefilledTripDays ?? initialTripDays,
+  );
 
   /** 화면에 보이는 큰 숫자칸의 값. 여행 전체 기간의 총 예산입니다. */
-  const [budget, setBudget] = useState(initialBudget);
+  const [budget, setBudget] = useState(
+    initialDailyBudgetWon !== undefined && prefilledTripDays !== undefined
+      ? initialDailyBudgetWon * prefilledTripDays
+      : initialBudget,
+  );
 
   /**
    * 고른 프리셋의 하루 금액. 프리셋은 하루 기준이라 총액과 따로 들고 있어야
    * 여행 기간이 바뀔 때 다시 곱할 수 있고, 눌린 버튼도 표시할 수 있습니다.
    */
+  /**
+   * 되돌아온 경우에도 하루 금액을 들고 있습니다. 저장하는 값도 API 가 받는
+   * 값도 하루 기준이라, 기간만 바꿨을 때 하루 예산이 유지되는 쪽이 맞습니다.
+   */
   const [selectedPresetDaily, setSelectedPresetDaily] = useState<number | null>(
-    null,
+    initialDailyBudgetWon ?? null,
   );
   const [hasNegativeBudgetInput, setHasNegativeBudgetInput] = useState(false);
   const [allocationPercents, setAllocationPercents] = useState<

@@ -35,15 +35,9 @@ export const retryButton = style([
   },
 ]);
 
-export const emptyCard = style([
-  typographyStyles.body6,
-  {
-    marginTop: vars.space.sm,
-    padding: vars.space.md,
-    color: vars.color.neutral500,
-    textAlign: "center",
-  },
-]);
+export const emptySection = style({
+  marginTop: vars.space.sm,
+});
 
 export const summaryCard = style({
   marginTop: vars.space.xs,
@@ -175,6 +169,37 @@ export const historyItem = style({
     },
   },
 });
+
+/** 금액과 그 아래 상세 보기 링크. 오른쪽 끝에 맞춥니다. */
+export const historyAmountColumn = style({
+  display: "flex",
+  flexShrink: 0,
+  flexDirection: "column",
+  alignItems: "flex-end",
+  gap: "2px",
+});
+
+/**
+ * 지난 여행을 지도로 여는 링크.
+ *
+ * 기록은 저장을 지운 뒤에도 남아, 여기가 그 코스에 닿는 유일한 통로입니다.
+ */
+export const historyDetailLink = style([
+  typographyStyles.body9,
+  {
+    padding: 0,
+
+    color: vars.color.neutral500,
+    background: "none",
+    border: 0,
+
+    textDecoration: "underline",
+    textUnderlineOffset: "2px",
+    whiteSpace: "nowrap",
+
+    cursor: "pointer",
+  },
+]);
 
 export const historyTitle = style([typographyStyles.body4]);
 

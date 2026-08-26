@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
 import { CountUpAmount } from "@/shared/components/CountUpAmount/CountUpAmount";
+import { EmptyState } from "@/shared/components/EmptyState";
 import { Skeleton } from "@/shared/components/Skeleton/Skeleton";
 import { MiniCardListSkeleton } from "@/shared/components/Skeleton/MiniCardSkeleton";
 import { toErrorMessage } from "@/shared/api/apiError";
@@ -25,8 +26,11 @@ export function HomePage() {
 
   const savedRoutes = data?.savedRoutes;
 
+  /**
+   * 언제 눌러도 빈 설문으로 보냅니다. 새 여행을 처음부터 짜는 입구라,
+   * 이전 답이 채워져 있으면 안 됩니다. 조건을 고치는 쪽은 추천 화면이 맡습니다.
+   */
   const handleStartPlanning = () => {
-    // TODO(확인 필요): 여행 계획 시작 CTA 이동 경로. 우선 /survey 로 가정.
     navigate("/survey");
   };
 
@@ -136,7 +140,13 @@ export function HomePage() {
           )}
 
           {savedRoutes && savedRoutes.length === 0 && (
-            <p className={styles.statusText}>아직 저장한 루트가 없어요.</p>
+            // 바로 위에 큰 CTA 가 있어 버튼이 둘로 보이지 않게 링크로 둡니다.
+            <EmptyState
+              title="담은 코스가 없습니다!!"
+              actionLabel="추천 코스 보러 가기"
+              actionVariant="link"
+              actionTo="/route"
+            />
           )}
 
           {savedRoutes?.map((route) => (

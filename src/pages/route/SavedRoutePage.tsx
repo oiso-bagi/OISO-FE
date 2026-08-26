@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { RouteBox } from "@/shared/components/RouteBox";
 import { ConfirmDialog } from "@/shared/components/ConfirmDialog/ConfirmDialog";
+import { EmptyState } from "@/shared/components/EmptyState";
 import { Header } from "@/shared/components/header/Header";
 import { RouteListSkeleton } from "@/shared/components/Skeleton/RouteCardSkeleton";
 import { useToast } from "@/shared/components/Toast/toastContext";
@@ -35,6 +36,8 @@ export function SavedRoutePage() {
   const routes = data?.routes ?? [];
 
   const deleteTarget = routes.find((route) => route.id === deleteTargetId);
+
+  const isEmpty = !isPending && !isError && routes.length === 0;
 
   // 서버가 총액을 안 줄 때의 폴백. 절약액은 음수라 절댓값으로 합산합니다.
   const calculatedSavingAmount = routes.reduce(
@@ -102,9 +105,12 @@ export function SavedRoutePage() {
       />
 
       <div className={pageContent}>
-        <SavedRouteSummary
-          totalSavingAmount={isPending || isError ? null : totalSavingAmount}
-        />
+        {/* 담은 게 없는데 "누적 절약 0원" 까지 띄우면 빈 화면이 두 번 반복됩니다. */}
+        {!isEmpty && (
+          <SavedRouteSummary
+            totalSavingAmount={isPending || isError ? null : totalSavingAmount}
+          />
+        )}
 
         {isPending && <RouteListSkeleton />}
         {isError && (
@@ -115,8 +121,13 @@ export function SavedRoutePage() {
             )}
           </p>
         )}
-        {routes && routes.length === 0 && (
-          <p className={styles.statusText}>아직 저장한 루트가 없어요.</p>
+        {isEmpty && (
+          <EmptyState
+            title="담은 코스가 없습니다!!"
+            description="추천 코스에서 마음에 드는 걸 담아 보세요."
+            actionLabel="추천 코스 보러 가기"
+            actionTo="/route"
+          />
         )}
         {routes && routes.length > 0 && (
           <div className={styles.routeList}>

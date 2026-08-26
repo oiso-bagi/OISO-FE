@@ -2,9 +2,16 @@ import { useMemo, useState } from "react";
 
 const initialSelectedStyleIds: string[] = [];
 
-export function useTravelStyleSelection() {
+interface UseTravelStyleSelectionOptions {
+  /** 이미 고른 적이 있으면 그 값으로 시작합니다. */
+  initialStyleIds?: string[];
+}
+
+export function useTravelStyleSelection({
+  initialStyleIds,
+}: UseTravelStyleSelectionOptions = {}) {
   const [selectedStyleIds, setSelectedStyleIds] = useState(
-    initialSelectedStyleIds,
+    initialStyleIds ?? initialSelectedStyleIds,
   );
 
   const selectedStyleIdSet = useMemo(

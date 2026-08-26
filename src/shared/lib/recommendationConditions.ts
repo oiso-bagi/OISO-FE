@@ -17,6 +17,15 @@ export interface RecommendationConditions {
   travelStyleSlugs: string[];
   durationDays: number;
   dailyBudgetWon: number;
+
+  /**
+   * 화면에 보여 줄 여행 스타일 이름. slug 와 같은 순서입니다.
+   *
+   * 조건 요약을 그리려고 옵션 API 를 다시 부르면 네트워크가 느릴 때 요약이
+   * 비어 보입니다. 고른 시점의 이름을 함께 저장해 두면 바로 그릴 수 있습니다.
+   * 이 필드가 생기기 전에 저장한 값에는 없을 수 있어 선택값입니다.
+   */
+  travelStyleLabels?: string[];
 }
 
 const isValid = (value: unknown): value is RecommendationConditions => {
@@ -24,11 +33,24 @@ const isValid = (value: unknown): value is RecommendationConditions => {
 
   const candidate = value as Partial<RecommendationConditions>;
 
+  /**
+   * 이름은 slug 와 같은 순서로 짝을 이룹니다. 길이가 다르면 짝이 깨진
+   * 값이므로, 손상된 이름으로 조건 요약이 비어 보이지 않게 무효로 봅니다.
+   */
+  const hasValidLabels =
+    candidate.travelStyleLabels === undefined ||
+    (Array.isArray(candidate.travelStyleLabels) &&
+      Array.isArray(candidate.travelStyleSlugs) &&
+      candidate.travelStyleLabels.length ===
+        candidate.travelStyleSlugs.length &&
+      candidate.travelStyleLabels.every((label) => typeof label === "string"));
+
   return (
     Array.isArray(candidate.travelStyleSlugs) &&
     candidate.travelStyleSlugs.every((slug) => typeof slug === "string") &&
     typeof candidate.durationDays === "number" &&
-    typeof candidate.dailyBudgetWon === "number"
+    typeof candidate.dailyBudgetWon === "number" &&
+    hasValidLabels
   );
 };
 

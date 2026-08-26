@@ -8,7 +8,10 @@ import {
   getSavedRoutes,
   updateSavedRouteCompletion,
 } from "../api/savedRouteApi";
-import type { SavedRouteListResponse } from "../api/types/savedRoute";
+import type {
+  SavedRouteDetail,
+  SavedRouteListResponse,
+} from "../api/types/savedRoute";
 import {
   USE_MOCK_DATA,
   getMockSavedRouteList,
@@ -123,15 +126,45 @@ export const useUpdateSavedRouteCompleted = () => {
       return updateSavedRouteCompletion(routeId, { isCompleted });
     },
 
-    onMutate: ({ routeId, isCompleted }) =>
-      apply((current) => ({
+    /**
+     * 목록과 상세를 함께 미리 반영합니다. 지도 상세 화면은 상세 캐시를 읽는데,
+     * 목록만 바꾸면 재조회가 끝날 때까지 토글이 그대로 있어 눌리지 않은 것처럼
+     * 보입니다.
+     */
+    onMutate: async ({ routeId, isCompleted }) => {
+      const detailKey = queryKeys.savedRoutes.detail(routeId);
+      await queryClient.cancelQueries({ queryKey: detailKey });
+
+      const previousDetail =
+        queryClient.getQueryData<SavedRouteDetail>(detailKey);
+
+      if (previousDetail) {
+        queryClient.setQueryData<SavedRouteDetail>(detailKey, {
+          ...previousDetail,
+          isCompleted,
+        });
+      }
+
+      const listContext = await apply((current) => ({
         ...current,
         routes: current.routes.map((route) =>
           route.id === routeId ? { ...route, isCompleted } : route,
         ),
-      })),
+      }));
 
-    onError: (_error, _variables, context) => rollback(context),
+      return { ...listContext, previousDetail };
+    },
+
+    onError: (_error, { routeId }, context) => {
+      rollback(context);
+
+      if (context?.previousDetail) {
+        queryClient.setQueryData(
+          queryKeys.savedRoutes.detail(routeId),
+          context.previousDetail,
+        );
+      }
+    },
 
     /**
      * 서버가 변경된 상태를 응답으로 돌려주므로 그 값으로 캐시를 맞춥니다.
@@ -168,6 +201,7 @@ export const useUpdateSavedRouteCompleted = () => {
 };
 
 export const useDeleteSavedRoute = () => {
+  const queryClient = useQueryClient();
   const invalidateSavedRoutes = useInvalidateSavedRoutes();
   const { apply, rollback } = useOptimisticSavedRouteList();
 
@@ -188,7 +222,15 @@ export const useDeleteSavedRoute = () => {
 
     onError: (_error, _routeId, context) => rollback(context),
 
-    // 서버가 계산한 누적 절약액으로 맞추고 홈도 갱신합니다.
-    onSettled: invalidateSavedRoutes,
+    /**
+     * 서버가 계산한 누적 절약액으로 맞추고 홈·대시보드도 갱신합니다.
+     *
+     * 대시보드는 완료한 여행의 절약 기록을 보여 주는데, 삭제해도 무효화하지
+     * 않아 지운 루트의 금액이 남아 있었습니다.
+     */
+    onSettled: () => {
+      invalidateSavedRoutes();
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.savings });
+    },
   });
 };

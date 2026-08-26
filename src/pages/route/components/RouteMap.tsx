@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from "react";
 
 import { loadKakaoMap } from "@/shared/lib/loadKakaoMap";
 
+import type { TransportationType } from "../api/types/recommendedRoute";
+import { getDayColor } from "../utils/dayColor";
+
 import * as styles from "./RouteMap.css";
 
 interface RouteMapPoint {
@@ -26,6 +29,10 @@ interface RouteMapStop {
    * 쓰지 않습니다.
    */
   pathFromPrevious?: RouteMapPoint[];
+
+  /** 이전 경유지에서 여기까지의 이동수단·소요시간. 경로선 위 라벨에 씁니다. */
+  transportationFromPrevious?: TransportationType | null;
+  durationFromPreviousMinutes?: number | null;
 }
 
 type PlottableStop = RouteMapStop & RouteMapPoint;
@@ -39,13 +46,7 @@ interface RouteMapProps {
 }
 
 // Polyline 은 CSS 변수를 못 받으므로 디자인 토큰 값을 직접 지정합니다.
-const SINGLE_DAY_LINE_COLOR = "#FD1187"; // secondary500 — 당일치기 코스 기존 색상
-const CASING_COLOR = "#000000";
-
-// 최대 5일차까지 서로 구분되는 마커/Polyline 색상
-const DAY_COLORS = ["#1E88E5", "#FB8C00", "#8E24AA", "#43A047", "#00ACC1"];
-const getDayColor = (dayNumber: number) =>
-  DAY_COLORS[(dayNumber - 1) % DAY_COLORS.length];
+const CASING_COLOR = "#FFFFFF";
 
 // 경유지가 없을 때 기본 중심 (부산 시청 인근)
 const BUSAN_CENTER = { latitude: 35.1798, longitude: 129.075 };
@@ -108,7 +109,32 @@ export function RouteMap({ stops, selectedDay }: RouteMapProps) {
     };
   }, []);
 
-  // 2) 선택된 코스에 맞춰 마커/경로만 갱신 (지도는 재사용)
+  /**
+   * 2) 지도 영역의 크기가 바뀌면 다시 배치합니다.
+   *
+   * 사용자가 손잡이로 높이를 줄이면 카카오 지도는 이전 크기를 그대로 들고
+   * 있어 타일이 잘리거나 빈 칸이 생깁니다. `relayout()` 이 중심을 옮기므로
+   * 앞뒤로 중심을 저장했다 되돌립니다.
+   */
+  useEffect(() => {
+    const map = mapRef.current;
+    const element = containerRef.current;
+    if (status !== "ready" || !map || !element) return;
+
+    const observer = new ResizeObserver(() => {
+      // 접혀서 크기가 0 이면 중심 계산이 무너지므로 건너뜁니다.
+      if (element.clientWidth === 0 || element.clientHeight === 0) return;
+
+      const center = map.getCenter();
+      map.relayout();
+      map.setCenter(center);
+    });
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [status]);
+
+  // 3) 선택된 코스에 맞춰 마커/경로만 갱신 (지도는 재사용)
   useEffect(() => {
     const map = mapRef.current;
     if (status !== "ready" || !map || !window.kakao?.maps) return;
@@ -139,7 +165,6 @@ export function RouteMap({ stops, selectedDay }: RouteMapProps) {
     const dayNumbers = Array.from(
       new Set(visibleStops.map((stop) => stop.dayNumber)),
     ).sort((a, b) => a - b);
-    const isMultiDay = dayNumbers.length > 1;
 
     // 도로 경로가 경유지 바깥으로 나갈 수 있어 범위 계산에 함께 넣습니다.
     const linePointsForBounds: RouteMapPoint[] = [];
@@ -150,7 +175,7 @@ export function RouteMap({ stops, selectedDay }: RouteMapProps) {
         .filter((stop) => stop.dayNumber === dayNumber)
         .sort((a, b) => a.sequence - b.sequence);
 
-      const color = isMultiDay ? getDayColor(dayNumber) : SINGLE_DAY_LINE_COLOR;
+      const color = getDayColor(dayNumber);
 
       // 경로선: 검정 케이싱(아래) + 일차 색상 실선(위)
       const dayLinePoints = toDayLinePoints(dayStops);
@@ -160,16 +185,20 @@ export function RouteMap({ stops, selectedDay }: RouteMapProps) {
         (point) => new kakao.maps.LatLng(point.latitude, point.longitude),
       );
 
+      /**
+       * 흰 케이싱이 지도 도로와 경로선을 갈라 줍니다. 검정으로 두면 케이싱이
+       * 색 선을 거의 덮어 일차 색이 실루엣으로만 보였습니다.
+       */
       const casing = new kakao.maps.Polyline({
         path: linePoints,
-        strokeWeight: 6,
+        strokeWeight: 5,
         strokeColor: CASING_COLOR,
         strokeOpacity: 1,
         strokeStyle: "solid",
       });
       const line = new kakao.maps.Polyline({
         path: linePoints,
-        strokeWeight: 4,
+        strokeWeight: 3.5,
         strokeColor: color,
         strokeOpacity: 1,
         strokeStyle: "solid",
@@ -182,9 +211,7 @@ export function RouteMap({ stops, selectedDay }: RouteMapProps) {
       dayStops.forEach((stop, index) => {
         const overlay = new kakao.maps.CustomOverlay({
           position: new kakao.maps.LatLng(stop.latitude, stop.longitude),
-          content: isMultiDay
-            ? `<div class="${styles.marker}" style="background-color:${color};color:#fff">${index + 1}</div>`
-            : `<div class="${styles.marker}">${index + 1}</div>`,
+          content: `<div class="${styles.marker}" style="background-color:${color}">${index + 1}</div>`,
           xAnchor: 0.5,
           yAnchor: 0.5,
           zIndex: 3,

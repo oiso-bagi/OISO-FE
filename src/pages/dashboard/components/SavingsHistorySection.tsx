@@ -1,5 +1,8 @@
+import { Link } from "react-router-dom";
+
 import type { SavingsHistoryDto } from "@/shared/api/generated/types";
 import { Card } from "@/shared/components/Card";
+import { EmptyState } from "@/shared/components/EmptyState";
 
 import { formatDisplayDate, formatWon } from "../utils/dashboardFormat";
 import * as styles from "../DashboardPage.css";
@@ -33,16 +36,34 @@ export function SavingsHistorySection({
                   {formatDisplayDate(history.trippedAt)}
                 </time>
               </div>
-              <strong className={styles.historyAmount}>
-                -{formatWon(history.savedAmountWon)}
-              </strong>
+
+              <div className={styles.historyAmountColumn}>
+                <strong className={styles.historyAmount}>
+                  -{formatWon(history.savedAmountWon)}
+                </strong>
+
+                {/*
+                  저장 루트가 아니라 추천 루트로 엽니다. 기록은 저장을 지운
+                  뒤에도 남아, 저장 상세로 열면 404 가 납니다.
+                */}
+                <Link
+                  className={styles.historyDetailLink}
+                  to={`/map/${encodeURIComponent(history.routeId)}?source=recommended`}
+                >
+                  상세 보기
+                </Link>
+              </div>
             </li>
           ))}
         </Card>
       ) : (
-        <Card className={styles.emptyCard}>
-          아직 완료한 여행의 절약 기록이 없어요.
-        </Card>
+        <EmptyState
+          className={styles.emptySection}
+          title="다녀온 여행이 없습니다!!"
+          description="저장한 루트에서 여행을 완료로 표시하면 절약이 쌓입니다."
+          actionLabel="저장한 루트 보기"
+          actionTo="/saved"
+        />
       )}
     </section>
   );

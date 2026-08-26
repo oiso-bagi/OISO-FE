@@ -12,6 +12,18 @@ export const page = style({
   height: "calc(100dvh - 72px - env(safe-area-inset-bottom, 0px))",
 });
 
+/**
+ * 헤더 아래 구분선.
+ *
+ * 공용 `Header` 에는 선이 없어 지도의 위쪽 테두리가 그 역할을 대신했는데,
+ * 사이에 일차 탭이 들어가면서 선이 어긋났습니다. 헤더가 직접 갖도록 옮깁니다.
+ */
+export const headerArea = style({
+  flexShrink: 0,
+
+  borderBottom: `2.5px solid ${vars.color.black}`,
+});
+
 export const mapArea = style({
   flex: "0 0 auto",
 
@@ -25,10 +37,12 @@ export const mapArea = style({
   height: "45dvh",
   minHeight: "260px",
 
+  // 손잡이로 조절하면 인라인 높이가 이 값을 덮어씁니다.
+
   width: "100%",
 
-  // 지도 영역 위아래 구분선
-  borderBlock: `2.5px solid ${vars.color.black}`,
+  // 위쪽 선은 headerArea·일차 탭이 이미 그어 둡니다.
+  borderBottom: `2.5px solid ${vars.color.black}`,
 
   boxSizing: "border-box",
 });
