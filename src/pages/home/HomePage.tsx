@@ -145,7 +145,7 @@ export function HomePage() {
               title="담은 코스가 없습니다!!"
               actionLabel="추천 코스 보러 가기"
               actionVariant="link"
-              onAction={() => navigate("/route")}
+              actionTo="/route"
             />
           )}
 

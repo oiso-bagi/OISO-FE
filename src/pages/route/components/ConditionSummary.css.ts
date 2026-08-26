@@ -55,6 +55,9 @@ export const editButton = style([
 
     cursor: "pointer",
 
+    // 링크로 렌더되므로 기본 밑줄을 지웁니다.
+    textDecoration: "none",
+
     selectors: {
       "&:active": {
         transform: "translate(1.5px, 2px)",

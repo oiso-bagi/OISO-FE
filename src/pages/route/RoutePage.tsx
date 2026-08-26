@@ -193,7 +193,7 @@ export function RoutePage() {
           dailyBudgetWon={conditions.dailyBudgetWon}
           travelStyleNames={travelStyleNames}
           // 여기서 들어온 설문만 이전 답을 채웁니다.
-          onEdit={() => navigate("/survey?mode=edit")}
+          editTo="/survey?mode=edit"
         />
       )}
 
@@ -236,7 +236,7 @@ export function RoutePage() {
             title="조건에 맞는 코스가 없습니다!!"
             description="조건을 바꾸면 다른 코스가 나올 수 있어요."
             actionLabel="조건 바꿔서 다시 찾기"
-            onAction={() => navigate("/survey?mode=edit")}
+            actionTo="/survey?mode=edit"
           />
         )}
 

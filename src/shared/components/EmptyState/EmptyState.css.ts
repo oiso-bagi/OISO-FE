@@ -63,6 +63,9 @@ export const actionButton = style([
     cursor: "pointer",
     boxSizing: "border-box",
 
+    // 링크로 렌더될 때 기본 밑줄이 붙지 않게 합니다.
+    textDecoration: "none",
+
     selectors: {
       "&:active": {
         transform: "translate(2.5px, 2.5px)",

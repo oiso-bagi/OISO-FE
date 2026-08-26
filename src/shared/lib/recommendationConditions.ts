@@ -33,9 +33,16 @@ const isValid = (value: unknown): value is RecommendationConditions => {
 
   const candidate = value as Partial<RecommendationConditions>;
 
+  /**
+   * 이름은 slug 와 같은 순서로 짝을 이룹니다. 길이가 다르면 짝이 깨진
+   * 값이므로, 손상된 이름으로 조건 요약이 비어 보이지 않게 무효로 봅니다.
+   */
   const hasValidLabels =
     candidate.travelStyleLabels === undefined ||
     (Array.isArray(candidate.travelStyleLabels) &&
+      Array.isArray(candidate.travelStyleSlugs) &&
+      candidate.travelStyleLabels.length ===
+        candidate.travelStyleSlugs.length &&
       candidate.travelStyleLabels.every((label) => typeof label === "string"));
 
   return (

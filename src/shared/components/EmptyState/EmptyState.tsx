@@ -1,12 +1,20 @@
+import { Link } from "react-router-dom";
+
 import * as styles from "./EmptyState.css";
 
 interface EmptyStateProps {
   title: string;
   description?: string;
 
-  /** 다음에 할 일. 없으면 안내만 보여 줍니다. */
   actionLabel?: string;
-  onAction?: () => void;
+
+  /**
+   * 다음에 갈 화면.
+   *
+   * 지금 쓰이는 빈 상태의 다음 행동은 모두 화면 이동이라 링크만 받습니다.
+   * 버튼으로 그리면 새 탭 열기와 링크 대상 확인을 쓸 수 없습니다.
+   */
+  actionTo?: string;
 
   /**
    * 화면에 이미 큰 CTA 가 있는 자리(홈)에서는 `link` 로 낮춰 버튼이 둘로
@@ -27,10 +35,13 @@ export function EmptyState({
   title,
   description,
   actionLabel,
-  onAction,
+  actionTo,
   actionVariant = "button",
   className,
 }: EmptyStateProps) {
+  const actionClassName =
+    actionVariant === "link" ? styles.actionLink : styles.actionButton;
+
   return (
     <div
       className={
@@ -41,16 +52,10 @@ export function EmptyState({
 
       {description && <p className={styles.description}>{description}</p>}
 
-      {actionLabel && onAction && (
-        <button
-          type="button"
-          className={
-            actionVariant === "link" ? styles.actionLink : styles.actionButton
-          }
-          onClick={onAction}
-        >
+      {actionLabel && actionTo && (
+        <Link to={actionTo} className={actionClassName}>
           {actionLabel}
-        </button>
+        </Link>
       )}
     </div>
   );

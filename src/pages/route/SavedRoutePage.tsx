@@ -126,7 +126,7 @@ export function SavedRoutePage() {
             title="담은 코스가 없습니다!!"
             description="추천 코스에서 마음에 드는 걸 담아 보세요."
             actionLabel="추천 코스 보러 가기"
-            onAction={() => navigate("/route")}
+            actionTo="/route"
           />
         )}
         {routes && routes.length > 0 && (

@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import * as styles from "./ConditionSummary.css";
 
 interface ConditionSummaryProps {
@@ -5,7 +7,8 @@ interface ConditionSummaryProps {
   dailyBudgetWon: number;
   /** 화면에 보여 줄 여행 테마 이름. 한글로 들어옵니다. */
   travelStyleNames: string[];
-  onEdit: () => void;
+  /** 조건을 고치러 갈 경로 */
+  editTo: string;
 }
 
 /**
@@ -18,7 +21,7 @@ export function ConditionSummary({
   durationDays,
   dailyBudgetWon,
   travelStyleNames,
-  onEdit,
+  editTo,
 }: ConditionSummaryProps) {
   const parts = [
     `${durationDays}일`,
@@ -31,9 +34,9 @@ export function ConditionSummary({
     <div className={styles.summary}>
       <p className={styles.conditionText}>{parts.join(" · ")}</p>
 
-      <button type="button" className={styles.editButton} onClick={onEdit}>
+      <Link to={editTo} className={styles.editButton}>
         조건 수정
-      </button>
+      </Link>
     </div>
   );
 }
