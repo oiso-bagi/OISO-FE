@@ -201,6 +201,7 @@ export const useUpdateSavedRouteCompleted = () => {
 };
 
 export const useDeleteSavedRoute = () => {
+  const queryClient = useQueryClient();
   const invalidateSavedRoutes = useInvalidateSavedRoutes();
   const { apply, rollback } = useOptimisticSavedRouteList();
 
@@ -221,7 +222,15 @@ export const useDeleteSavedRoute = () => {
 
     onError: (_error, _routeId, context) => rollback(context),
 
-    // 서버가 계산한 누적 절약액으로 맞추고 홈도 갱신합니다.
-    onSettled: invalidateSavedRoutes,
+    /**
+     * 서버가 계산한 누적 절약액으로 맞추고 홈·대시보드도 갱신합니다.
+     *
+     * 대시보드는 완료한 여행의 절약 기록을 보여 주는데, 삭제해도 무효화하지
+     * 않아 지운 루트의 금액이 남아 있었습니다.
+     */
+    onSettled: () => {
+      invalidateSavedRoutes();
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.savings });
+    },
   });
 };

@@ -158,11 +158,6 @@ export const historyCard = style({
 });
 
 export const historyItem = style({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: vars.space.md,
-
   selectors: {
     "& + &": {
       marginTop: vars.space.xs,
@@ -170,7 +165,39 @@ export const historyItem = style({
   },
 });
 
-export const historyTitle = style([typographyStyles.body4]);
+/**
+ * 기록 한 줄 전체를 누르면 그 코스를 지도로 봅니다.
+ *
+ * 저장을 지운 뒤에도 남는 기록이라 여기가 지난 여행에 닿는 유일한 통로입니다.
+ */
+export const historyButton = style({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: vars.space.md,
+
+  width: "100%",
+  padding: `${vars.space.xs} ${vars.space.xxs}`,
+
+  background: "none",
+  border: 0,
+
+  cursor: "pointer",
+  textAlign: "left",
+
+  selectors: {
+    "&:active": {
+      backgroundColor: vars.color.primary100,
+    },
+  },
+});
+
+export const historyTitle = style([
+  typographyStyles.body4,
+  {
+    display: "block",
+  },
+]);
 
 export const historyDate = style([
   typographyStyles.body9,
