@@ -181,36 +181,11 @@ export const stopConnection = style([
  * 눌린 모양으로 뒤집어 한눈에 갈리게 합니다. 테두리·그림자 굵기도 다이얼로그
  * 버튼과 맞췄습니다.
  */
-/** 저장 버튼과 다음 행동 링크를 한 줄에 둡니다. */
-export const saveRow = style({
-  display: "flex",
-  alignSelf: "center",
-  alignItems: "center",
-  gap: vars.space.xs,
-
-  marginTop: "8px",
-});
-
-export const savedListLink = style([
-  typo.detail2,
-  {
-    padding: "4px 2px",
-
-    color: vars.color.neutral500,
-    background: "none",
-    border: 0,
-
-    textDecoration: "underline",
-    textUnderlineOffset: "3px",
-
-    cursor: "pointer",
-  },
-]);
-
 export const saveButton = style([
   typo.body7,
   {
     display: "flex",
+    alignSelf: "center",
     alignItems: "center",
     justifyContent: "center",
     gap: "5px",
@@ -218,6 +193,7 @@ export const saveButton = style([
     minWidth: "84px",
     height: "34px",
 
+    margin: "8px 0 0 0",
     padding: "0 12px",
 
     color: vars.color.ink,

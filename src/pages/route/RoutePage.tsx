@@ -138,7 +138,13 @@ export function RoutePage() {
     setJustSavedIds((previous) => new Set(previous).add(routeId));
 
     createSavedRoute.mutate(routeId, {
-      onSuccess: () => showToast({ message: "저장되었습니다" }),
+      // 저장하고 나면 할 일이 없어 흐름이 끊깁니다. 토스트에서 바로 넘어갑니다.
+      onSuccess: () =>
+        showToast({
+          message: "저장되었습니다",
+          actionLabel: "저장 목록 바로가기",
+          onAction: () => navigate("/saved"),
+        }),
       onError: (saveError) => {
         // 실패했으면 다시 누를 수 있도록 되돌립니다.
         setJustSavedIds((previous) => {
@@ -268,7 +274,6 @@ export function RoutePage() {
                         stops={visibleStops}
                         onSave={() => handleSave(route.id)}
                         isSaved={isRouteSaved(route.id)}
-                        onViewSavedList={() => navigate("/saved")}
                         isSaving={createSavedRoute.isPending}
                       />
                     )}
