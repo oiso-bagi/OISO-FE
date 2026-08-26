@@ -17,6 +17,7 @@ import { useSavedRouteDetail } from "./hooks/useSavedRouteDetail";
 import { DayTabs } from "./components/DayTabs";
 import { MapResizeHandle } from "./components/MapResizeHandle";
 import { useMapResize } from "./hooks/useMapResize";
+import type { SelectedDay } from "./types/day";
 
 import * as styles from "./MapDetailPage.css";
 
@@ -67,11 +68,12 @@ export function MapDetailPage() {
   );
   const isMultiDay = dayNumbers.length > 1;
 
-  const [selectedDay, setSelectedDay] = useState<number | "all">("all");
+  const [selectedDay, setSelectedDay] = useState<SelectedDay>("all");
 
   // 지도/목록 비율은 사용자가 손잡이로 조절합니다.
   const mapAreaRef = useRef<HTMLDivElement>(null);
-  const { mapStyle, resizeProps } = useMapResize(mapAreaRef);
+  const listAreaRef = useRef<HTMLDivElement>(null);
+  const { mapStyle, resizeProps } = useMapResize(mapAreaRef, listAreaRef);
 
   // 다른 루트로 이동하거나 조회 대상이 변경되면 일차 선택을 전체로 초기화합니다.
   useEffect(() => {
@@ -121,7 +123,7 @@ export function MapDetailPage() {
 
       <MapResizeHandle controlsId="map-detail-map-area" {...resizeProps} />
 
-      <div className={styles.listArea}>
+      <div ref={listAreaRef} className={styles.listArea}>
         {!isInvalid && isPending && (
           <div className={styles.listSkeleton}>
             <Skeleton width="30%" height="18px" />

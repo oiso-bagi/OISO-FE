@@ -7,16 +7,16 @@ import { useToast } from "@/shared/components/Toast/toastContext";
 import { toErrorMessage } from "@/shared/api/apiError";
 
 import { DayTabs } from "./components/DayTabs";
-import type { SelectedDay } from "./components/DayTabs";
 import { MapResizeHandle } from "./components/MapResizeHandle";
 import { RouteMap } from "./components/RouteMap";
 import { RouteStopList } from "./components/RouteStopList";
 import { TransportationLabel } from "./components/TransportationLabel";
 
+import { useMapResize } from "./hooks/useMapResize";
 import { useRecommendedRouteDetail } from "./hooks/useRecommendedRouteDetail";
 import { useRecommendedRoutes } from "./hooks/useRecommendedRoutes";
-import { useMapResize } from "./hooks/useMapResize";
 import { useCreateSavedRoute, useSavedRoutes } from "./hooks/useSavedRoutes";
+import type { SelectedDay } from "./types/day";
 import { formatDistance, toRouteSummaryItems } from "./utils/routeFormat";
 
 import * as styles from "./components/routeLayout.css";
@@ -33,7 +33,8 @@ export function RoutePage() {
 
   // 지도/목록 비율은 사용자가 손잡이로 조절합니다.
   const mapAreaRef = useRef<HTMLDivElement>(null);
-  const { mapStyle, resizeProps } = useMapResize(mapAreaRef);
+  const listAreaRef = useRef<HTMLDivElement>(null);
+  const { mapStyle, resizeProps } = useMapResize(mapAreaRef, listAreaRef);
 
   const { data: routes, isPending, isError, error } = useRecommendedRoutes();
   // 카드를 펼쳤을 때만 이 쿼리가 켜지므로, isPending 은 "아직 결과 없음"과 같습니다.
@@ -167,7 +168,7 @@ export function RoutePage() {
 
       <MapResizeHandle controlsId="route-map-area" {...resizeProps} />
 
-      <div className={styles.listArea}>
+      <div ref={listAreaRef} className={styles.listArea}>
         {isPending && <RouteListSkeleton />}
 
         {isError && (

@@ -1,8 +1,8 @@
-import type { MapResizeHandleProps } from "../hooks/useMapResize";
+import type { MapResizeHandlers } from "../types/mapResize";
 
 import * as styles from "./MapResizeHandle.css";
 
-interface Props extends MapResizeHandleProps {
+interface MapResizeHandleProps extends MapResizeHandlers {
   /** 이 손잡이가 조절하는 지도 영역의 id */
   controlsId: string;
 }
@@ -17,7 +17,7 @@ export function MapResizeHandle({
   controlsId,
   isCollapsed,
   ...handlers
-}: Props) {
+}: MapResizeHandleProps) {
   return (
     <button
       type="button"
