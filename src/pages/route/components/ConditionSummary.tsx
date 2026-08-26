@@ -1,9 +1,10 @@
-import type { RecommendationConditions } from "@/shared/lib/recommendationConditions";
-
 import * as styles from "./ConditionSummary.css";
 
 interface ConditionSummaryProps {
-  conditions: RecommendationConditions;
+  durationDays: number;
+  dailyBudgetWon: number;
+  /** 화면에 보여 줄 여행 테마 이름. 한글로 들어옵니다. */
+  travelStyleNames: string[];
   onEdit: () => void;
 }
 
@@ -14,19 +15,17 @@ interface ConditionSummaryProps {
  * 무엇으로 검색했는지 알 수 없었습니다.
  */
 export function ConditionSummary({
-  conditions,
+  durationDays,
+  dailyBudgetWon,
+  travelStyleNames,
   onEdit,
 }: ConditionSummaryProps) {
-  /** 이름을 저장하기 전에 설문을 마친 사용자는 slug 만 갖고 있습니다. */
-  const styleNames =
-    conditions.travelStyleLabels ?? conditions.travelStyleSlugs;
-
   const parts = [
-    `${conditions.durationDays}일`,
-    `하루 ${conditions.dailyBudgetWon.toLocaleString("ko-KR")}원`,
+    `${durationDays}일`,
+    `하루 ${dailyBudgetWon.toLocaleString("ko-KR")}원`,
   ];
 
-  if (styleNames.length > 0) parts.push(styleNames.join(", "));
+  if (travelStyleNames.length > 0) parts.push(travelStyleNames.join(", "));
 
   return (
     <div className={styles.summary}>

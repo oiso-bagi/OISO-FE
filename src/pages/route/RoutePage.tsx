@@ -7,6 +7,7 @@ import { RouteListSkeleton } from "@/shared/components/Skeleton/RouteCardSkeleto
 import { useToast } from "@/shared/components/Toast/toastContext";
 import { toErrorMessage } from "@/shared/api/apiError";
 import { readRecommendationConditions } from "@/shared/lib/recommendationConditions";
+import { useRecommendationOptions } from "@/pages/survey/hooks/useRecommendationOptions";
 
 import { ConditionSummary } from "./components/ConditionSummary";
 import { DayTabs } from "./components/DayTabs";
@@ -46,6 +47,28 @@ export function RoutePage() {
    * 닿으므로 보통 값이 있지만, 저장이 막힌 환경을 대비해 없을 수 있게 둡니다.
    */
   const conditions = readRecommendationConditions();
+
+  /**
+   * 여행 테마를 한글로 보여 줍니다.
+   *
+   * 설문이 이름을 함께 저장하기 전에 조건을 정한 사용자는 slug 만 갖고 있어
+   * "nature-walk" 처럼 보입니다. 그때만 옵션 API 로 이름을 채웁니다.
+   */
+  const hasSavedStyleLabels = conditions?.travelStyleLabels !== undefined;
+  const { data: recommendationOptions } = useRecommendationOptions(
+    conditions !== null && !hasSavedStyleLabels,
+  );
+
+  const travelStyleNames =
+    conditions === null
+      ? []
+      : (conditions.travelStyleLabels ??
+        conditions.travelStyleSlugs.map(
+          (slug) =>
+            recommendationOptions?.travelStyles.find(
+              (style) => style.id === slug,
+            )?.label ?? slug,
+        ));
 
   const { data: routes, isPending, isError, error } = useRecommendedRoutes();
   // 카드를 펼쳤을 때만 이 쿼리가 켜지므로, isPending 은 "아직 결과 없음"과 같습니다.
@@ -159,8 +182,11 @@ export function RoutePage() {
 
       {conditions && (
         <ConditionSummary
-          conditions={conditions}
-          onEdit={() => navigate("/survey")}
+          durationDays={conditions.durationDays}
+          dailyBudgetWon={conditions.dailyBudgetWon}
+          travelStyleNames={travelStyleNames}
+          // 여기서 들어온 설문만 이전 답을 채웁니다.
+          onEdit={() => navigate("/survey?mode=edit")}
         />
       )}
 
