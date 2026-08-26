@@ -158,6 +158,11 @@ export const historyCard = style({
 });
 
 export const historyItem = style({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: vars.space.md,
+
   selectors: {
     "& + &": {
       marginTop: vars.space.xs,
@@ -165,39 +170,38 @@ export const historyItem = style({
   },
 });
 
-/**
- * 기록 한 줄 전체를 누르면 그 코스를 지도로 봅니다.
- *
- * 저장을 지운 뒤에도 남는 기록이라 여기가 지난 여행에 닿는 유일한 통로입니다.
- */
-export const historyButton = style({
+/** 금액과 그 아래 상세 보기 링크. 오른쪽 끝에 맞춥니다. */
+export const historyAmountColumn = style({
   display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: vars.space.md,
-
-  width: "100%",
-  padding: `${vars.space.xs} ${vars.space.xxs}`,
-
-  background: "none",
-  border: 0,
-
-  cursor: "pointer",
-  textAlign: "left",
-
-  selectors: {
-    "&:active": {
-      backgroundColor: vars.color.primary100,
-    },
-  },
+  flexShrink: 0,
+  flexDirection: "column",
+  alignItems: "flex-end",
+  gap: "2px",
 });
 
-export const historyTitle = style([
-  typographyStyles.body4,
+/**
+ * 지난 여행을 지도로 여는 링크.
+ *
+ * 기록은 저장을 지운 뒤에도 남아, 여기가 그 코스에 닿는 유일한 통로입니다.
+ */
+export const historyDetailLink = style([
+  typographyStyles.body9,
   {
-    display: "block",
+    padding: 0,
+
+    color: vars.color.neutral500,
+    background: "none",
+    border: 0,
+
+    textDecoration: "underline",
+    textUnderlineOffset: "2px",
+    whiteSpace: "nowrap",
+
+    cursor: "pointer",
   },
 ]);
+
+export const historyTitle = style([typographyStyles.body4]);
 
 export const historyDate = style([
   typographyStyles.body9,

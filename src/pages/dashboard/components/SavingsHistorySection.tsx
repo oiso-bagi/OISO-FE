@@ -29,36 +29,37 @@ export function SavingsHistorySection({
               key={`${history.routeId}-${history.trippedAt}`}
               className={styles.historyItem}
             >
-              {/*
-                저장 루트가 아니라 추천 루트로 엽니다. 기록은 저장을 지운
-                뒤에도 남아, 저장 상세로 열면 404 가 납니다.
-              */}
-              <button
-                type="button"
-                className={styles.historyButton}
-                onClick={() =>
-                  navigate(
-                    `/map/${encodeURIComponent(history.routeId)}?source=recommended`,
-                  )
-                }
-              >
-                <span>
-                  {/* button 안에는 heading 을 둘 수 없어 span 으로 씁니다. */}
-                  <span className={styles.historyTitle}>
-                    {history.routeName}
-                  </span>
-                  <time
-                    className={styles.historyDate}
-                    dateTime={history.trippedAt}
-                  >
-                    {formatDisplayDate(history.trippedAt)}
-                  </time>
-                </span>
+              <div>
+                <h3 className={styles.historyTitle}>{history.routeName}</h3>
+                <time
+                  className={styles.historyDate}
+                  dateTime={history.trippedAt}
+                >
+                  {formatDisplayDate(history.trippedAt)}
+                </time>
+              </div>
 
+              <div className={styles.historyAmountColumn}>
                 <strong className={styles.historyAmount}>
                   -{formatWon(history.savedAmountWon)}
                 </strong>
-              </button>
+
+                {/*
+                  저장 루트가 아니라 추천 루트로 엽니다. 기록은 저장을 지운
+                  뒤에도 남아, 저장 상세로 열면 404 가 납니다.
+                */}
+                <button
+                  type="button"
+                  className={styles.historyDetailLink}
+                  onClick={() =>
+                    navigate(
+                      `/map/${encodeURIComponent(history.routeId)}?source=recommended`,
+                    )
+                  }
+                >
+                  상세 보기
+                </button>
+              </div>
             </li>
           ))}
         </Card>
