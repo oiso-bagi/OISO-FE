@@ -27,9 +27,20 @@ import type {
   RouteLocation,
 } from "../types/recommendedRoute";
 
+/**
+ * 지도 좌표에 필요한 필드만 추립니다.
+ *
+ * 목록의 `stopLocations` 와 상세의 `stops` 는 절약액 필드 유무가 달라 서로
+ * 대입되지 않습니다. 이 함수가 쓰는 필드만 받으면 둘 다 넘길 수 있습니다.
+ */
+type StopCoordinateSource = Pick<
+  RouteStopLocationDto,
+  "sequence" | "dayNumber" | "placeName" | "latitude" | "longitude"
+>;
+
 /** 좌표가 없는 경유지는 지도에 찍을 수 없어 제외합니다. */
 const toRouteLocations = (
-  stopLocations: RouteStopLocationDto[],
+  stopLocations: StopCoordinateSource[],
 ): RouteLocation[] =>
   stopLocations
     .filter((stop) => stop.latitude !== null && stop.longitude !== null)
