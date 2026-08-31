@@ -57,13 +57,19 @@ export function SavedRoutePage() {
     // 진행 중이면 중복 요청을 막습니다.
     if (updateCompleted.isPending) return;
 
-    if (!isCompleted) {
-      trackEvent("trip_complete", { route_id: routeId, from: "saved_list" });
-    }
-
     updateCompleted.mutate(
       { routeId, isCompleted: !isCompleted },
       {
+        // 요청이 실패해도 완료로 집계되지 않도록 성공한 뒤에만 보냅니다.
+        onSuccess: () => {
+          if (!isCompleted) {
+            trackEvent("trip_complete", {
+              route_id: routeId,
+              from: "saved_list",
+            });
+          }
+        },
+
         onError: (toggleError) =>
           showToast({
             message: toErrorMessage(

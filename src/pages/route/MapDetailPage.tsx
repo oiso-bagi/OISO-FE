@@ -74,13 +74,16 @@ export function MapDetailPage() {
 
     const nextCompleted = !saved.data.isCompleted;
 
-    if (nextCompleted) {
-      trackEvent("trip_complete", { route_id: routeId, from: "map" });
-    }
-
     updateCompleted.mutate(
       { routeId, isCompleted: nextCompleted },
       {
+        // 요청이 실패해도 완료로 집계되지 않도록 성공한 뒤에만 보냅니다.
+        onSuccess: () => {
+          if (nextCompleted) {
+            trackEvent("trip_complete", { route_id: routeId, from: "map" });
+          }
+        },
+
         onError: (toggleError) =>
           showToast({
             message: toErrorMessage(

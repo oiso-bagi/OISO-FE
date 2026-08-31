@@ -17,12 +17,13 @@ import { GA_MEASUREMENT_ID } from "@/shared/config/env";
  * 가 이어져 단계별 이탈이 그대로 깔때기가 됩니다.
  * 더 늘리면 심는 비용은 늘고 읽히는 건 줄어듭니다.
  */
-type AnalyticsEvent =
-  | { name: "survey_complete"; params: SurveyCompleteParams }
-  | { name: "route_expand"; params: RouteExpandParams }
-  | { name: "route_save"; params: RouteSaveParams }
-  | { name: "map_view"; params: MapViewParams }
-  | { name: "trip_complete"; params: TripCompleteParams };
+type EventParams = {
+  survey_complete: SurveyCompleteParams;
+  route_expand: RouteExpandParams;
+  route_save: RouteSaveParams;
+  map_view: MapViewParams;
+  trip_complete: TripCompleteParams;
+};
 
 type SurveyCompleteParams = {
   duration_days: number;
@@ -66,8 +67,28 @@ declare global {
 
 const isEnabled = () => GA_MEASUREMENT_ID !== "" && Boolean(window.gtag);
 
-const toPagePath = (location: { pathname: string; search: string }) =>
-  `${location.pathname}${location.search}`;
+/**
+ * 분석에 의미가 있으면서 개인정보가 아닌 쿼리 키만 남깁니다.
+ *
+ * 쿼리를 통째로 보내면 OAuth 콜백처럼 서버가 무엇을 붙일지 모르는 경로에서
+ * 토큰이나 식별자가 GA 로 흘러갈 수 있습니다.
+ */
+const ALLOWED_QUERY_KEYS = ["source", "mode"] as const;
+
+const toPagePath = (location: { pathname: string; search: string }) => {
+  const search = new URLSearchParams(location.search);
+  const kept = new URLSearchParams();
+
+  ALLOWED_QUERY_KEYS.forEach((key) => {
+    const value = search.get(key);
+
+    if (value !== null) kept.set(key, value);
+  });
+
+  const query = kept.toString();
+
+  return query ? `${location.pathname}?${query}` : location.pathname;
+};
 
 const trackPageView = (pagePath: string) => {
   if (!isEnabled()) return;
@@ -79,10 +100,15 @@ const trackPageView = (pagePath: string) => {
   });
 };
 
-/** 흐름 이벤트 한 건을 보냅니다. 측정 ID 가 없으면 아무 일도 일어나지 않습니다. */
-export const trackEvent = <T extends AnalyticsEvent>(
-  name: T["name"],
-  params: T["params"],
+/**
+ * 흐름 이벤트 한 건을 보냅니다. 측정 ID 가 없으면 아무 일도 일어나지 않습니다.
+ *
+ * 이름을 키로 잡아 파라미터가 그 이벤트의 것으로 좁혀집니다. 이름과 파라미터를
+ * 따로 추론하면 `route_expand` 에 `rank` 가 빠진 조합도 통과합니다.
+ */
+export const trackEvent = <K extends keyof EventParams>(
+  name: K,
+  params: EventParams[K],
 ) => {
   if (!isEnabled()) return;
 
