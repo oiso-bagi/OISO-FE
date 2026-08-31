@@ -8,6 +8,7 @@ import { Header } from "@/shared/components/header/Header";
 import { RouteListSkeleton } from "@/shared/components/Skeleton/RouteCardSkeleton";
 import { useToast } from "@/shared/components/Toast/toastContext";
 import { toErrorMessage } from "@/shared/api/apiError";
+import { trackEvent } from "@/shared/lib/analytics";
 
 import { SavedRouteSummary } from "./components/SavedRouteSummary";
 import { TransportationLabel } from "./components/TransportationLabel";
@@ -55,6 +56,10 @@ export function SavedRoutePage() {
   const handleToggleCompleted = (routeId: string, isCompleted: boolean) => {
     // 진행 중이면 중복 요청을 막습니다.
     if (updateCompleted.isPending) return;
+
+    if (!isCompleted) {
+      trackEvent("trip_complete", { route_id: routeId, from: "saved_list" });
+    }
 
     updateCompleted.mutate(
       { routeId, isCompleted: !isCompleted },

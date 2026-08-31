@@ -7,6 +7,7 @@ import { Header } from "@/shared/components/header/Header";
 import { RouteListSkeleton } from "@/shared/components/Skeleton/RouteCardSkeleton";
 import { useToast } from "@/shared/components/Toast/toastContext";
 import { toErrorMessage } from "@/shared/api/apiError";
+import { trackEvent } from "@/shared/lib/analytics";
 import { readRecommendationConditions } from "@/shared/lib/recommendationConditions";
 import { useRecommendationOptions } from "@/pages/survey/hooks/useRecommendationOptions";
 
@@ -123,6 +124,13 @@ export function RoutePage() {
   }, [routes]);
 
   const handleToggleExpanded = (routeId: string) => {
+    // 접는 건 관심 신호가 아니라 펼칠 때만 보냅니다.
+    if (expandedRouteId !== routeId) {
+      const rank = (routes ?? []).findIndex((route) => route.id === routeId);
+
+      trackEvent("route_expand", { route_id: routeId, rank: rank + 1 });
+    }
+
     setExpandedRouteId((prev) => (prev === routeId ? null : routeId));
     // 다른 코스를 펼치면 이전 코스에서 고른 일차는 의미가 없습니다.
     setSelectedDay("all");
@@ -140,12 +148,15 @@ export function RoutePage() {
 
     createSavedRoute.mutate(routeId, {
       // 저장하고 나면 할 일이 없어 흐름이 끊깁니다. 토스트에서 바로 넘어갑니다.
-      onSuccess: () =>
+      onSuccess: () => {
+        trackEvent("route_save", { route_id: routeId });
+
         showToast({
           message: "저장되었습니다",
           actionLabel: "저장 목록 바로가기",
           onAction: () => navigate("/saved"),
-        }),
+        });
+      },
       onError: (saveError) => {
         // 실패했으면 다시 누를 수 있도록 되돌립니다.
         setJustSavedIds((previous) => {

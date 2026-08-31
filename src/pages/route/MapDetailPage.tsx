@@ -10,6 +10,7 @@ import backIcon from "@/shared/assets/svg/back.svg";
 import { Skeleton } from "@/shared/components/Skeleton/Skeleton";
 import { useToast } from "@/shared/components/Toast/toastContext";
 import { toErrorMessage } from "@/shared/api/apiError";
+import { trackEvent } from "@/shared/lib/analytics";
 
 import { RouteMap } from "./components/RouteMap";
 import { RouteStopList } from "./components/RouteStopList";
@@ -71,8 +72,14 @@ export function MapDetailPage() {
   const handleToggleCompleted = () => {
     if (routeId === null || !saved.data || updateCompleted.isPending) return;
 
+    const nextCompleted = !saved.data.isCompleted;
+
+    if (nextCompleted) {
+      trackEvent("trip_complete", { route_id: routeId, from: "map" });
+    }
+
     updateCompleted.mutate(
-      { routeId, isCompleted: !saved.data.isCompleted },
+      { routeId, isCompleted: nextCompleted },
       {
         onError: (toggleError) =>
           showToast({
@@ -105,6 +112,16 @@ export function MapDetailPage() {
   // 다른 루트로 이동하거나 조회 대상이 변경되면 일차 선택을 전체로 초기화합니다.
   useEffect(() => {
     setSelectedDay("all");
+  }, [routeId, isSaved]);
+
+  // 지도 진입. 루트가 바뀔 때마다 한 번씩 보냅니다.
+  useEffect(() => {
+    if (routeId === null) return;
+
+    trackEvent("map_view", {
+      route_id: routeId,
+      source: isSaved ? "saved" : "recommended",
+    });
   }, [routeId, isSaved]);
 
   // 일차 탭에서 특정 일차를 선택하면 지도뿐 아니라 하단 경유지 리스트도 해당 일차만 표시합니다.

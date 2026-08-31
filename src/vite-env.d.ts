@@ -16,6 +16,9 @@ interface ImportMetaEnv {
 
   /** mock 사용 여부. 미설정 시 base URL 유무로 판단합니다. */
   readonly VITE_USE_MOCK?: string;
+
+  /** GA4 측정 ID(`G-` 로 시작). 없으면 수집하지 않습니다. */
+  readonly VITE_GA_MEASUREMENT_ID?: string;
 }
 
 interface ImportMeta {
