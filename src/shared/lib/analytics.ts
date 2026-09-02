@@ -73,16 +73,24 @@ const isEnabled = () => GA_MEASUREMENT_ID !== "" && Boolean(window.gtag);
  * 쿼리를 통째로 보내면 OAuth 콜백처럼 서버가 무엇을 붙일지 모르는 경로에서
  * 토큰이나 식별자가 GA 로 흘러갈 수 있습니다.
  */
-const ALLOWED_QUERY_KEYS = ["source", "mode"] as const;
+const ALLOWED_QUERY: Record<string, readonly string[]> = {
+  source: ["recommended", "saved"],
+  mode: ["edit"],
+};
 
 const toPagePath = (location: { pathname: string; search: string }) => {
   const search = new URLSearchParams(location.search);
   const kept = new URLSearchParams();
 
-  ALLOWED_QUERY_KEYS.forEach((key) => {
+  /**
+   * 키만 거르면 값은 여전히 URL 에서 온 입력입니다. `?source=<이메일>` 처럼
+   * 아무 값이나 넣어도 그대로 실려 나가므로, 우리가 실제로 쓰는 값일 때만
+   * 남깁니다.
+   */
+  Object.entries(ALLOWED_QUERY).forEach(([key, allowedValues]) => {
     const value = search.get(key);
 
-    if (value !== null) kept.set(key, value);
+    if (value !== null && allowedValues.includes(value)) kept.set(key, value);
   });
 
   const query = kept.toString();

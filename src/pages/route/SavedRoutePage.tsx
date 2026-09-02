@@ -57,28 +57,29 @@ export function SavedRoutePage() {
     // 진행 중이면 중복 요청을 막습니다.
     if (updateCompleted.isPending) return;
 
-    updateCompleted.mutate(
-      { routeId, isCompleted: !isCompleted },
-      {
-        // 요청이 실패해도 완료로 집계되지 않도록 성공한 뒤에만 보냅니다.
-        onSuccess: () => {
-          if (!isCompleted) {
-            trackEvent("trip_complete", {
-              route_id: routeId,
-              from: "saved_list",
-            });
-          }
-        },
-
-        onError: (toggleError) =>
-          showToast({
-            message: toErrorMessage(
-              toggleError,
-              "상태를 변경하지 못했어요. 다시 시도해 주세요.",
-            ),
-          }),
-      },
-    );
+    /**
+     * `mutate` 의 호출별 콜백은 요청 중 화면을 벗어나면 실행되지 않아 이벤트가
+     * 누락됩니다. 컴포넌트 수명과 무관한 `mutateAsync` 로 처리합니다.
+     */
+    updateCompleted
+      .mutateAsync({ routeId, isCompleted: !isCompleted })
+      .then(() => {
+        // 요청이 실패하면 완료로 집계되지 않습니다.
+        if (!isCompleted) {
+          trackEvent("trip_complete", {
+            route_id: routeId,
+            from: "saved_list",
+          });
+        }
+      })
+      .catch((toggleError: unknown) =>
+        showToast({
+          message: toErrorMessage(
+            toggleError,
+            "상태를 변경하지 못했어요. 다시 시도해 주세요.",
+          ),
+        }),
+      );
   };
 
   // 삭제는 되돌리기 어려우니 확인 다이얼로그를 거칩니다.
