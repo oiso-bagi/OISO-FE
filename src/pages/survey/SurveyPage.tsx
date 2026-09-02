@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { useToast } from "@/shared/components/Toast/toastContext";
+import { trackEvent } from "@/shared/lib/analytics";
 import { completeSurvey } from "@/shared/lib/onboardingFlow";
 import {
   readRecommendationConditions,
@@ -88,6 +89,12 @@ export function SurveyPage() {
         });
         return;
       }
+
+      trackEvent("survey_complete", {
+        duration_days: surveyForm.budget.tripDays,
+        daily_budget_won: surveyForm.budget.dailyBudget,
+        style_count: selectedStyleIds.length,
+      });
 
       navigate("/route");
       return;

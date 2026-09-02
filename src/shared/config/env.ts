@@ -16,6 +16,16 @@ export const API_BASE_URL = normalize(import.meta.env.VITE_API_BASE_URL);
 /** 카카오 지도 JavaScript 키 */
 export const KAKAO_MAP_KEY = normalize(import.meta.env.VITE_KAKAO_MAP_KEY);
 
+/**
+ * GA4 측정 ID.
+ *
+ * 비어 있으면 수집을 아예 켜지 않습니다. 로컬과 프리뷰 배포에서 실제 지표에
+ * 잡히지 않게 하려면 이 값을 운영 환경에만 넣으면 됩니다.
+ */
+export const GA_MEASUREMENT_ID = normalize(
+  import.meta.env.VITE_GA_MEASUREMENT_ID,
+);
+
 const rawUseMock = normalize(import.meta.env.VITE_USE_MOCK);
 
 /**

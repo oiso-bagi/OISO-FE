@@ -10,6 +10,7 @@ import backIcon from "@/shared/assets/svg/back.svg";
 import { Skeleton } from "@/shared/components/Skeleton/Skeleton";
 import { useToast } from "@/shared/components/Toast/toastContext";
 import { toErrorMessage } from "@/shared/api/apiError";
+import { trackEvent } from "@/shared/lib/analytics";
 
 import { RouteMap } from "./components/RouteMap";
 import { RouteStopList } from "./components/RouteStopList";
@@ -71,18 +72,29 @@ export function MapDetailPage() {
   const handleToggleCompleted = () => {
     if (routeId === null || !saved.data || updateCompleted.isPending) return;
 
-    updateCompleted.mutate(
-      { routeId, isCompleted: !saved.data.isCompleted },
-      {
-        onError: (toggleError) =>
-          showToast({
-            message: toErrorMessage(
-              toggleError,
-              "상태를 변경하지 못했어요. 다시 시도해 주세요.",
-            ),
-          }),
-      },
-    );
+    const nextCompleted = !saved.data.isCompleted;
+
+    /**
+     * `mutate` 의 호출별 콜백은 요청 중 화면을 벗어나면 실행되지 않아 이벤트가
+     * 누락됩니다. 지도에서 완료를 누르고 바로 뒤로 가는 흐름이 그렇습니다.
+     * 컴포넌트 수명과 무관한 `mutateAsync` 로 처리합니다.
+     */
+    updateCompleted
+      .mutateAsync({ routeId, isCompleted: nextCompleted })
+      .then(() => {
+        // 요청이 실패하면 완료로 집계되지 않습니다.
+        if (nextCompleted) {
+          trackEvent("trip_complete", { route_id: routeId, from: "map" });
+        }
+      })
+      .catch((toggleError: unknown) =>
+        showToast({
+          message: toErrorMessage(
+            toggleError,
+            "상태를 변경하지 못했어요. 다시 시도해 주세요.",
+          ),
+        }),
+      );
   };
 
   // 다일 코스일 때만 일차 선택 탭을 노출합니다. 기본값은 전체(All) 표시.
@@ -106,6 +118,23 @@ export function MapDetailPage() {
   useEffect(() => {
     setSelectedDay("all");
   }, [routeId, isSaved]);
+
+  /**
+   * 지도 진입. 조회에 성공한 뒤 서버가 돌려준 id 로 보냅니다.
+   *
+   * URL 의 경로 조각을 그대로 쓰면 사용자가 넣은 아무 문자열이 GA 로 실려
+   * 나갑니다. 조회가 실패했다면 코스를 본 것도 아닙니다.
+   */
+  const viewedRouteId = route?.id;
+
+  useEffect(() => {
+    if (viewedRouteId === undefined) return;
+
+    trackEvent("map_view", {
+      route_id: viewedRouteId,
+      source: isSaved ? "saved" : "recommended",
+    });
+  }, [viewedRouteId, isSaved]);
 
   // 일차 탭에서 특정 일차를 선택하면 지도뿐 아니라 하단 경유지 리스트도 해당 일차만 표시합니다.
   const visibleStops =

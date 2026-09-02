@@ -82,6 +82,26 @@ export interface RouteStopLocationDto {
    * @example 129.1187
    */
   longitude: number | null;
+  /**
+   * 구간 이동 대중교통/이동 비용(원)
+   * @example 1500
+   */
+  fareWon: number | null;
+  /**
+   * 장소 실제/추정 이용 가격(원)
+   * @example 12000
+   */
+  estimatedPriceWon: number | null;
+  /**
+   * 해당 장소 카테고리의 비교 기준이 되는 관광지 프리미엄 가격(원)
+   * @example 18500
+   */
+  touristPremiumWon: number | null;
+  /**
+   * 해당 장소 이용으로 절약한 금액(원, touristPremiumWon - estimatedPriceWon)
+   * @example 6500
+   */
+  savedPriceWon: number | null;
 }
 
 export interface RecommendedRouteListResponseDto {
@@ -143,8 +163,8 @@ export interface RecommendedRouteListResponseDto {
    */
   estimatedSavingsWon: number;
   /**
-   * 추천 점수
-   * @example 87.5
+   * 추천도 점수 (0 ~ 100점 백분율 척도)
+   * @example 94
    */
   score: number;
   /**
@@ -207,6 +227,11 @@ export interface RouteStopResponseDto {
    */
   dayNumber: number;
   /**
+   * 장소 고유 ID
+   * @example "place_001"
+   */
+  placeId: string | null;
+  /**
    * 장소 이름
    * @example "해운대 해수욕장"
    */
@@ -268,7 +293,17 @@ export interface RouteStopResponseDto {
    */
   stayMinutes: number | null;
   /**
-   * 이 경유지부터 다음 경유지까지의 실제 도로 굴곡 좌표 배열 (카카오맵 Polyline 렌더링용)
+   * 구간 교통비(원)
+   * @example 1500
+   */
+  fareWon: number | null;
+  /**
+   * 장소 지출 예상 비용(원)
+   * @example 12000
+   */
+  estimatedPriceWon: number | null;
+  /**
+   * 이전 경유지부터 현재 경유지까지의 실제 도로 굴곡 좌표 배열 (카카오맵 Polyline 렌더링용, WALKING 구간은 보행 보간 좌표 generateFallbackPath() 사용, 첫 경유지는 빈 배열)
    * @example [{"latitude":35.1587,"longitude":129.1604},{"latitude":35.159,"longitude":129.161}]
    */
   pathCoordinates: PathCoordinateDto[];
@@ -480,6 +515,11 @@ export interface SavedRouteStopDetailDto {
    */
   dayNumber: number;
   /**
+   * 장소 고유 ID
+   * @example "place_001"
+   */
+  placeId: string | null;
+  /**
    * 장소 이름
    * @example "광안리해수욕장"
    */
@@ -526,6 +566,16 @@ export interface SavedRouteStopDetailDto {
    */
   nextTravelTimeMinutes: number | null;
   /**
+   * 구간 교통비(원)
+   * @example 1500
+   */
+  fareWon: number | null;
+  /**
+   * 장소 지출 예상 비용(원)
+   * @example 12000
+   */
+  estimatedPriceWon: number | null;
+  /**
    * 장소 위도
    * @example 35.1532
    */
@@ -536,7 +586,7 @@ export interface SavedRouteStopDetailDto {
    */
   longitude: number | null;
   /**
-   * 이 경유지부터 다음 경유지까지의 실제 도로 굴곡 좌표 배열 (카카오맵 Polyline 렌더링용)
+   * 이전 경유지부터 현재 경유지까지의 실제 도로 굴곡 좌표 배열 (카카오맵 Polyline 렌더링용, WALKING 구간은 보행 보간 좌표 generateFallbackPath() 사용, 첫 경유지는 빈 배열)
    * @example [{"latitude":35.1587,"longitude":129.1604},{"latitude":35.159,"longitude":129.161}]
    */
   pathCoordinates: PathCoordinateDto[];
@@ -874,6 +924,11 @@ export interface RecommendRouteRequestDto {
    * @example {"foodRatio":0.35,"experienceRatio":0.25,"transportRatio":0.4}
    */
   ratios?: BudgetRatiosDto;
+  /**
+   * 뚜벅이(보행자) 전용 추천 모드 여부. true 설정 시 고도 경사 오르막 피로도가 높은 산복도로 코스는 감점되고 평지 코스에 가산점이 부여됩니다.
+   * @example true
+   */
+  isPedestrianMode?: boolean;
 }
 
 export interface SavingsCategoryDto {
