@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 
 import { CURRENT_CONSENT_VERSION } from "@/shared/api/consentApi";
 import { useAuthStatus } from "@/shared/auth/authContext";
@@ -11,10 +11,13 @@ import { pageContent } from "@/shared/styles/layout.css";
 import { TermsAgreementForm } from "./components/TermsAgreementForm";
 import { useAgreementSelection } from "./hooks/useAgreementSelection";
 import { useConsentStatus, useSubmitConsents } from "./hooks/useConsents";
+import { AGREEMENTS } from "./terms.constants";
+import { TermsDetailPage } from "./TermsDetailPage";
 import * as styles from "./TermsPage.css";
 
 export function TermsPage() {
   const navigate = useNavigate();
+  const { "*": agreementSlug } = useParams();
   const showToast = useToast();
   const authStatus = useAuthStatus();
   const consentStatusQuery = useConsentStatus(authStatus === "authenticated");
@@ -96,6 +99,18 @@ export function TermsPage() {
     consentStatusQuery.isPending ||
     consentStatusQuery.isError ||
     submitConsentsMutation.isPending;
+
+  const selectedAgreement = agreementSlug
+    ? AGREEMENTS.find(({ slug }) => slug === agreementSlug)
+    : undefined;
+
+  if (agreementSlug && !selectedAgreement) {
+    return <Navigate to="/consents" replace />;
+  }
+
+  if (selectedAgreement) {
+    return <TermsDetailPage agreement={selectedAgreement} />;
+  }
 
   return (
     <main className={styles.page}>
