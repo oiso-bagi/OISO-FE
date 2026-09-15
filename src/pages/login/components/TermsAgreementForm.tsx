@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import { Card } from "@/shared/components/Card";
 import CheckIcon from "@/shared/icons/check.svg?react";
 
@@ -39,7 +41,7 @@ export function TermsAgreementForm({
       </Card>
 
       <Card className={styles.agreementBox}>
-        {AGREEMENTS.map(({ key, label, isRequired }, index) => (
+        {AGREEMENTS.map(({ key, slug, label, isRequired }, index) => (
           <div
             key={key}
             className={
@@ -72,13 +74,13 @@ export function TermsAgreementForm({
               >
                 {isRequired ? "필수" : "선택"}
               </span>
-              <button
-                type="button"
+              <Link
+                to={`/consents/${slug}`}
                 className={styles.viewButton}
                 aria-label={`${label} 내용 보기`}
               >
                 보기
-              </button>
+              </Link>
             </div>
           </div>
         ))}

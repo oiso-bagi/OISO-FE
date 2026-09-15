@@ -51,7 +51,7 @@ export const router = createBrowserRouter([
         element: <LoginPage />,
       },
       {
-        path: "/consents",
+        path: "/consents/*",
         element: <TermsPage />,
       },
       {
