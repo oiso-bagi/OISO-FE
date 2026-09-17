@@ -112,12 +112,49 @@ export const stopOrder = style([
   },
 ]);
 
+/**
+ * 누르면 지도 핀 위에 장소 정보가 뜹니다. 카드 모양은 `stopBox` 가 그대로
+ * 맡고, 버튼 기본값만 되돌립니다.
+ */
+export const stopButton = style({
+  color: vars.color.black,
+  textAlign: "left",
+
+  cursor: "pointer",
+
+  selectors: {
+    // 지도에 정보를 띄운 경유지. 지도 태그와 같은 라임으로 이어 줍니다.
+    '&[data-selected="true"]': {
+      backgroundColor: vars.color.primary400,
+    },
+    // 눌리는 느낌. 그림자만큼 밀어 넣습니다.
+    "&:active": {
+      transform: "translate(2px, 2px)",
+      boxShadow: "none",
+    },
+    "&:focus-visible": {
+      outline: `3px solid ${vars.color.secondary500}`,
+      outlineOffset: "2px",
+    },
+  },
+});
+
 export const stopContent = style({
   display: "flex",
+  flex: "1 1 auto",
   flexDirection: "column",
   gap: "4px",
 
   minWidth: 0,
+});
+
+export const stopChevron = style({
+  flexShrink: 0,
+
+  width: "12px",
+  height: "12px",
+
+  color: vars.color.neutral500,
 });
 
 export const stopName = style([

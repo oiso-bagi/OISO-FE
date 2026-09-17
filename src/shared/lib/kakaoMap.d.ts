@@ -27,6 +27,8 @@ declare namespace kakao.maps {
     getCenter(): LatLng;
     setCenter(latlng: LatLng): void;
     relayout(): void;
+    /** 지도 중심을 픽셀 단위로 부드럽게 옮깁니다. 양수면 중심이 오른쪽·아래로 갑니다. */
+    panBy(dx: number, dy: number): void;
   }
 
   interface PolylineOptions {
@@ -48,11 +50,24 @@ declare namespace kakao.maps {
     xAnchor?: number;
     yAnchor?: number;
     zIndex?: number;
+    /** true 면 오버레이를 누를 때 지도 클릭 이벤트가 발생하지 않습니다. */
+    clickable?: boolean;
   }
 
   class CustomOverlay {
     constructor(options: CustomOverlayOptions);
     setMap(map: Map | null): void;
+    setPosition(position: LatLng): void;
+    setZIndex(zIndex: number): void;
+  }
+
+  namespace event {
+    function addListener(target: Map, type: string, handler: () => void): void;
+    function removeListener(
+      target: Map,
+      type: string,
+      handler: () => void,
+    ): void;
   }
 }
 

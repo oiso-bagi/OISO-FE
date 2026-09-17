@@ -62,6 +62,18 @@ export interface RecommendedRouteStop {
   transportationFromPrevious: TransportationType | null;
   durationFromPreviousMinutes: number | null;
 
+  // 아래는 장소 정보 시트에 보여 줄 값입니다. 저장 루트 상세 응답에는 체류
+  // 시간이 없고, 목 데이터에는 일부 코스에만 있어 optional 입니다.
+
+  /** 머무는 시간(분) */
+  stayMinutes?: number | null;
+  /** 이 장소에서 쓸 것으로 예상되는 비용(원) */
+  estimatedPriceWon?: number | null;
+  /** 같은 카테고리의 관광지 프리미엄 가격(원). 절약액 비교 기준입니다. */
+  touristPremiumWon?: number | null;
+  /** 관광지 프리미엄 대비 아끼는 금액(원). 서버가 양수로 내려줍니다. */
+  savedPriceWon?: number | null;
+
   /**
    * 이전 경유지에서 이 경유지까지의 실제 도로 좌표. 지도 경로선에 씁니다.
    *

@@ -47,6 +47,26 @@ export function RoutePage() {
   const [selectedDay, setSelectedDay] = useState<SelectedDay>("all");
 
   /**
+   * 지도 핀 위에 장소 정보를 띄운 경유지. 지도와 경유지 목록이 함께 씁니다.
+   * 같은 경유지를 다시 누르면 닫습니다.
+   */
+  const [selectedStopSequence, setSelectedStopSequence] = useState<
+    number | null
+  >(null);
+
+  const handleSelectStop = (sequence: number | null) => {
+    setSelectedStopSequence((previous) =>
+      sequence !== null && previous === sequence ? null : sequence,
+    );
+  };
+
+  // 일차를 바꾸면 보던 장소가 지도에서 사라질 수 있어 정보를 닫습니다.
+  const handleSelectDay = (day: SelectedDay) => {
+    setSelectedDay(day);
+    setSelectedStopSequence(null);
+  };
+
+  /**
    * 첫 카드 자동 펼침은 화면당 한 번만 합니다. 이 값이 없으면 사용자가 접은
    * 뒤에도 다시 펼쳐집니다.
    */
@@ -170,8 +190,9 @@ export function RoutePage() {
     }
 
     setExpandedRouteId((prev) => (prev === routeId ? null : routeId));
-    // 다른 코스를 펼치면 이전 코스에서 고른 일차는 의미가 없습니다.
+    // 다른 코스를 펼치면 이전 코스에서 고른 일차·장소는 의미가 없습니다.
     setSelectedDay("all");
+    setSelectedStopSequence(null);
   };
 
   /**
@@ -301,7 +322,7 @@ export function RoutePage() {
         <DayTabs
           dayNumbers={dayNumbers}
           selectedDay={selectedDay}
-          onSelect={setSelectedDay}
+          onSelect={handleSelectDay}
         />
       )}
 
@@ -314,6 +335,8 @@ export function RoutePage() {
         <RouteMap
           stops={mapStops}
           selectedDay={selectedDay === "all" ? undefined : selectedDay}
+          selectedStopSequence={selectedStopSequence}
+          onSelectStop={handleSelectStop}
         />
       </div>
 
@@ -378,6 +401,8 @@ export function RoutePage() {
                     {routeDetail?.id === route.id && (
                       <RouteStopList
                         stops={visibleStops}
+                        selectedStopSequence={selectedStopSequence}
+                        onSelectStop={handleSelectStop}
                         onToggleSave={() => handleToggleSave(route.id)}
                         isSaved={isRouteSaved(route.id)}
                         isSaving={isSaveRequestPending}

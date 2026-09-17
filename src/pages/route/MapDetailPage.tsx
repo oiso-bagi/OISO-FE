@@ -109,15 +109,49 @@ export function MapDetailPage() {
 
   const [selectedDay, setSelectedDay] = useState<SelectedDay>("all");
 
+  /**
+   * 지도 핀 위에 장소 정보를 띄운 경유지. 지도와 경유지 목록이 함께 씁니다.
+   * 같은 경유지를 다시 누르면 닫습니다.
+   */
+  const [selectedStopSequence, setSelectedStopSequence] = useState<
+    number | null
+  >(null);
+
   // 지도/목록 비율은 사용자가 손잡이로 조절합니다.
   const mapAreaRef = useRef<HTMLDivElement>(null);
   const listAreaRef = useRef<HTMLDivElement>(null);
   const { mapStyle, resizeProps } = useMapResize(mapAreaRef, listAreaRef);
 
-  // 다른 루트로 이동하거나 조회 대상이 변경되면 일차 선택을 전체로 초기화합니다.
+  // 다른 루트로 이동하거나 조회 대상이 변경되면 일차·장소 선택을 초기화합니다.
   useEffect(() => {
     setSelectedDay("all");
+    setSelectedStopSequence(null);
   }, [routeId, isSaved]);
+
+  const handleSelectStop = (sequence: number | null) => {
+    setSelectedStopSequence((previous) =>
+      sequence !== null && previous === sequence ? null : sequence,
+    );
+  };
+
+  /**
+   * 이 페이지는 지도와 목록이 함께 스크롤돼, 목록 아래쪽 경유지를 누르면 정보가
+   * 뜬 지도가 화면 밖에 있습니다. 지도가 가려져 있을 때만 끌어올립니다.
+   */
+  const handleSelectStopFromList = (sequence: number) => {
+    handleSelectStop(sequence);
+
+    mapAreaRef.current?.scrollIntoView({
+      block: "nearest",
+      behavior: "smooth",
+    });
+  };
+
+  // 일차를 바꾸면 보던 장소가 지도에서 사라질 수 있어 정보를 닫습니다.
+  const handleSelectDay = (day: SelectedDay) => {
+    setSelectedDay(day);
+    setSelectedStopSequence(null);
+  };
 
   /**
    * 지도 진입. 조회에 성공한 뒤 서버가 돌려준 id 로 보냅니다.
@@ -169,7 +203,7 @@ export function MapDetailPage() {
         <DayTabs
           dayNumbers={dayNumbers}
           selectedDay={selectedDay}
-          onSelect={setSelectedDay}
+          onSelect={handleSelectDay}
         />
       )}
 
@@ -182,6 +216,8 @@ export function MapDetailPage() {
         <RouteMap
           stops={route?.stops ?? []}
           selectedDay={selectedDay === "all" ? undefined : selectedDay}
+          selectedStopSequence={selectedStopSequence}
+          onSelectStop={handleSelectStop}
         />
       </div>
 
@@ -208,7 +244,13 @@ export function MapDetailPage() {
           </p>
         )}
 
-        {route && <RouteStopList stops={visibleStops} />}
+        {route && (
+          <RouteStopList
+            stops={visibleStops}
+            selectedStopSequence={selectedStopSequence}
+            onSelectStop={handleSelectStopFromList}
+          />
+        )}
       </div>
     </div>
   );

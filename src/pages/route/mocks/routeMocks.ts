@@ -31,6 +31,10 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       longitude: 129.0201,
       transportationFromPrevious: null,
       durationFromPreviousMinutes: null,
+      stayMinutes: 60,
+      estimatedPriceWon: 0,
+      touristPremiumWon: 0,
+      savedPriceWon: 0,
     },
     {
       sequence: 2,
@@ -42,6 +46,10 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       longitude: 129.0294,
       transportationFromPrevious: "WALKING",
       durationFromPreviousMinutes: 8,
+      stayMinutes: 40,
+      estimatedPriceWon: 5000,
+      touristPremiumWon: 12000,
+      savedPriceWon: 7000,
     },
     {
       sequence: 3,
@@ -53,6 +61,10 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       longitude: 129.0264,
       transportationFromPrevious: "SUBWAY",
       durationFromPreviousMinutes: 12,
+      stayMinutes: 50,
+      estimatedPriceWon: 9000,
+      touristPremiumWon: 18500,
+      savedPriceWon: 9500,
     },
     {
       sequence: 4,

@@ -1,3 +1,5 @@
+import { FaChevronRight } from "react-icons/fa6";
+
 import CheckIcon from "@/shared/assets/svg/check.svg?react";
 import SaveIcon from "@/shared/assets/svg/save.svg?react";
 
@@ -8,6 +10,11 @@ import * as styles from "./RouteStopList.css";
 
 interface RouteStopListProps {
   stops: RecommendedRouteStop[];
+
+  /** 지도에 장소 정보를 띄운 경유지. 목록에서도 같은 칸을 강조합니다. */
+  selectedStopSequence: number | null;
+  /** 경유지를 누르면 호출합니다. 지도 핀 위에 장소 정보를 띄웁니다. */
+  onSelectStop: (sequence: number) => void;
 
   /**
    * 전달하면 목록 하단에 저장 버튼을 노출합니다. 저장하지 않은 코스는 저장,
@@ -35,6 +42,8 @@ const groupStopsByDay = (stops: RecommendedRouteStop[]) => {
 
 export function RouteStopList({
   stops,
+  selectedStopSequence,
+  onSelectStop,
   onToggleSave,
   isSaving,
   isSaved,
@@ -74,15 +83,22 @@ export function RouteStopList({
 
               return (
                 <li key={stop.sequence} className={styles.stopListItem}>
-                  <div className={styles.stopBox}>
+                  {/* 버튼 안에는 div 를 둘 수 없어 span 으로 묶습니다. */}
+                  <button
+                    type="button"
+                    className={`${styles.stopBox} ${styles.stopButton}`}
+                    data-selected={stop.sequence === selectedStopSequence}
+                    aria-pressed={stop.sequence === selectedStopSequence}
+                    onClick={() => onSelectStop(stop.sequence)}
+                  >
                     <span className={styles.stopOrder}>{stop.sequence}</span>
 
-                    <div className={styles.stopContent}>
+                    <span className={styles.stopContent}>
                       <strong className={styles.stopName}>
                         {stop.placeName}
                       </strong>
 
-                      <div className={styles.stopTagList}>
+                      <span className={styles.stopTagList}>
                         {stop.category && (
                           <span className={styles.stopTag}>
                             {stop.category}
@@ -92,9 +108,14 @@ export function RouteStopList({
                         <span className={styles.stopTag}>
                           {stop.operatingHours ?? "운영시간 정보 없음"}
                         </span>
-                      </div>
-                    </div>
-                  </div>
+                      </span>
+                    </span>
+
+                    <FaChevronRight
+                      className={styles.stopChevron}
+                      aria-hidden="true"
+                    />
+                  </button>
 
                   {nextStop?.transportationFromPrevious && (
                     <div className={styles.stopConnection}>

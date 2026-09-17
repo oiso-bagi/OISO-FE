@@ -7,11 +7,21 @@ import { style } from "@vanilla-extract/css";
  * 최소 대응 너비: 375px
  */
 
+/**
+ * 화면 높이.
+ *
+ * 모바일 Safari 의 `100vh` 는 주소창·툴바가 접혔을 때 기준이라 실제 보이는
+ * 높이보다 큽니다. 레이아웃을 `vh` 로 두면 문서가 툴바 높이만큼 길어져, 추천
+ * 루트처럼 `dvh` 로 높이를 맞춘 화면이 통째로 밀리며 하단 네비 위에 빈 띠가
+ * 생겼습니다. 보이는 높이(`dvh`)로 맞춥니다.
+ */
+const SCREEN_HEIGHT = "100dvh";
+
 export const appContainer = style({
   width: "100%",
   minWidth: "375px",
   maxWidth: "430px",
-  minHeight: "100vh",
+  minHeight: SCREEN_HEIGHT,
 
   margin: "0 auto",
   backgroundColor: vars.color.bg,
@@ -19,7 +29,7 @@ export const appContainer = style({
 });
 
 export const contentWithBottomNavigation = style({
-  minHeight: "100vh",
+  minHeight: SCREEN_HEIGHT,
   // 하단 네비 + 홈 인디케이터 영역만큼 비워, 마지막 콘텐츠가 안 가리게
   paddingBottom: BOTTOM_NAV_TOTAL_HEIGHT,
 
@@ -33,11 +43,11 @@ export const contentWithBottomNavigation = style({
 });
 
 export const content = style({
-  minHeight: "100vh",
+  minHeight: SCREEN_HEIGHT,
 });
 
 export const authStatus = style({
-  minHeight: "100vh",
+  minHeight: SCREEN_HEIGHT,
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
