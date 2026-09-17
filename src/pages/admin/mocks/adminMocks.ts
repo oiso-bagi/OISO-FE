@@ -23,7 +23,6 @@ import type {
   AdminPlacesQuery,
   AdminRoute,
   AdminRoutesQuery,
-  AdminSavingsBreakdown,
   AdminStatsOverview,
   AdminUser,
   AdminUsersQuery,
@@ -365,6 +364,8 @@ const buildStops = (route: AdminRoute): AdminRouteStop[] =>
       placeId: place.id,
       placeName: place.name,
       address: place.address,
+      latitude: place.latitude,
+      longitude: place.longitude,
       nextTransportType: isLast ? null : index % 2 === 0 ? "WALKING" : "BUS",
       nextTravelTimeMinutes: isLast ? null : 8 + (index % 5) * 4,
       nextTravelCostWon: isLast ? null : index % 2 === 0 ? 0 : 1550,
@@ -472,48 +473,6 @@ export const mockGetAdminStatsOverview =
       totalSavedRouteCount: 3891,
       totalSavingsWon: 52_340_000,
       averageLocalContributionScore: 72.4,
-    };
-  };
-
-export const mockGetAdminSavingsBreakdown =
-  async (): Promise<AdminSavingsBreakdown> => {
-    await delay();
-
-    return {
-      byCategory: [
-        {
-          category: "FOOD",
-          label: "식당·카페",
-          amountWon: 12_000_000,
-          ratio: 0.42,
-        },
-        {
-          category: "TRANSPORT",
-          label: "교통비",
-          amountWon: 8_000_000,
-          ratio: 0.28,
-        },
-        {
-          category: "ACTIVITY",
-          label: "체험비",
-          amountWon: 8_600_000,
-          ratio: 0.3,
-        },
-      ],
-      byMarketType: [
-        {
-          type: "MARKET",
-          label: "전통시장",
-          amountWon: 15_000_000,
-          ratio: 0.55,
-        },
-        {
-          type: "LOCAL",
-          label: "로컬 상권",
-          amountWon: 12_300_000,
-          ratio: 0.45,
-        },
-      ],
     };
   };
 

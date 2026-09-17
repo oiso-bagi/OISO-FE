@@ -581,22 +581,6 @@ export const statUnit = style({
   fontWeight: admin.fontWeight.regular,
 });
 
-/** 차트 2종을 나란히 둡니다. */
-export const dashboardRow = style({
-  display: "grid",
-  gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
-  gap: admin.space.md,
-
-  marginBottom: admin.space.lg,
-
-  "@media": {
-    // 막대 옆 금액·비율이 눌려 줄바꿈되기 시작하는 폭부터 위아래로 놓습니다.
-    [NARROW]: {
-      gridTemplateColumns: "minmax(0, 1fr)",
-    },
-  },
-});
-
 export const sectionTitle = style({
   padding: admin.space.md,
   borderBottom: admin.border.thin,
@@ -607,45 +591,6 @@ export const sectionTitle = style({
 
 export const sectionBody = style({
   padding: admin.space.lg,
-});
-
-/* ── 가로 막대 (절약 리포트) ────────────────────────────── */
-
-export const barRow = style({
-  display: "grid",
-  gridTemplateColumns: "88px 1fr 116px",
-  alignItems: "center",
-  gap: admin.space.md,
-
-  selectors: {
-    "&:not(:last-child)": { marginBottom: admin.space.md },
-  },
-});
-
-export const barLabel = style({
-  fontSize: admin.fontSize.md,
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  whiteSpace: "nowrap",
-});
-
-export const barTrack = style({
-  height: "18px",
-  backgroundColor: admin.color.canvas,
-  border: admin.border.thin,
-});
-
-export const barFill = style({
-  height: "100%",
-  backgroundColor: admin.color.accent,
-});
-
-export const barValue = style({
-  color: admin.color.textMuted,
-  fontFamily: admin.font.mono,
-  fontSize: admin.fontSize.sm,
-  fontVariantNumeric: "tabular-nums",
-  textAlign: "right",
 });
 
 /* ── KTO 배치 운영 ──────────────────────────────────────── */
@@ -992,4 +937,130 @@ export const placeholder = style({
   color: admin.color.textMuted,
   fontSize: admin.fontSize.md,
   textAlign: "center",
+});
+
+/* ── 코스 미리보기 지도 ─────────────────────────────────── */
+
+export const mapPreviewHeader = style({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: admin.space.md,
+
+  padding: `${admin.space.sm} ${admin.space.md}`,
+  borderBottom: admin.border.thin,
+});
+
+export const mapPreviewTitle = style({
+  margin: 0,
+
+  fontSize: admin.fontSize.md,
+  fontWeight: admin.fontWeight.semibold,
+});
+
+export const mapDayFilter = style({
+  display: "flex",
+  gap: admin.space.xs,
+});
+
+export const mapDayButton = style({
+  height: "28px",
+  padding: `0 ${admin.space.md}`,
+
+  border: admin.border.thin,
+  backgroundColor: admin.color.surface,
+
+  color: admin.color.textMuted,
+  fontFamily: admin.font.body,
+  fontSize: admin.fontSize.sm,
+
+  cursor: "pointer",
+
+  selectors: {
+    "&:hover": { color: admin.color.text },
+    '&[aria-pressed="true"]': {
+      borderColor: admin.color.accent,
+      backgroundColor: admin.color.accentSurface,
+      color: admin.color.accent,
+      fontWeight: admin.fontWeight.semibold,
+    },
+  },
+});
+
+/** 지도는 부모 높이를 채우므로 여기서 높이를 정합니다. */
+export const mapPreviewArea = style({
+  height: "360px",
+});
+
+export const mapPreviewNote = style({
+  margin: 0,
+  padding: `${admin.space.sm} ${admin.space.md}`,
+  borderTop: admin.border.thin,
+
+  color: admin.color.textMuted,
+  fontSize: admin.fontSize.sm,
+});
+
+/**
+ * 지도에서 고른 경유지. `stopRowLast` 의 회색 바탕보다 뒤에 정의해 덮어씁니다.
+ */
+export const stopRowSelected = style({
+  backgroundColor: admin.color.accentSurface,
+});
+
+/** 장소 칸을 누르면 지도에서 그 핀을 찾습니다. */
+export const stopNameButton = style({
+  padding: 0,
+
+  border: "none",
+  background: "none",
+
+  color: admin.color.text,
+  fontFamily: admin.font.body,
+  fontSize: admin.fontSize.md,
+  textAlign: "left",
+
+  cursor: "pointer",
+
+  selectors: {
+    "&:hover": { color: admin.color.accent },
+    "&:focus-visible": {
+      outline: `2px solid ${admin.color.accent}`,
+      outlineOffset: "2px",
+    },
+  },
+});
+
+/* ── 장소 검색 더 불러오기 ──────────────────────────────── */
+
+/** 목록 끝 표시. 이 줄이 보이면 다음 페이지를 불러옵니다. */
+export const searchLoadMore = style({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: admin.space.sm,
+
+  minHeight: "40px",
+  padding: admin.space.sm,
+
+  color: admin.color.textMuted,
+  fontSize: admin.fontSize.sm,
+});
+
+export const searchLoadMoreRetry = style({
+  padding: `0 ${admin.space.sm}`,
+  height: "26px",
+
+  border: admin.border.thin,
+  backgroundColor: admin.color.surface,
+
+  color: admin.color.text,
+  fontFamily: admin.font.body,
+  fontSize: admin.fontSize.sm,
+
+  cursor: "pointer",
+
+  selectors: {
+    "&:hover": { borderColor: admin.color.accent, color: admin.color.accent },
+  },
 });

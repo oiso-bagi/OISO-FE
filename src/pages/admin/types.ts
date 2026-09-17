@@ -105,6 +105,9 @@ export interface AdminRouteStop {
   /** 수정 화면에서 장소를 다시 조회하지 않도록 서버가 함께 내려줍니다. */
   placeName: string;
   address: string;
+  /** 코스 미리보기 지도에 찍습니다. 서버에는 보내지 않습니다. */
+  latitude: number;
+  longitude: number;
   /** 서버 기본값은 60분이며, 현재 화면에서는 별도로 편집하지 않습니다. */
   stayTimeMinutes?: number;
   /** 다음 경유지까지의 정보. 마지막 경유지는 모두 null 입니다. */
@@ -140,26 +143,6 @@ export interface AdminStatsOverview {
   totalSavingsWon: number;
   /** 로컬 기여 지수 평균 (%) */
   averageLocalContributionScore: number;
-}
-
-export interface SavingsCategoryBreakdown {
-  category: string;
-  label: string;
-  amountWon: number;
-  /** 서버의 percentage(0~100)를 API 경계에서 0~1로 변환합니다. */
-  ratio: number;
-}
-
-export interface SavingsMarketBreakdown {
-  type: string;
-  label: string;
-  amountWon: number;
-  ratio: number;
-}
-
-export interface AdminSavingsBreakdown {
-  byCategory: SavingsCategoryBreakdown[];
-  byMarketType: SavingsMarketBreakdown[];
 }
 
 /* ── KTO 공공데이터 배치 ────────────────────────────────── */

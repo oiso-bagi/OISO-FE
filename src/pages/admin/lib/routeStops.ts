@@ -66,6 +66,8 @@ export const addStop = (
       placeId: place.id,
       placeName: place.name,
       address: place.address,
+      latitude: place.latitude,
+      longitude: place.longitude,
       ...DEFAULT_NEXT,
     },
   ]);

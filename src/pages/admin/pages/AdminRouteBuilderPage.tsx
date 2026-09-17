@@ -22,6 +22,7 @@ import {
   validateRouteForm,
 } from "../lib/routeStops";
 import type { AdminRouteStop } from "../types";
+import { RouteMapPreview } from "./RouteMapPreview";
 import { RoutePlaceSearch } from "./RoutePlaceSearch";
 import { RouteStopList } from "./RouteStopList";
 
@@ -46,6 +47,18 @@ export function AdminRouteBuilderPage() {
   const [errors, setErrors] = useState<RouteFormErrors>({});
   const [isDirty, setIsDirty] = useState(false);
   const [isPublishConfirmOpen, setIsPublishConfirmOpen] = useState(false);
+
+  /**
+   * 지도와 경유지 목록이 함께 강조하는 경유지. 순서를 옮겨도 같은 장소를
+   * 가리키도록 `sequence` 가 아니라 장소 id 로 들고 있습니다.
+   */
+  const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
+
+  const handleSelectPlace = (placeId: string | null) => {
+    setSelectedPlaceId((previous) =>
+      placeId !== null && previous === placeId ? null : placeId,
+    );
+  };
 
   const detail = detailQuery.data;
 
@@ -237,6 +250,12 @@ export function AdminRouteBuilderPage() {
         </div>
       </section>
 
+      <RouteMapPreview
+        stops={stops}
+        selectedPlaceId={selectedPlaceId}
+        onSelectPlace={handleSelectPlace}
+      />
+
       <div className={styles.builderColumns}>
         <RoutePlaceSearch
           addedPlaceIds={addedPlaceIds}
@@ -245,6 +264,8 @@ export function AdminRouteBuilderPage() {
 
         <RouteStopList
           stops={stops}
+          selectedPlaceId={selectedPlaceId}
+          onSelectStop={handleSelectPlace}
           onMove={(index, toIndex) =>
             applyStops(moveStop(stops, index, toIndex))
           }
