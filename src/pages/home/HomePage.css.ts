@@ -70,6 +70,13 @@ export const content = style([
 
     // 좌우 여백과 box-sizing 은 pageContent 가 담당합니다.
     paddingTop: "13px",
+
+    /**
+     * 끝까지 스크롤했을 때 목록이 하단 네비에 바로 붙어 잘려 보이지 않게
+     * 띄웁니다. 목록의 오프셋 그림자(4px)도 이 안에 들어옵니다. 대시보드와
+     * 같은 값입니다.
+     */
+    paddingBottom: vars.space.xl,
   },
 ]);
 
