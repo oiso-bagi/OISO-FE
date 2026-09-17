@@ -1,4 +1,5 @@
 import { Button } from "@/shared/components/button/Button";
+import { DataAttribution } from "@/shared/components/DataAttribution/DataAttribution";
 
 import * as styles from "./SurveyFooter.css";
 
@@ -21,6 +22,8 @@ export function SurveyFooter({ onPrevious, onNext }: SurveyFooterProps) {
       <Button type="button" width="100%" onClick={onNext}>
         다음
       </Button>
+
+      <DataAttribution className={styles.attribution} />
     </footer>
   );
 }

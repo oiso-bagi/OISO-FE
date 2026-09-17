@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 
 import { AppLayout } from "@/app/layout/AppLayout";
 import { AuthLayout } from "@/app/layout/AuthLayout";
+import { DATA_SOURCES_PATH } from "@/shared/components/DataAttribution/DataAttribution";
 
 import { HomePage } from "@/pages/home/HomePage";
 import { RoutePage } from "@/pages/route/RoutePage";
@@ -11,6 +12,7 @@ import { TermsPage } from "@/pages/login/TermsPage";
 import { AuthCallbackPage } from "@/pages/login/AuthCallbackPage";
 import { SurveyPage } from "@/pages/survey/SurveyPage";
 import { DashboardPage } from "@/pages/dashboard/DashboardPage";
+import { DataSourcesPage } from "@/pages/data-sources/DataSourcesPage";
 import { NotFoundPage } from "@/pages/not-found/NotFoundPage";
 
 export const router = createBrowserRouter([
@@ -69,6 +71,11 @@ export const router = createBrowserRouter([
       {
         path: "/survey",
         element: <SurveyPage />,
+      },
+      {
+        // 로그인 전 화면에서도 열려야 해서 인증을 확인하지 않는 레이아웃에 둡니다.
+        path: DATA_SOURCES_PATH,
+        element: <DataSourcesPage />,
       },
     ],
   },

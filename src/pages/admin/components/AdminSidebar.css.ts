@@ -134,6 +134,24 @@ export const navLabel = style({
   textOverflow: "ellipsis",
 });
 
+/** 하단 데이터 출처. 사이드바 폭에 맞춰 어절 단위로 줄바꿈합니다. */
+export const attribution = style({
+  padding: `${admin.space.sm} ${admin.space.lg}`,
+
+  color: admin.color.sidebarText,
+  fontSize: admin.fontSize.xs,
+  lineHeight: 1.5,
+  textDecoration: "none",
+  wordBreak: "keep-all",
+
+  selectors: {
+    "&:hover": {
+      color: admin.color.sidebarTextActive,
+      textDecoration: "underline",
+    },
+  },
+});
+
 export const collapseButton = style({
   display: "flex",
   alignItems: "center",

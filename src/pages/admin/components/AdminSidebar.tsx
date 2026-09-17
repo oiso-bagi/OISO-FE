@@ -1,9 +1,14 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 
 import CourseIcon from "@/shared/assets/svg/course.svg?react";
 import DashboardIcon from "@/shared/assets/svg/dashboard.svg?react";
 import PlusIcon from "@/shared/assets/svg/plus.svg?react";
 import UsersIcon from "@/shared/assets/svg/users.svg?react";
+import {
+  DATA_ATTRIBUTION_TEXT,
+  DATA_SOURCES_PATH,
+  type DataSourcesLinkState,
+} from "@/shared/components/DataAttribution/DataAttribution";
 import oisoLogo from "@/shared/icons/oiso_logo.svg";
 
 import * as styles from "./AdminSidebar.css";
@@ -24,6 +29,9 @@ export function AdminSidebar({
   isCollapsed,
   onToggleCollapsed,
 }: AdminSidebarProps) {
+  const location = useLocation();
+  const dataSourcesState: DataSourcesLinkState = { from: location.pathname };
+
   return (
     <aside
       className={`${styles.sidebar} ${
@@ -57,6 +65,17 @@ export function AdminSidebar({
           </NavLink>
         ))}
       </nav>
+
+      {/* 접으면 폭이 좁아 문구가 들어가지 않습니다. 펼쳤을 때만 보입니다. */}
+      {!isCollapsed && (
+        <Link
+          to={DATA_SOURCES_PATH}
+          state={dataSourcesState}
+          className={styles.attribution}
+        >
+          {DATA_ATTRIBUTION_TEXT}
+        </Link>
+      )}
 
       <button
         type="button"

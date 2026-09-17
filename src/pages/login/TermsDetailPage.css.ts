@@ -144,3 +144,8 @@ export const notice = style([
     wordBreak: "keep-all",
   },
 ]);
+
+export const attribution = style({
+  marginTop: vars.space.lg,
+  paddingInline: vars.space.md,
+});

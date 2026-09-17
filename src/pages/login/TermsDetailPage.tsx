@@ -1,4 +1,5 @@
 import { CURRENT_CONSENT_VERSION } from "@/shared/api/consentApi";
+import { DataAttribution } from "@/shared/components/DataAttribution/DataAttribution";
 import { Header } from "@/shared/components/header/Header";
 import { pageContent } from "@/shared/styles/layout.css";
 
@@ -63,6 +64,8 @@ export function TermsDetailPage({ agreement }: TermsDetailPageProps) {
           )}
         </div>
       </article>
+
+      <DataAttribution className={styles.attribution} />
     </main>
   );
 }

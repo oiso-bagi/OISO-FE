@@ -3,7 +3,7 @@ import { style } from "@vanilla-extract/css";
 import { vars } from "@/shared/styles/theme.css";
 import * as typo from "@/shared/styles/typography.css";
 
-/** 상단 바 + 지도 + 하단 리스트. 하단 네비(72px) 위 영역을 채웁니다. */
+/** 상단 바 + 지도 + 하단 리스트. 하단 네비 위 영역을 채웁니다. */
 export const page = style({
   display: "flex",
   flexDirection: "column",
