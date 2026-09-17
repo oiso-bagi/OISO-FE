@@ -53,6 +53,8 @@ export const listArea = style({
   minHeight: 0,
 
   overflowY: "auto",
+  // 목록 끝에서 더 밀어도 바깥 페이지가 따라 스크롤되지 않게 합니다.
+  overscrollBehavior: "contain",
   paddingInline: vars.space.md,
 });
 
