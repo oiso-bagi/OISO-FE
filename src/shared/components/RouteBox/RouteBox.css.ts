@@ -255,6 +255,15 @@ export const detailButton = style([
   },
 ]);
 
+export const detailButtonIcon = style({
+  flexShrink: 0,
+  width: "10px",
+  height: "10px",
+
+  margin: "1px",
+  display: "block",
+});
+
 // 별 모양과 "추천" 글자가 모두 들어 있는 recommendBadge.svg 를 그대로 씁니다.
 export const recommendBadge = style({
   position: "absolute",
@@ -290,7 +299,6 @@ export const recommendationRate = style({
 
   color: vars.color.black,
 
-  fontFamily: "Pretendard",
   fontSize: "10px",
   fontWeight: 900,
   lineHeight: "20px",

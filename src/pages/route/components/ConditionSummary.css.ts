@@ -47,6 +47,10 @@ export const editButton = style([
     height: "30px",
     padding: "0 10px",
 
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+
     color: vars.color.black,
     backgroundColor: vars.color.white,
 
