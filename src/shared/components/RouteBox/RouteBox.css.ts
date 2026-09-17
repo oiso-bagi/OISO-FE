@@ -22,6 +22,22 @@ export const container = style({
   boxSizing: "border-box",
 });
 
+/** 카드 빈 곳을 눌러 펼칠 수 있을 때 */
+export const clickableContainer = style({
+  cursor: "pointer",
+});
+
+/**
+ * 펼친 내용을 감싸 카드 클릭에서 빼기 위한 요소입니다.
+ *
+ * 레이아웃에는 끼어들지 않아 기존 간격이 그대로입니다. 펼친 목록은 눌러도
+ * 접히지 않으므로 손가락 커서도 이어받지 않게 되돌립니다.
+ */
+export const expandedContent = style({
+  display: "contents",
+  cursor: "auto",
+});
+
 export const editHeader = style({
   display: "flex",
   alignItems: "center",
