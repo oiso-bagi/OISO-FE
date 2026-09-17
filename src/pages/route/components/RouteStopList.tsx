@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { FaChevronRight } from "react-icons/fa6";
 
 import CheckIcon from "@/shared/assets/svg/check.svg?react";
@@ -7,11 +6,15 @@ import SaveIcon from "@/shared/assets/svg/save.svg?react";
 import type { RecommendedRouteStop } from "../api/types/recommendedRoute";
 import { formatDuration, formatStopTransportation } from "../utils/routeFormat";
 
-import { StopDetailSheet } from "./StopDetailSheet";
 import * as styles from "./RouteStopList.css";
 
 interface RouteStopListProps {
   stops: RecommendedRouteStop[];
+
+  /** 지도에 장소 정보를 띄운 경유지. 목록에서도 같은 칸을 강조합니다. */
+  selectedStopSequence: number | null;
+  /** 경유지를 누르면 호출합니다. 지도 핀 위에 장소 정보를 띄웁니다. */
+  onSelectStop: (sequence: number) => void;
 
   /**
    * 전달하면 목록 하단에 저장 버튼을 노출합니다. 저장하지 않은 코스는 저장,
@@ -39,17 +42,13 @@ const groupStopsByDay = (stops: RecommendedRouteStop[]) => {
 
 export function RouteStopList({
   stops,
+  selectedStopSequence,
+  onSelectStop,
   onToggleSave,
   isSaving,
   isSaved,
 }: RouteStopListProps) {
   const dayGroups = groupStopsByDay(stops);
-  const isMultiDay = dayGroups[0]?.dayNumber !== null;
-
-  // 장소 정보 시트에 띄운 경유지 (null 이면 닫힘)
-  const [selectedStop, setSelectedStop] = useState<RecommendedRouteStop | null>(
-    null,
-  );
 
   return (
     <section className={styles.stopSection}>
@@ -88,8 +87,9 @@ export function RouteStopList({
                   <button
                     type="button"
                     className={`${styles.stopBox} ${styles.stopButton}`}
-                    aria-haspopup="dialog"
-                    onClick={() => setSelectedStop(stop)}
+                    data-selected={stop.sequence === selectedStopSequence}
+                    aria-pressed={stop.sequence === selectedStopSequence}
+                    onClick={() => onSelectStop(stop.sequence)}
                   >
                     <span className={styles.stopOrder}>{stop.sequence}</span>
 
@@ -155,14 +155,6 @@ export function RouteStopList({
           )}
           {isSaved ? "저장됨" : "저장"}
         </button>
-      )}
-
-      {selectedStop && (
-        <StopDetailSheet
-          stop={selectedStop}
-          isMultiDay={isMultiDay}
-          onClose={() => setSelectedStop(null)}
-        />
       )}
     </section>
   );

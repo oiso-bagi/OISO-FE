@@ -85,5 +85,20 @@ export const marker = style([
     boxShadow: "0 0 0 1.5px rgba(0, 0, 0, 0.45), 0 2px 5px rgba(0, 0, 0, 0.3)",
 
     boxSizing: "border-box",
+    cursor: "pointer",
+
+    transition: "transform 120ms ease",
+
+    selectors: {
+      // 정보를 띄운 핀. 크기를 키우고 검은 링으로 다른 핀과 가릅니다.
+      '&[data-selected="true"]': {
+        transform: "scale(1.2)",
+        boxShadow: `0 0 0 2px ${vars.color.black}, 0 2px 5px rgba(0, 0, 0, 0.3)`,
+      },
+      "&:focus-visible": {
+        outline: `3px solid ${vars.color.secondary500}`,
+        outlineOffset: "2px",
+      },
+    },
   },
 ]);

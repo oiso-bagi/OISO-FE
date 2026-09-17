@@ -83,11 +83,6 @@ export function RouteBox({
   const handleCardClick = (event: MouseEvent<HTMLElement>) => {
     const target = event.target as Element;
 
-    /**
-     * 경유지 장소 정보 시트처럼 body 에 붙인(portal) 요소의 클릭도 React
-     * 트리를 따라 여기까지 올라옵니다. 카드 DOM 밖의 클릭은 무시합니다.
-     */
-    if (!event.currentTarget.contains(target)) return;
     if (target.closest("button, a, input, label")) return;
     if (expandedContentRef.current?.contains(target)) return;
     // 글자를 드래그해 고른 경우는 누른 것으로 보지 않습니다.

@@ -71,6 +71,9 @@ export const title = style([
 export const mapArea = style({
   flexShrink: 0,
 
+  // 목록에서 경유지를 눌러 지도로 끌어올릴 때 고정된 상단 바에 가리지 않게 합니다.
+  scrollMarginTop: "56px",
+
   height: "46dvh",
   minHeight: "280px",
 
