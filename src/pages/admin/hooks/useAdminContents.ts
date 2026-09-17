@@ -1,5 +1,6 @@
 import {
   keepPreviousData,
+  useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
@@ -31,6 +32,31 @@ export const useAdminPlaces = (query: AdminPlacesQuery) =>
   useQuery({
     queryKey: queryKeys.admin.places.list(query),
     queryFn: () => getAdminPlaces(query),
+    placeholderData: keepPreviousData,
+  });
+
+const PLACE_SEARCH_PAGE_SIZE = 20;
+
+/**
+ * 코스 등록의 장소 검색. 목록 끝에 닿으면 다음 페이지를 이어 붙입니다.
+ *
+ * 서버가 페이지 번호 방식이라 마지막으로 받은 페이지가 `totalPages` 보다
+ * 작을 때만 다음 페이지를 요청합니다.
+ */
+export const useAdminPlaceSearch = (
+  query: Omit<AdminPlacesQuery, "page" | "size">,
+) =>
+  useInfiniteQuery({
+    queryKey: queryKeys.admin.places.search(query),
+    queryFn: ({ pageParam }) =>
+      getAdminPlaces({
+        ...query,
+        page: pageParam,
+        size: PLACE_SEARCH_PAGE_SIZE,
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.page < lastPage.totalPages ? lastPage.page + 1 : undefined,
     placeholderData: keepPreviousData,
   });
 

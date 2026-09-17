@@ -1,4 +1,4 @@
-import type { QueryClient } from "@tanstack/react-query";
+import type { InfiniteData, QueryClient } from "@tanstack/react-query";
 
 import type { PaginatedResponse } from "../types";
 
@@ -16,26 +16,43 @@ import type { PaginatedResponse } from "../types";
  *
  * 목록 쿼리는 `keepPreviousData` 를 쓰므로 재조회 중에도 표가 비지 않습니다.
  */
+const replaceItemInPage = <T extends { id: string }>(
+  page: PaginatedResponse<T>,
+  updated: T,
+): PaginatedResponse<T> => {
+  const index = page.items.findIndex((item) => item.id === updated.id);
+
+  if (index === -1) return page;
+
+  const items = [...page.items];
+  items[index] = updated;
+
+  return { ...page, items };
+};
+
 export const replaceItemInLists = <T extends { id: string }>(
   queryClient: QueryClient,
   listKey: readonly unknown[],
   updated: T,
 ) => {
-  queryClient.setQueriesData<PaginatedResponse<T>>(
-    { queryKey: listKey },
-    (previous) => {
-      if (!previous) return previous;
+  /**
+   * 같은 key 아래에 페이지 목록과 무한 목록(코스 등록의 장소 검색)이 함께
+   * 있습니다. 무한 목록은 페이지 배열로 감싸여 있어 각 페이지를 고칩니다.
+   */
+  queryClient.setQueriesData<
+    PaginatedResponse<T> | InfiniteData<PaginatedResponse<T>>
+  >({ queryKey: listKey }, (previous) => {
+    if (!previous) return previous;
 
-      const index = previous.items.findIndex((item) => item.id === updated.id);
+    if ("pages" in previous) {
+      return {
+        ...previous,
+        pages: previous.pages.map((page) => replaceItemInPage(page, updated)),
+      };
+    }
 
-      if (index === -1) return previous;
-
-      const items = [...previous.items];
-      items[index] = updated;
-
-      return { ...previous, items };
-    },
-  );
+    return replaceItemInPage(previous, updated);
+  });
 
   void queryClient.invalidateQueries({ queryKey: listKey });
 };

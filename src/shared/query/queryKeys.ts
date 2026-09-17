@@ -66,6 +66,8 @@ export const queryKeys = {
     places: {
       all: adminPlaces,
       list: (query: object) => [...adminPlaces, "list", query] as const,
+      /** 코스 등록의 장소 검색. 페이지를 이어 붙이는 무한 목록입니다. */
+      search: (query: object) => [...adminPlaces, "search", query] as const,
     },
 
     routes: {
@@ -77,7 +79,6 @@ export const queryKeys = {
     stats: {
       all: adminStats,
       overview: () => [...adminStats, "overview"] as const,
-      savingsBreakdown: () => [...adminStats, "savingsBreakdown"] as const,
     },
 
     kto: {
