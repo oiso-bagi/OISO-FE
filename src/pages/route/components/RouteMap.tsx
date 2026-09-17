@@ -116,6 +116,15 @@ export function RouteMap({
   const [calloutContainer] = useState(() => document.createElement("div"));
   const calloutOverlayRef = useRef<kakao.maps.CustomOverlay | null>(null);
 
+  /**
+   * 새로 고른 경유지인지, 핀을 직접 눌러 고른 것인지 구분합니다.
+   *
+   * 목록에서 고르면 지도가 다른 곳을 보고 있을 수 있어 그 일차로 옮기고, 핀을
+   * 직접 누르면 이미 그 자리를 보고 있으니 지도를 움직이지 않습니다.
+   */
+  const previousSelectedStopSequenceRef = useRef<number | null>(null);
+  const markerClickedSequenceRef = useRef<number | null>(null);
+
   const [status, setStatus] = useState<"loading" | "ready" | "error">(
     "loading",
   );
@@ -255,9 +264,10 @@ export function RouteMap({
           "aria-label",
           `${markerNumber}번 ${stop.placeName} 장소 정보 보기`,
         );
-        element.addEventListener("click", () =>
-          onSelectStopRef.current?.(stop.sequence),
-        );
+        element.addEventListener("click", () => {
+          markerClickedSequenceRef.current = stop.sequence;
+          onSelectStopRef.current?.(stop.sequence);
+        });
 
         const overlay = new kakao.maps.CustomOverlay({
           position: new kakao.maps.LatLng(stop.latitude, stop.longitude),
@@ -295,6 +305,14 @@ export function RouteMap({
 
     const { kakao } = window;
 
+    const isNewSelection =
+      previousSelectedStopSequenceRef.current !== selectedStopSequence;
+    const isSelectedFromMarker =
+      markerClickedSequenceRef.current === selectedStopSequence;
+
+    previousSelectedStopSequenceRef.current = selectedStopSequence;
+    markerClickedSequenceRef.current = null;
+
     markersRef.current.forEach(({ element, overlay }, sequence) => {
       const isSelected = sequence === selectedStopSequence;
 
@@ -318,6 +336,29 @@ export function RouteMap({
       selected.stop.longitude,
     );
 
+    /**
+     * 목록에서 고른 경유지면 그 일차의 경유지와 경로선이 모두 보이게 옮깁니다.
+     * 사용자가 지도를 다른 곳으로 옮겨 뒀어도 고른 핀을 바로 찾을 수 있습니다.
+     */
+    if (isNewSelection && !isSelectedFromMarker) {
+      const visibleStops = Array.from(
+        markersRef.current.values(),
+        (entry) => entry.stop,
+      );
+      const dayStops = toDayStops(visibleStops, selected.stop.dayNumber);
+
+      // 경유지가 하나뿐인 일차는 범위가 점이라 최대로 확대되므로 중심만 옮깁니다.
+      if (dayStops.length > 1) {
+        const bounds = new kakao.maps.LatLngBounds();
+        toDayLinePoints(dayStops).forEach((point) =>
+          bounds.extend(new kakao.maps.LatLng(point.latitude, point.longitude)),
+        );
+        map.setBounds(bounds);
+      } else {
+        map.setCenter(position);
+      }
+    }
+
     if (calloutOverlayRef.current) {
       calloutOverlayRef.current.setPosition(position);
     } else {
@@ -337,8 +378,17 @@ export function RouteMap({
      * 가장자리 핀이면 태그가 지도 밖으로 잘립니다. 태그가 그려진 뒤 크기를 재서
      * 잘린 만큼 지도를 옮깁니다. 범위를 다시 맞추지 않아 코스 전체 모양은
      * 그대로 둡니다.
+     *
+     * 바로 위에서 일차 범위로 옮긴 경우 지도가 오버레이 위치를 다음 프레임에
+     * 갱신하므로, 한 프레임 더 기다렸다가 잽니다.
      */
-    const frame = requestAnimationFrame(() => {
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(fitCalloutInView);
+    });
+
+    function fitCalloutInView() {
+      if (!map) return;
+
       const container = containerRef.current;
       if (!container) return;
 
@@ -358,7 +408,7 @@ export function RouteMap({
       const dy = overflowTop > 0 ? -overflowTop : Math.max(overflowBottom, 0);
 
       if (dx !== 0 || dy !== 0) map.panBy(dx, dy);
-    });
+    }
 
     return () => cancelAnimationFrame(frame);
   }, [calloutContainer, selectedStopSequence, status, stops, selectedDay]);
