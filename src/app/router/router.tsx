@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 
 import { AppLayout } from "@/app/layout/AppLayout";
 import { AuthLayout } from "@/app/layout/AuthLayout";
+import { RequireConsents } from "@/app/router/RequireConsents";
 import { DATA_SOURCES_PATH } from "@/shared/components/DataAttribution/DataAttribution";
 
 import { HomePage } from "@/pages/home/HomePage";
@@ -69,8 +70,13 @@ export const router = createBrowserRouter([
         element: <AuthCallbackPage />,
       },
       {
+        // 신규 사용자가 주소창으로 약관 동의를 건너뛰지 못하게 막습니다.
         path: "/survey",
-        element: <SurveyPage />,
+        element: (
+          <RequireConsents>
+            <SurveyPage />
+          </RequireConsents>
+        ),
       },
       {
         // 로그인 전 화면에서도 열려야 해서 인증을 확인하지 않는 레이아웃에 둡니다.

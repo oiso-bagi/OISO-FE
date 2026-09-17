@@ -228,9 +228,13 @@ export const useDeleteSavedRoute = () => {
      * 대시보드는 완료한 여행의 절약 기록을 보여 주는데, 삭제해도 무효화하지
      * 않아 지운 루트의 금액이 남아 있었습니다.
      */
-    onSettled: () => {
+    onSettled: (_result, _error, routeId) => {
       invalidateSavedRoutes();
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.savings });
+      // 추천 상세의 isSaved 도 바뀌므로 해당 항목만 다시 받습니다.
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.recommendedRoutes.detail(routeId),
+      });
     },
   });
 };

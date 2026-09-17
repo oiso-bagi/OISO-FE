@@ -9,11 +9,14 @@ import * as styles from "./RouteStopList.css";
 interface RouteStopListProps {
   stops: RecommendedRouteStop[];
 
-  /** 전달하면 목록 하단에 저장 버튼을 노출합니다. */
-  onSave?: () => void;
-  /** 저장 진행 중이면 버튼을 비활성화해 중복 저장을 막습니다. */
+  /**
+   * 전달하면 목록 하단에 저장 버튼을 노출합니다. 저장하지 않은 코스는 저장,
+   * 저장한 코스는 저장 취소로 누릅니다.
+   */
+  onToggleSave?: () => void;
+  /** 저장·취소 요청 중이면 버튼을 비활성화해 중복 요청을 막습니다. */
   isSaving?: boolean;
-  /** 이미 저장한 코스면 버튼을 "저장됨" 상태로 굳힙니다. */
+  /** 이미 저장한 코스면 버튼을 "저장됨" 상태로 보여 줍니다. */
   isSaved?: boolean;
 }
 
@@ -32,7 +35,7 @@ const groupStopsByDay = (stops: RecommendedRouteStop[]) => {
 
 export function RouteStopList({
   stops,
-  onSave,
+  onToggleSave,
   isSaving,
   isSaved,
 }: RouteStopListProps) {
@@ -112,13 +115,14 @@ export function RouteStopList({
         </div>
       ))}
 
-      {onSave && (
+      {onToggleSave && (
         <button
           type="button"
           className={styles.saveButton}
           data-saved={isSaved}
-          onClick={onSave}
-          disabled={isSaving || isSaved}
+          aria-pressed={isSaved}
+          onClick={onToggleSave}
+          disabled={isSaving}
         >
           {isSaved ? (
             <CheckIcon className={styles.saveIcon} aria-hidden />

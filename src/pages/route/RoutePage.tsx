@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { ConfirmDialog } from "@/shared/components/ConfirmDialog/ConfirmDialog";
 import { RouteBox } from "@/shared/components/RouteBox";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { Header } from "@/shared/components/header/Header";
@@ -21,11 +22,23 @@ import { TransportationLabel } from "./components/TransportationLabel";
 import { useMapResize } from "./hooks/useMapResize";
 import { useRecommendedRouteDetail } from "./hooks/useRecommendedRouteDetail";
 import { useRecommendedRoutes } from "./hooks/useRecommendedRoutes";
-import { useCreateSavedRoute, useSavedRoutes } from "./hooks/useSavedRoutes";
+import {
+  useCreateSavedRoute,
+  useDeleteSavedRoute,
+  useSavedRoutes,
+} from "./hooks/useSavedRoutes";
 import type { SelectedDay } from "./types/day";
 import { formatDistance, toRouteSummaryItems } from "./utils/routeFormat";
 
 import * as styles from "./components/routeLayout.css";
+
+/**
+ * 저장·저장 취소 토스트 표시 시간.
+ *
+ * 기본 4초는 목록 위를 오래 가립니다. "저장 목록 바로가기" 를 누를 시간은
+ * 남깁니다. 실패 토스트는 읽어야 할 내용이 있어 기본 시간을 씁니다.
+ */
+const SAVE_TOAST_DURATION_MS = 2500;
 
 export function RoutePage() {
   const navigate = useNavigate();
@@ -83,6 +96,9 @@ export function RoutePage() {
   } = useRecommendedRouteDetail(expandedRouteId);
 
   const createSavedRoute = useCreateSavedRoute();
+  const deleteSavedRoute = useDeleteSavedRoute();
+  const isSaveRequestPending =
+    createSavedRoute.isPending || deleteSavedRoute.isPending;
   const showToast = useToast();
 
   /**
@@ -98,18 +114,40 @@ export function RoutePage() {
   );
 
   /**
-   * 방금 저장한 id. 서버 목록만 보면 재조회가 끝날 때까지 버튼이 "저장" 으로
-   * 남아, 저장이 안 된 것처럼 보입니다. 요청을 보내는 순간 먼저 반영하고
-   * 실패하면 되돌립니다.
+   * 방금 저장하거나 취소한 결과. 서버 목록·상세만 보면 재조회가 끝날 때까지
+   * 버튼이 이전 상태로 남아 눌리지 않은 것처럼 보입니다. 요청을 보내는 순간
+   * 먼저 반영하고 실패하면 지워 서버 값으로 되돌립니다.
    */
-  const [justSavedIds, setJustSavedIds] = useState<ReadonlySet<string>>(
-    new Set(),
-  );
+  const [saveOverrides, setSaveOverrides] = useState<
+    ReadonlyMap<string, boolean>
+  >(new Map());
+
+  const setSaveOverride = (routeId: string, isSaved: boolean | null) => {
+    setSaveOverrides((previous) => {
+      const next = new Map(previous);
+
+      if (isSaved === null) {
+        next.delete(routeId);
+      } else {
+        next.set(routeId, isSaved);
+      }
+
+      return next;
+    });
+  };
 
   const isRouteSaved = (routeId: string) =>
-    justSavedIds.has(routeId) ||
-    savedRouteIds.has(routeId) ||
-    (routeDetail?.id === routeId && routeDetail.isSaved);
+    saveOverrides.get(routeId) ??
+    (savedRouteIds.has(routeId) ||
+      (routeDetail?.id === routeId && routeDetail.isSaved));
+
+  // 저장 취소 확인 다이얼로그 대상 (null 이면 닫힘)
+  const [cancelSaveTargetId, setCancelSaveTargetId] = useState<string | null>(
+    null,
+  );
+  const cancelSaveTarget = routes?.find(
+    (route) => route.id === cancelSaveTargetId,
+  );
 
   /**
    * 지도가 화면의 45% 를 차지하는데 들어오자마자 비어 있어, 첫 추천 코스를
@@ -139,12 +177,35 @@ export function RoutePage() {
   /**
    * 서버는 같은 루트를 두 번 저장해도 목록에 하나만 남깁니다(저장 목록 응답의
    * 식별자가 routeId 하나뿐이라 중복을 표현할 수 없습니다). 그래서 이미 저장한
-   * 코스는 버튼을 "저장됨" 으로 굳히고 요청 자체를 보내지 않습니다.
+   * 코스는 다시 저장하지 않고, 누르면 저장을 취소합니다.
    */
-  const handleSave = (routeId: string) => {
-    if (createSavedRoute.isPending || isRouteSaved(routeId)) return;
+  const handleToggleSave = (routeId: string) => {
+    if (isSaveRequestPending) return;
 
-    setJustSavedIds((previous) => new Set(previous).add(routeId));
+    if (!isRouteSaved(routeId)) {
+      saveRoute(routeId);
+      return;
+    }
+
+    /**
+     * 완료한 여행은 대시보드 절약 기록에 들어가 있어, 저장을 취소하면 그 기록도
+     * 함께 사라집니다. 이때만 한 번 확인받습니다. 저장 목록을 아직 못 받아
+     * 완료 여부를 모르면 안전하게 확인받습니다.
+     */
+    const savedRoute = savedRouteList?.routes.find(
+      (route) => route.id === routeId,
+    );
+
+    if (!savedRouteList || savedRoute?.isCompleted) {
+      setCancelSaveTargetId(routeId);
+      return;
+    }
+
+    cancelSave(routeId);
+  };
+
+  const saveRoute = (routeId: string) => {
+    setSaveOverride(routeId, true);
 
     createSavedRoute.mutate(routeId, {
       // 저장하고 나면 할 일이 없어 흐름이 끊깁니다. 토스트에서 바로 넘어갑니다.
@@ -153,17 +214,14 @@ export function RoutePage() {
 
         showToast({
           message: "저장되었습니다",
+          duration: SAVE_TOAST_DURATION_MS,
           actionLabel: "저장 목록 바로가기",
           onAction: () => navigate("/saved"),
         });
       },
       onError: (saveError) => {
         // 실패했으면 다시 누를 수 있도록 되돌립니다.
-        setJustSavedIds((previous) => {
-          const next = new Set(previous);
-          next.delete(routeId);
-          return next;
-        });
+        setSaveOverride(routeId, null);
 
         showToast({
           message: toErrorMessage(
@@ -173,6 +231,37 @@ export function RoutePage() {
         });
       },
     });
+  };
+
+  const cancelSave = (routeId: string) => {
+    setSaveOverride(routeId, false);
+
+    deleteSavedRoute.mutate(routeId, {
+      onSuccess: () => {
+        showToast({
+          message: "저장이 취소되었습니다",
+          duration: SAVE_TOAST_DURATION_MS,
+        });
+      },
+      onError: (cancelError) => {
+        setSaveOverride(routeId, null);
+
+        showToast({
+          message: toErrorMessage(
+            cancelError,
+            "저장을 취소하지 못했어요. 잠시 후 다시 시도해 주세요.",
+          ),
+        });
+      },
+    });
+  };
+
+  const handleConfirmCancelSave = () => {
+    if (cancelSaveTargetId !== null) {
+      cancelSave(cancelSaveTargetId);
+    }
+
+    setCancelSaveTargetId(null);
   };
 
   // 펼쳐진 코스의 경유지를 상단 지도에 표시 (없으면 부산 기본 지도)
@@ -289,9 +378,9 @@ export function RoutePage() {
                     {routeDetail?.id === route.id && (
                       <RouteStopList
                         stops={visibleStops}
-                        onSave={() => handleSave(route.id)}
+                        onToggleSave={() => handleToggleSave(route.id)}
                         isSaved={isRouteSaved(route.id)}
-                        isSaving={createSavedRoute.isPending}
+                        isSaving={isSaveRequestPending}
                       />
                     )}
                   </>
@@ -301,6 +390,20 @@ export function RoutePage() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={cancelSaveTargetId !== null}
+        title={
+          cancelSaveTarget
+            ? `'${cancelSaveTarget.name}' 저장을 취소할까요?`
+            : "저장을 취소할까요?"
+        }
+        description="여행 완료로 기록한 코스는 대시보드의 절약 기록도 함께 사라져요."
+        confirmLabel="저장 취소"
+        cancelLabel="닫기"
+        onCancel={() => setCancelSaveTargetId(null)}
+        onConfirm={handleConfirmCancelSave}
+      />
     </div>
   );
 }

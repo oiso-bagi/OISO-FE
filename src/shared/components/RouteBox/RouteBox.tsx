@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+import { useRef } from "react";
+import type { MouseEvent, ReactNode } from "react";
 
 import TrashcanIcon from "@/shared/assets/svg/trashcan.svg?react";
 import LocationIcon from "@/shared/assets/svg/location.svg?react";
@@ -67,8 +68,38 @@ export function RouteBox({
   const isEditable = variant === "editable";
   const hasRecommendationRate = typeof recommendationRate === "number";
 
+  const expandedContentRef = useRef<HTMLDivElement>(null);
+
+  /**
+   * 추천 루트 카드는 빈 곳을 눌러도 펼치거나 접습니다.
+   *
+   * 카드 안의 버튼은 자기 동작만 해야 합니다. 상세 보기 버튼은 스스로
+   * 토글하므로 여기서 한 번 더 토글하면 제자리로 돌아가고, 저장 버튼을 누르면
+   * 카드가 함께 접힙니다. 펼친 경유지 목록 안을 누를 때도 접지 않습니다.
+   *
+   * 저장 루트 카드는 완료 토글·삭제 버튼 옆을 잘못 누르면 지도로 넘어가 버려
+   * 기존처럼 버튼으로만 엽니다.
+   */
+  const handleCardClick = (event: MouseEvent<HTMLElement>) => {
+    const target = event.target as Element;
+
+    if (target.closest("button, a, input, label")) return;
+    if (expandedContentRef.current?.contains(target)) return;
+    // 글자를 드래그해 고른 경우는 누른 것으로 보지 않습니다.
+    if (window.getSelection()?.toString()) return;
+
+    onToggleExpanded();
+  };
+
   return (
-    <article className={styles.container}>
+    <article
+      className={
+        isEditable
+          ? styles.container
+          : `${styles.container} ${styles.clickableContainer}`
+      }
+      onClick={isEditable ? undefined : handleCardClick}
+    >
       {isEditable && (
         <div className={styles.editHeader}>
           <span className={styles.completedText}>여행을 완료하셨나요?</span>
@@ -150,7 +181,9 @@ export function RouteBox({
 
       {isExpanded ? (
         <>
-          {children}
+          <div ref={expandedContentRef} className={styles.expandedContent}>
+            {children}
+          </div>
           <button
             type="button"
             className={styles.detailButton}

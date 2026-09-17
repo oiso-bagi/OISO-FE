@@ -213,12 +213,12 @@ export const saveButton = style([
       },
 
       // 저장 완료: 색이 반전되고 그림자가 사라져 눌린 상태로 남습니다.
+      // 다시 누르면 저장이 취소되므로 커서는 그대로 둡니다.
       '&[data-saved="true"]': {
         color: vars.color.white,
         backgroundColor: vars.color.black,
         boxShadow: "none",
         transform: "translate(2px, 2px)",
-        cursor: "default",
       },
 
       // 저장 요청 중에만 흐려집니다. 저장 완료는 흐려지면 안 됩니다.
