@@ -1,11 +1,7 @@
-import { BarBreakdown } from "../components/BarBreakdown";
 import { PageHeader } from "../components/PageHeader";
 import { StatCard } from "../components/StatCard";
 import * as styles from "../components/ui.css";
-import {
-  useAdminSavingsBreakdown,
-  useAdminStatsOverview,
-} from "../hooks/useAdminDashboard";
+import { useAdminStatsOverview } from "../hooks/useAdminDashboard";
 import { formatNumber } from "../lib/format";
 import { AdminKtoPanel } from "./AdminKtoPanel";
 
@@ -14,7 +10,6 @@ const toManwon = (won: number) => formatNumber(Math.round(won / 10000));
 
 export function AdminDashboardPage() {
   const overview = useAdminStatsOverview();
-  const breakdown = useAdminSavingsBreakdown();
 
   const stats = overview.data;
   const isPending = overview.isPending;
@@ -26,10 +21,7 @@ export function AdminDashboardPage() {
         description="서비스 현황과 KTO 공공데이터 배치 운영 상태를 확인합니다."
       />
 
-      {/*
-       * 실패했을 때 카드가 전부 "—" 로만 남으면 값이 없는 이유를 알 수 없습니다.
-       * 같은 화면의 BarBreakdown 도 에러를 표시하므로 동작을 맞춥니다.
-       */}
+      {/* 실패했을 때 카드가 전부 "—" 로만 남으면 값이 없는 이유를 알 수 없습니다. */}
       {overview.isError && (
         <p className={styles.inlineError} role="alert">
           지표를 불러오지 못했어요.
@@ -60,32 +52,6 @@ export function AdminDashboardPage() {
           value={stats ? stats.averageLocalContributionScore.toFixed(1) : "—"}
           unit="%"
           isPending={isPending}
-        />
-      </div>
-
-      <div className={styles.dashboardRow}>
-        <BarBreakdown
-          title="카테고리별 절약"
-          items={(breakdown.data?.byCategory ?? []).map((item) => ({
-            key: item.category,
-            label: item.label,
-            amountWon: item.amountWon,
-            ratio: item.ratio,
-          }))}
-          isPending={breakdown.isPending}
-          isError={breakdown.isError}
-        />
-
-        <BarBreakdown
-          title="상권별 절약"
-          items={(breakdown.data?.byMarketType ?? []).map((item) => ({
-            key: item.type,
-            label: item.label,
-            amountWon: item.amountWon,
-            ratio: item.ratio,
-          }))}
-          isPending={breakdown.isPending}
-          isError={breakdown.isError}
         />
       </div>
 

@@ -5,13 +5,11 @@ import { USE_MOCK } from "@/shared/config/env";
 
 import {
   getAdminKtoStatus,
-  getAdminSavingsBreakdown,
   getAdminStatsOverview,
   postAdminKtoCollect,
 } from "../api/adminDashboardApi";
 import {
   mockGetAdminKtoStatus,
-  mockGetAdminSavingsBreakdown,
   mockGetAdminStatsOverview,
   mockPostAdminKtoCollect,
 } from "../mocks/adminMocks";
@@ -23,12 +21,6 @@ export const useAdminStatsOverview = () =>
   useQuery({
     queryKey: queryKeys.admin.stats.overview(),
     queryFn: USE_MOCK ? mockGetAdminStatsOverview : getAdminStatsOverview,
-  });
-
-export const useAdminSavingsBreakdown = () =>
-  useQuery({
-    queryKey: queryKeys.admin.stats.savingsBreakdown(),
-    queryFn: USE_MOCK ? mockGetAdminSavingsBreakdown : getAdminSavingsBreakdown,
   });
 
 /**
