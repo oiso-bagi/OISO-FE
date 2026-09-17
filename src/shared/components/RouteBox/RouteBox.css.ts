@@ -290,7 +290,6 @@ export const recommendationRate = style({
 
   color: vars.color.black,
 
-  // fontFamily: "Pretendard",
   fontSize: "10px",
   fontWeight: 900,
   lineHeight: "20px",
