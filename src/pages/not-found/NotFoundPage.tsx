@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 
+import { DataAttribution } from "@/shared/components/DataAttribution/DataAttribution";
 import { pageContent } from "@/shared/styles/layout.css";
 
 import * as styles from "./NotFoundPage.css";
@@ -22,6 +23,8 @@ export function NotFoundPage() {
         <Link className={styles.homeLink} to="/">
           홈으로 돌아가기
         </Link>
+
+        <DataAttribution className={styles.attribution} />
       </section>
     </main>
   );

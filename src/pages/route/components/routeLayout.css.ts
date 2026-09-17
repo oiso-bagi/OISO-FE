@@ -1,5 +1,6 @@
 import { style } from "@vanilla-extract/css";
 
+import { BOTTOM_NAV_TOTAL_HEIGHT } from "@/shared/styles/bottomNavigationSize";
 import { vars } from "@/shared/styles/theme.css";
 import * as typo from "@/shared/styles/typography.css";
 
@@ -8,8 +9,8 @@ export const page = style({
   display: "flex",
   flexDirection: "column",
 
-  // 하단 네비(72px) + 홈 인디케이터 영역 제외한 높이
-  height: "calc(100dvh - 72px - env(safe-area-inset-bottom, 0px))",
+  // 하단 네비 + 홈 인디케이터 영역 제외한 높이
+  height: `calc(100dvh - ${BOTTOM_NAV_TOTAL_HEIGHT})`,
 });
 
 /**

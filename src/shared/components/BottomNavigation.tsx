@@ -4,6 +4,7 @@ import courseIcon from "@/shared/assets/svg/course.svg";
 import dashboardIcon from "@/shared/assets/svg/dashboard.svg";
 import homeIcon from "@/shared/assets/svg/ic-house.svg";
 import saveIcon from "@/shared/assets/svg/save.svg";
+import { DataAttribution } from "@/shared/components/DataAttribution/DataAttribution";
 
 import * as styles from "./BottomNavigation.css.ts";
 
@@ -56,41 +57,45 @@ export function BottomNavigation() {
   };
 
   return (
-    <nav className={styles.navigation}>
-      {navigationItems.map((item) => {
-        const isActive = isActivePath(item.activePaths);
+    <div className={styles.bar}>
+      <nav className={styles.navigation}>
+        {navigationItems.map((item) => {
+          const isActive = isActivePath(item.activePaths);
 
-        return (
-          <Link
-            key={item.path}
-            to={item.path}
-            className={styles.item}
-            aria-current={isActive ? "page" : undefined}
-          >
-            <div
-              className={`${styles.iconBox} ${
-                isActive ? styles.activeIconBox : ""
-              }`}
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={styles.item}
+              aria-current={isActive ? "page" : undefined}
             >
-              <img
-                src={item.icon}
-                alt=""
-                className={`${styles.icon} ${
-                  isActive ? styles.activeIcon : ""
+              <div
+                className={`${styles.iconBox} ${
+                  isActive ? styles.activeIconBox : ""
                 }`}
-              />
-            </div>
+              >
+                <img
+                  src={item.icon}
+                  alt=""
+                  className={`${styles.icon} ${
+                    isActive ? styles.activeIcon : ""
+                  }`}
+                />
+              </div>
 
-            <span
-              className={`${styles.label} ${
-                isActive ? styles.activeLabel : ""
-              }`}
-            >
-              {item.label}
-            </span>
-          </Link>
-        );
-      })}
-    </nav>
+              <span
+                className={`${styles.label} ${
+                  isActive ? styles.activeLabel : ""
+                }`}
+              >
+                {item.label}
+              </span>
+            </Link>
+          );
+        })}
+      </nav>
+
+      <DataAttribution variant="navigation" className={styles.attribution} />
+    </div>
   );
 }

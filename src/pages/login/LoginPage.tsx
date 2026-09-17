@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { API_BASE_URL } from "@/shared/config/env";
 import { useToast } from "@/shared/components/Toast/toastContext";
 import { CountUpAmount } from "@/shared/components/CountUpAmount/CountUpAmount";
+import { DataAttribution } from "@/shared/components/DataAttribution/DataAttribution";
 import OisoLogo from "@/shared/icons/oiso_logo.svg?react";
 import KakaoLogo from "@/shared/icons/kakao.svg?react";
 import GoogleLogo from "@/shared/icons/google.svg?react";
@@ -115,6 +116,7 @@ export function LoginPage() {
 
       <footer className={styles.footer}>
         <p>2026 관광데이터 활용 공모전 · 개발 부문</p>
+        <DataAttribution />
       </footer>
     </div>
   );

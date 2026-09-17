@@ -1,3 +1,4 @@
+import { BOTTOM_NAV_TOTAL_HEIGHT } from "@/shared/styles/bottomNavigationSize";
 import { vars } from "@/shared/styles/theme.css";
 import { style } from "@vanilla-extract/css";
 
@@ -19,8 +20,8 @@ export const appContainer = style({
 
 export const contentWithBottomNavigation = style({
   minHeight: "100vh",
-  // 하단 네비(72px) + 홈 인디케이터 영역만큼 비워, 마지막 콘텐츠가 안 가리게
-  paddingBottom: "calc(72px + env(safe-area-inset-bottom, 0px))",
+  // 하단 네비 + 홈 인디케이터 영역만큼 비워, 마지막 콘텐츠가 안 가리게
+  paddingBottom: BOTTOM_NAV_TOTAL_HEIGHT,
 
   /**
    * 자식(페이지)이 남는 높이를 채우도록 flex 컬럼으로 둡니다.

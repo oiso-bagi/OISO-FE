@@ -3,6 +3,7 @@ import { Navigate, useNavigate, useParams } from "react-router-dom";
 
 import { CURRENT_CONSENT_VERSION } from "@/shared/api/consentApi";
 import { useAuthStatus } from "@/shared/auth/authContext";
+import { DataAttribution } from "@/shared/components/DataAttribution/DataAttribution";
 import { Header } from "@/shared/components/header/Header";
 import { useToast } from "@/shared/components/Toast/toastContext";
 import { prepareSurveyOnboarding } from "@/shared/lib/onboardingFlow";
@@ -141,6 +142,8 @@ export function TermsPage() {
             : "동의하고 시작하기"}
         </button>
       </div>
+
+      <DataAttribution className={styles.attribution} />
     </main>
   );
 }

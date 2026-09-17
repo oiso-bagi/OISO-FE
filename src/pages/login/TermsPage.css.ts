@@ -173,3 +173,8 @@ export const submitButton = style([
 export const submitArea = style({
   marginTop: "auto",
 });
+
+export const attribution = style({
+  marginTop: vars.space.md,
+  paddingInline: vars.space.md,
+});

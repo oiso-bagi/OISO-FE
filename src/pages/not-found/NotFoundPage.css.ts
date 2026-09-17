@@ -82,3 +82,7 @@ export const homeLink = style([
     },
   },
 ]);
+
+export const attribution = style({
+  marginTop: vars.space.xl,
+});

@@ -1,5 +1,6 @@
 import { keyframes, style } from "@vanilla-extract/css";
 
+import { BOTTOM_NAV_TOTAL_HEIGHT } from "@/shared/styles/bottomNavigationSize";
 import { vars } from "@/shared/styles/theme.css";
 import * as typo from "@/shared/styles/typography.css";
 
@@ -12,8 +13,8 @@ export const wrapper = style({
   position: "fixed",
   left: 0,
   right: 0,
-  // 하단 네비(72px) + 홈 인디케이터 위로 16px 띄움
-  bottom: "calc(88px + env(safe-area-inset-bottom, 0px))",
+  // 하단 네비 + 홈 인디케이터 위로 16px 띄움
+  bottom: `calc(${BOTTOM_NAV_TOTAL_HEIGHT} + 16px)`,
 
   zIndex: 90,
 
