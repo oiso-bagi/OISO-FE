@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import TrashcanIcon from "@/shared/assets/svg/trashcan.svg?react";
 import LocationIcon from "@/shared/assets/svg/location.svg?react";
 import RecommendBadgeIcon from "@/shared/assets/svg/recommendBadge.svg?react";
+import { FaArrowRight, FaArrowUp } from "react-icons/fa6";
 
 import * as styles from "./RouteBox.css";
 
@@ -157,7 +158,7 @@ export function RouteBox({
             aria-expanded={true}
           >
             간단히 보기
-            <span aria-hidden>↑</span>
+            <FaArrowUp className={styles.detailButtonIcon} aria-hidden="true" />
           </button>
         </>
       ) : (
@@ -168,7 +169,10 @@ export function RouteBox({
           aria-expanded={false}
         >
           {isEditable ? "지도 보기" : "상세 보기"}
-          <span aria-hidden>→</span>
+          <FaArrowRight
+            className={styles.detailButtonIcon}
+            aria-hidden="true"
+          />
         </button>
       )}
     </article>
