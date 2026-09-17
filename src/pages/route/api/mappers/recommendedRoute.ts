@@ -63,6 +63,10 @@ const toRouteStop = (stop: RouteStopResponseDto): RecommendedRouteStop => ({
   longitude: stop.longitude,
   transportationFromPrevious: stop.nextTransportType,
   durationFromPreviousMinutes: stop.nextTravelTimeMinutes,
+  stayMinutes: stop.stayMinutes,
+  estimatedPriceWon: stop.estimatedPriceWon,
+  touristPremiumWon: stop.touristPremiumWon,
+  savedPriceWon: stop.savedPriceWon,
   pathFromPrevious: stop.pathCoordinates ?? [],
 });
 
