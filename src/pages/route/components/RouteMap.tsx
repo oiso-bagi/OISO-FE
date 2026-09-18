@@ -72,6 +72,21 @@ const toDayStops = (stops: PlottableStop[], dayNumber: number) =>
     .filter((stop) => stop.dayNumber === dayNumber)
     .sort((a, b) => a.sequence - b.sequence);
 
+/**
+ * 핀 번호. 일차 안에서의 방문 순서입니다.
+ *
+ * 경유지 목록도 같은 번호를 씁니다. 좌표가 없어 핀을 못 그리는 경유지도
+ * 목록에는 있으므로, 번호가 밀리지 않게 그런 경유지까지 세어 매깁니다.
+ */
+const getDayOrder = (
+  stops: RecommendedRouteStop[],
+  target: RecommendedRouteStop,
+) =>
+  stops
+    .filter((stop) => stop.dayNumber === target.dayNumber)
+    .sort((a, b) => a.sequence - b.sequence)
+    .findIndex((stop) => stop.sequence === target.sequence) + 1;
+
 // Polyline 은 CSS 변수를 못 받으므로 디자인 토큰 값을 직접 지정합니다.
 const CASING_COLOR = "#FFFFFF";
 
@@ -266,8 +281,8 @@ export function RouteMap({
       overlaysRef.current.push(casing, line);
 
       // 경유지 순번 마커 — 해당 일차 안에서의 방문 순서로 표시
-      dayStops.forEach((stop, index) => {
-        const markerNumber = index + 1;
+      dayStops.forEach((stop) => {
+        const markerNumber = getDayOrder(stops, stop);
 
         const element = document.createElement("button");
         element.type = "button";
@@ -494,11 +509,7 @@ export function RouteMap({
         createPortal(
           <StopCallout
             stop={selectedStop}
-            markerNumber={
-              toDayStops(plottableStops, selectedStop.dayNumber).indexOf(
-                selectedStop,
-              ) + 1
-            }
+            markerNumber={getDayOrder(stops, selectedStop)}
             markerColor={getDayColor(selectedStop.dayNumber)}
             isMultiDay={isMultiDay}
             onClose={() => onSelectStop?.(null)}

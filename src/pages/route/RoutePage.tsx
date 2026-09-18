@@ -225,22 +225,28 @@ export function RoutePage() {
     cancelSave(routeId);
   };
 
+  /**
+   * `mutate` 의 호출별 콜백은 요청 중 화면을 벗어나면 실행되지 않아, 저장하고
+   * 바로 다른 탭으로 가면 `route_save` 이벤트와 결과 토스트가 빠집니다.
+   * 컴포넌트 수명과 무관한 `mutateAsync` 로 처리합니다.
+   */
   const saveRoute = (routeId: string) => {
     setSaveOverride(routeId, true);
 
-    createSavedRoute.mutate(routeId, {
-      // 저장하고 나면 할 일이 없어 흐름이 끊깁니다. 토스트에서 바로 넘어갑니다.
-      onSuccess: () => {
+    createSavedRoute
+      .mutateAsync(routeId)
+      .then(() => {
         trackEvent("route_save", { route_id: routeId });
 
+        // 저장하고 나면 할 일이 없어 흐름이 끊깁니다. 토스트에서 바로 넘어갑니다.
         showToast({
           message: "저장되었습니다",
           duration: SAVE_TOAST_DURATION_MS,
           actionLabel: "저장 목록 바로가기",
           onAction: () => navigate("/saved"),
         });
-      },
-      onError: (saveError) => {
+      })
+      .catch((saveError: unknown) => {
         // 실패했으면 다시 누를 수 있도록 되돌립니다.
         setSaveOverride(routeId, null);
 
@@ -250,21 +256,21 @@ export function RoutePage() {
             "저장하지 못했어요. 잠시 후 다시 시도해 주세요.",
           ),
         });
-      },
-    });
+      });
   };
 
   const cancelSave = (routeId: string) => {
     setSaveOverride(routeId, false);
 
-    deleteSavedRoute.mutate(routeId, {
-      onSuccess: () => {
+    deleteSavedRoute
+      .mutateAsync(routeId)
+      .then(() => {
         showToast({
           message: "저장이 취소되었습니다",
           duration: SAVE_TOAST_DURATION_MS,
         });
-      },
-      onError: (cancelError) => {
+      })
+      .catch((cancelError: unknown) => {
         setSaveOverride(routeId, null);
 
         showToast({
@@ -273,8 +279,7 @@ export function RoutePage() {
             "저장을 취소하지 못했어요. 잠시 후 다시 시도해 주세요.",
           ),
         });
-      },
-    });
+      });
   };
 
   const handleConfirmCancelSave = () => {
