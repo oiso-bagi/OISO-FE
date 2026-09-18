@@ -83,7 +83,7 @@ export const queryKeys = {
 
     kto: {
       all: adminKto,
-      status: () => [...adminKto, "status"] as const,
+      status: (source: string) => [...adminKto, "status", source] as const,
     },
   },
 };

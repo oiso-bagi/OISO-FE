@@ -366,6 +366,11 @@ export interface RecommendedRouteDetailResponseDto {
    */
   recommendScore: number;
   /**
+   * 로컬(외곽·원도심 상권) 기여 지수 점수 (0~100)
+   * @example 65
+   */
+  localContributionScore: number;
+  /**
    * 추천 루트 여부
    * @example true
    */
@@ -480,6 +485,14 @@ export interface CreateSavedRouteDto {
    * @example "clx1234567890abcdef"
    */
   routeId: string;
+}
+
+export interface SaveRouteResponseDto {
+  /**
+   * 새로운 보관함 저장 생성 여부 (신규 저장 시 true, 이미 저장되어 있어 중복 생성 없는 경우 false)
+   * @example true
+   */
+  created: boolean;
 }
 
 export interface ToggleSavedRouteCompletionDto {
@@ -698,8 +711,36 @@ export interface SavedRouteDetailResponseDto {
    * @example 15000
    */
   estimatedSavingsWon: number;
+  /**
+   * 로컬(외곽·원도심 상권) 기여 지수 점수 (0~100)
+   * @example 65
+   */
+  localContributionScore: number;
   /** 저장 루트 경유지 상세 목록 */
   stops: SavedRouteStopDetailDto[];
+}
+
+export interface LocalLoginRequestDto {
+  /** Local account email. */
+  email: string;
+  /**
+   * Local account password.
+   * @minLength 8
+   */
+  password: string;
+}
+
+export interface AuthTokenResponseDto {
+  /**
+   * 재발급된 액세스 토큰
+   * @example "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+   */
+  accessToken: string;
+  /**
+   * 토큰 타입
+   * @example "Bearer"
+   */
+  tokenType: string;
 }
 
 export interface CurrentUserResponseDto {
@@ -728,19 +769,6 @@ export interface CurrentUserResponseDto {
    * @example "USER"
    */
   role: "USER" | "ADMIN";
-}
-
-export interface AuthTokenResponseDto {
-  /**
-   * 재발급된 액세스 토큰
-   * @example "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-   */
-  accessToken: string;
-  /**
-   * 토큰 타입
-   * @example "Bearer"
-   */
-  tokenType: string;
 }
 
 export interface AuthSessionResponseDto {
@@ -1028,6 +1056,31 @@ export interface SavingsDashboardResponseDto {
   localContribution: LocalContributionDto;
   /** 최근 완료 여행 절약 내역 */
   histories: SavingsHistoryDto[];
+}
+
+export interface SavingsHistoriesPageResponseDto {
+  /** Savings history items. */
+  items: SavingsHistoryDto[];
+  /**
+   * Current page number. Starts from 1.
+   * @example 1
+   */
+  page: number;
+  /**
+   * Number of items per page.
+   * @example 10
+   */
+  size: number;
+  /**
+   * Total number of savings histories.
+   * @example 25
+   */
+  totalCount: number;
+  /**
+   * Total number of pages.
+   * @example 3
+   */
+  totalPages: number;
 }
 
 export interface SavedRouteSummaryItemDto {
@@ -1612,6 +1665,145 @@ export interface AdminKtoCollectResponseDto {
    * @example 0
    */
   failureCount: number;
+}
+
+export interface AdminKtoPlaceStatusResponseDto {
+  /**
+   * 오늘 관광지 마스터 KTO API 호출 사용량 (쿼터 1,000건 한도)
+   * @example 6
+   */
+  dailyApiUsage: number;
+  /**
+   * 일일 최대 허용 쿼터 수
+   * @example 1000
+   */
+  dailyQuotaLimit: number;
+  /**
+   * 마지막 수집 성공 일시
+   * @example "2026-08-17T05:00:00.000Z"
+   */
+  lastCollectedAt: object | null;
+  /**
+   * 현재 수집 작업 상태 (IDLE | RUNNING)
+   * @example "IDLE"
+   */
+  status: string;
+  /**
+   * 마지막 수집 실행 결과 상태 (SUCCESS | PARTIAL_SUCCESS | FAILURE)
+   * @example "SUCCESS"
+   */
+  lastResult: "SUCCESS" | "PARTIAL_SUCCESS" | "FAILURE" | null;
+  /**
+   * 마지막 수집 실행 결과 메시지
+   * @example "한국관광공사 관광지 마스터 수동 수집이 성공적으로 완료되었습니다."
+   */
+  lastMessage: object | null;
+  /**
+   * 전체 부산 등록 장소 수
+   * @example 450
+   */
+  totalPlaceCount: number;
+}
+
+export interface AdminKtoPlaceCollectResponseDto {
+  /**
+   * 수동 수집 실행 결과 메시지
+   * @example "한국관광공사 관광지 마스터 수동 수집이 성공적으로 완료되었습니다."
+   */
+  message: string;
+  /**
+   * 수집 실행 완료 일시
+   * @format date-time
+   * @example "2026-08-17T05:30:00.000Z"
+   */
+  collectedAt: string;
+  /**
+   * 갱신된 장소 건수
+   * @example 120
+   */
+  updatedPlaceCount: number;
+  /**
+   * 갱신 실패한 장소 건수
+   * @example 0
+   */
+  failureCount: number;
+  /**
+   * API 호출 건수
+   * @example 6
+   */
+  apiCallCount: number;
+}
+
+export interface AdminKtoRelatedStatusResponseDto {
+  /**
+   * 오늘 연관관광지 KTO API 호출 사용량 (쿼터 1,000건 한도)
+   * @example 1
+   */
+  dailyApiUsage: number;
+  /**
+   * 일일 최대 허용 쿼터 수
+   * @example 1000
+   */
+  dailyQuotaLimit: number;
+  /**
+   * 마지막 수집 성공 일시
+   * @example "2026-08-17T08:00:00.000Z"
+   */
+  lastCollectedAt: object | null;
+  /**
+   * 현재 수집 작업 상태 (IDLE | RUNNING)
+   * @example "IDLE"
+   */
+  status: string;
+  /**
+   * 마지막 수집 실행 결과 상태 (SUCCESS | PARTIAL_SUCCESS | FAILURE)
+   * @example "SUCCESS"
+   */
+  lastResult: "SUCCESS" | "PARTIAL_SUCCESS" | "FAILURE" | null;
+  /**
+   * 마지막 수집 실행 결과 메시지
+   * @example "한국관광공사 연관관광지 수동 수집이 성공적으로 완료되었습니다."
+   */
+  lastMessage: object | null;
+  /**
+   * DB 매칭 연관 관광지 수
+   * @example 45
+   */
+  matchedPlaceCount: number;
+}
+
+export interface AdminKtoRelatedCollectResponseDto {
+  /**
+   * 수동 수집 실행 결과 메시지
+   * @example "한국관광공사 연관관광지 수동 수집이 성공적으로 완료되었습니다."
+   */
+  message: string;
+  /**
+   * 수집 실행 완료 일시
+   * @format date-time
+   * @example "2026-08-17T08:05:00.000Z"
+   */
+  collectedAt: string;
+  /**
+   * 수집된 연관 관광지 건수
+   * @example 50
+   */
+  collectedCount: number;
+  /**
+   * DB에 매칭되어 갱신된 장소 건수
+   * @example 45
+   */
+  matchedPlaceCount: number;
+  /**
+   * 수집 실패 건수
+   * @example 0
+   */
+  failureCount: number;
+  /**
+   * API 호출 건수
+   * @example 1
+   */
+  apiCallCount: number;
 }
 
 export interface AdminUserListItemDto {

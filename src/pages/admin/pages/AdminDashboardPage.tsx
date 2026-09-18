@@ -18,7 +18,7 @@ export function AdminDashboardPage() {
     <>
       <PageHeader
         title="대시보드"
-        description="서비스 현황과 KTO 공공데이터 배치 운영 상태를 확인합니다."
+        description="서비스 현황과 KTO 공공데이터 적재·수집 상태를 확인합니다."
       />
 
       {/* 실패했을 때 카드가 전부 "—" 로만 남으면 값이 없는 이유를 알 수 없습니다. */}

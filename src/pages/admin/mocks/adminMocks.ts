@@ -26,6 +26,7 @@ import type {
   AdminStatsOverview,
   AdminUser,
   AdminUsersQuery,
+  KtoSource,
   AuthProvider,
   PaginatedResponse,
   PlaceCategory,
@@ -482,65 +483,102 @@ export const mockGetAdminStatsOverview =
 const COOLDOWN_MS = 10 * 60 * 1000;
 const COLLECT_DURATION_MS = 6000;
 
-const ktoState = {
+interface MockKtoState {
+  loadedCount: number;
+  dailyLimit: number;
+  usedCount: number;
+  lastCollectedAt: string | null;
+  lastCollectResult: AdminKtoStatus["lastCollectResult"];
+  lastMessage: string | null;
+  collectingUntil: number;
+  cooldownUntil: number;
+}
+
+const createKtoState = (
+  loadedCount: number,
+  usedCount: number,
+  lastCollectResult: AdminKtoStatus["lastCollectResult"],
+  lastMessage: string | null = null,
+): MockKtoState => ({
+  loadedCount,
   dailyLimit: 1000,
-  usedCount: 150,
-  lastCollectedAt: new Date(2026, 7, 16, 4, 0, 0).toISOString() as
-    string | null,
-  lastCollectStatus: "SUCCESS" as AdminKtoStatus["lastCollectStatus"],
+  usedCount,
+  lastCollectedAt: new Date(2026, 8, 17, 4, 0, 0).toISOString(),
+  lastCollectResult,
+  lastMessage,
   collectingUntil: 0,
   cooldownUntil: 0,
+});
+
+const ktoStates: Record<KtoSource, MockKtoState> = {
+  TOUR_API: createKtoState(1024, 12, "SUCCESS"),
+  RELATED_TOUR: createKtoState(
+    312,
+    48,
+    "PARTIAL_SUCCESS",
+    "연관 관광지 3곳을 장소와 연결하지 못했습니다.",
+  ),
+  CONCENTRATION: createKtoState(85, 150, "SUCCESS"),
 };
 
-export const mockGetAdminKtoStatus = async (): Promise<AdminKtoStatus> => {
+export const mockGetAdminKtoStatus = async (
+  source: KtoSource,
+): Promise<AdminKtoStatus> => {
   await delay(180);
 
+  const state = ktoStates[source];
   const now = Date.now();
-  const isCollecting = now < ktoState.collectingUntil;
+  const isCollecting = now < state.collectingUntil;
 
   // 수집이 끝나는 시점에 사용량과 마지막 수집 기록을 갱신합니다.
-  if (!isCollecting && ktoState.collectingUntil !== 0) {
-    ktoState.collectingUntil = 0;
-    ktoState.usedCount = Math.min(ktoState.usedCount + 40, ktoState.dailyLimit);
-    ktoState.lastCollectedAt = new Date().toISOString();
-    ktoState.lastCollectStatus = "SUCCESS";
+  if (!isCollecting && state.collectingUntil !== 0) {
+    state.collectingUntil = 0;
+    state.usedCount = Math.min(state.usedCount + 40, state.dailyLimit);
+    state.lastCollectedAt = new Date().toISOString();
+    state.lastCollectResult = "SUCCESS";
+    state.lastMessage = null;
   }
 
   return {
-    dailyLimit: ktoState.dailyLimit,
-    usedCount: ktoState.usedCount,
-    remainingCount: ktoState.dailyLimit - ktoState.usedCount,
-    lastCollectedAt: ktoState.lastCollectedAt,
-    lastCollectStatus: ktoState.lastCollectStatus,
+    loadedCount: state.loadedCount,
+    dailyLimit: state.dailyLimit,
+    usedCount: state.usedCount,
+    remainingCount: state.dailyLimit - state.usedCount,
+    lastCollectedAt: state.lastCollectedAt,
+    lastCollectResult: state.lastCollectResult,
+    lastMessage: state.lastMessage,
     isCollecting,
     cooldownUntil:
-      ktoState.cooldownUntil > now
-        ? new Date(ktoState.cooldownUntil).toISOString()
+      state.cooldownUntil > now
+        ? new Date(state.cooldownUntil).toISOString()
         : null,
   };
 };
 
-export const mockPostAdminKtoCollect =
-  async (): Promise<AdminKtoCollectResponse> => {
-    await delay(200);
+export const mockPostAdminKtoCollect = async (
+  source: KtoSource,
+): Promise<AdminKtoCollectResponse> => {
+  await delay(200);
 
-    const now = Date.now();
+  const state = ktoStates[source];
+  const now = Date.now();
 
-    if (now < ktoState.collectingUntil) {
-      throw new Error("이미 수집이 진행 중입니다.");
-    }
-    if (now < ktoState.cooldownUntil) {
-      throw new Error("쿨타임이 끝난 뒤에 다시 시도해 주세요.");
-    }
-    if (ktoState.dailyLimit - ktoState.usedCount <= 0) {
-      throw new Error("오늘 사용 가능한 쿼터를 모두 사용했습니다.");
-    }
+  if (now < state.collectingUntil) {
+    throw new Error("이미 수집이 진행 중입니다.");
+  }
+  if (now < state.cooldownUntil) {
+    throw new Error("쿨타임이 끝난 뒤에 다시 시도해 주세요.");
+  }
+  if (state.dailyLimit - state.usedCount <= 0) {
+    throw new Error("오늘 사용 가능한 쿼터를 모두 사용했습니다.");
+  }
 
-    ktoState.collectingUntil = now + COLLECT_DURATION_MS;
-    ktoState.cooldownUntil = now + COOLDOWN_MS;
+  state.collectingUntil = now + COLLECT_DURATION_MS;
+  state.cooldownUntil = now + COOLDOWN_MS;
 
-    return {
-      accepted: true,
-      cooldownUntil: new Date(ktoState.cooldownUntil).toISOString(),
-    };
+  return {
+    updatedCount: state.loadedCount,
+    failureCount: 0,
+    cooldownUntil: new Date(state.cooldownUntil).toISOString(),
   };
+};
