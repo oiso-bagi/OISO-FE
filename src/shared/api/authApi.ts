@@ -1,6 +1,7 @@
 import type {
   AuthSessionResponseDto,
   AuthTokenResponseDto,
+  LocalLoginRequestDto,
 } from "@/shared/api/generated/types";
 import { clearAccessToken, setAccessToken } from "@/shared/auth/accessToken";
 
@@ -16,6 +17,22 @@ export const getAuthSession = () => {
 
 export const postLogout = () => {
   return http.post<void>("/auth/logout");
+};
+
+/**
+ * 아이디·비밀번호 로그인. 심사위원 전용 계정에만 씁니다(회원가입 없음).
+ *
+ * 성공하면 서버가 refresh token 쿠키도 함께 심어 줍니다.
+ */
+export const postLocalLogin = async (loginRequest: LocalLoginRequestDto) => {
+  const tokenResponse = await http.post<AuthTokenResponseDto>(
+    "/auth/login",
+    loginRequest,
+  );
+
+  setAccessToken(tokenResponse.accessToken);
+
+  return tokenResponse;
 };
 
 export const refreshAccessToken = () => {

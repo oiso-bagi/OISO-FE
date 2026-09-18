@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import { API_BASE_URL } from "@/shared/config/env";
 import { useToast } from "@/shared/components/Toast/toastContext";
@@ -96,6 +96,9 @@ export function LoginPage() {
       </section>
 
       <section className={styles.actions} aria-label="로그인 방법">
+        <Link to="/login/reviewer" className={styles.reviewerButton}>
+          심사위원으로 시작하기
+        </Link>
         <button
           type="button"
           className={styles.kakaoButton}

@@ -131,6 +131,11 @@ const loginButton = style([
   },
 ]);
 
+export const reviewerButton = style([
+  loginButton,
+  { backgroundColor: vars.color.primary300 },
+]);
+
 export const kakaoButton = style([loginButton, { backgroundColor: "#FEE500" }]);
 
 export const googleButton = style([
