@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { useAuthStatus } from "@/shared/auth/authContext";
 import XIcon from "@/shared/icons/x.svg?react";
-import { isSurveyCompleted } from "@/shared/lib/onboardingFlow";
 
 import { useConsentStatus } from "./hooks/useConsents";
 import * as styles from "./AuthCallbackPage.css";
@@ -38,9 +37,7 @@ export function AuthCallbackPage() {
       return;
     }
 
-    navigate(isSurveyCompleted() ? "/" : "/survey", {
-      replace: true,
-    });
+    navigate("/", { replace: true });
   }, [authStatus, consentStatusQuery.data, hasRedirectError, navigate]);
 
   if (isError) {
