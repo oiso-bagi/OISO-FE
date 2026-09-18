@@ -147,14 +147,32 @@ export interface AdminStatsOverview {
 
 /* ── KTO 공공데이터 배치 ────────────────────────────────── */
 
-export type KtoCollectStatus = "SUCCESS" | "FAILED";
+/**
+ * 적재·수집 현황을 보여 주는 KTO 공공데이터.
+ *
+ * 공공데이터 신청서에 "자동 배치 + 관리자 수동 즉시 수집 병행"으로 적혀 있어,
+ * 세 API 모두 현황과 즉시 수집을 따로 둡니다.
+ */
+export type KtoSource =
+  /** 국문 관광정보 (장소 마스터) */
+  | "TOUR_API"
+  /** 관광빅데이터 연관 관광지 */
+  | "RELATED_TOUR"
+  /** 관광지 집중률 (혼잡도) */
+  | "CONCENTRATION";
+
+export type KtoCollectResult = "SUCCESS" | "PARTIAL_SUCCESS" | "FAILURE";
 
 export interface AdminKtoStatus {
+  /** 적재된 장소 수. API 마다 세는 대상이 다릅니다. */
+  loadedCount: number;
   dailyLimit: number;
   usedCount: number;
   remainingCount: number;
   lastCollectedAt: string | null;
-  lastCollectStatus: KtoCollectStatus | null;
+  lastCollectResult: KtoCollectResult | null;
+  /** 마지막 수집 결과 안내. 실패·부분 성공 사유가 담깁니다. */
+  lastMessage: string | null;
   /** 현재 수집 진행 중 여부 */
   isCollecting: boolean;
   /** 쿨타임 종료 시각. 쿨타임이 없으면 null */
@@ -162,6 +180,8 @@ export interface AdminKtoStatus {
 }
 
 export interface AdminKtoCollectResponse {
-  accepted: boolean;
+  /** 이번 수집으로 갱신된 건수 */
+  updatedCount: number;
+  failureCount: number;
   cooldownUntil: string | null;
 }
