@@ -514,13 +514,12 @@ const createKtoState = (
 
 const ktoStates: Record<KtoSource, MockKtoState> = {
   TOUR_API: createKtoState(1024, 12, "SUCCESS"),
-  RELATED_TOUR: createKtoState(
-    312,
-    48,
+  CONCENTRATION: createKtoState(
+    85,
+    150,
     "PARTIAL_SUCCESS",
-    "연관 관광지 3곳을 장소와 연결하지 못했습니다.",
+    "혼잡도 집중률을 받지 못한 장소가 3곳 있습니다.",
   ),
-  CONCENTRATION: createKtoState(85, 150, "SUCCESS"),
 };
 
 /** 수집이 끝나는 시점에 사용량과 마지막 수집 기록을 갱신합니다. */

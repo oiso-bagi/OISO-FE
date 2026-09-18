@@ -48,8 +48,7 @@ export const useTriggerKtoCollect = (source: KtoSource) => {
       USE_MOCK ? mockPostAdminKtoCollect(source) : postAdminKtoCollect(source),
     /**
      * 수집 직후 현황을 다시 읽어 쿨타임·적재 건수를 반영합니다. 관광정보를
-     * 새로 받으면 연관 관광지·혼잡도가 세는 장소도 달라질 수 있어 모두 다시
-     * 읽습니다.
+     * 새로 받으면 혼잡도가 세는 장소도 달라질 수 있어 모두 다시 읽습니다.
      */
     onSettled: () =>
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.kto.all }),

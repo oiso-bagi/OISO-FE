@@ -600,10 +600,10 @@ export const sectionBody = style({
 
 /* ── KTO 공공데이터 적재 현황 ──────────────────────────── */
 
-/** API 3종 카드를 나란히 둡니다. */
+/** API 카드(국문 관광정보·관광지 집중률)를 나란히 둡니다. */
 export const ktoCards = style({
   display: "grid",
-  gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
   gap: admin.space.md,
 
   "@media": {

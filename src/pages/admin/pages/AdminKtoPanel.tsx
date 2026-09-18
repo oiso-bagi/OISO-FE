@@ -36,12 +36,6 @@ const KTO_SOURCES: KtoSourceInfo[] = [
     countLabel: "적재 장소",
   },
   {
-    source: "RELATED_TOUR",
-    title: "연관 관광지",
-    apiName: "TarRlteTarService1",
-    countLabel: "연관 관광지 연결 장소",
-  },
-  {
     source: "CONCENTRATION",
     title: "관광지 집중률",
     apiName: "TatsCnctrRateService",

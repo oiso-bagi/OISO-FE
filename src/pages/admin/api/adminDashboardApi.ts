@@ -2,8 +2,6 @@ import type {
   AdminKtoCollectResponseDto,
   AdminKtoPlaceCollectResponseDto,
   AdminKtoPlaceStatusResponseDto,
-  AdminKtoRelatedCollectResponseDto,
-  AdminKtoRelatedStatusResponseDto,
   AdminKtoStatusResponseDto,
   AdminStatsOverviewResponseDto,
 } from "@/shared/api/generated/types";
@@ -48,15 +46,10 @@ export const getAdminStatsOverview = async (): Promise<AdminStatsOverview> => {
   };
 };
 
-type KtoStatusDto =
-  | AdminKtoStatusResponseDto
-  | AdminKtoPlaceStatusResponseDto
-  | AdminKtoRelatedStatusResponseDto;
+type KtoStatusDto = AdminKtoStatusResponseDto | AdminKtoPlaceStatusResponseDto;
 
 type KtoCollectDto =
-  | AdminKtoCollectResponseDto
-  | AdminKtoPlaceCollectResponseDto
-  | AdminKtoRelatedCollectResponseDto;
+  AdminKtoCollectResponseDto | AdminKtoPlaceCollectResponseDto;
 
 /**
  * 데이터마다 현황·수집 엔드포인트와 적재 건수 필드가 다릅니다.
@@ -75,12 +68,6 @@ const KTO_ENDPOINTS: Record<
     collect: "/admin/kto/place-collect",
     toLoadedCount: (dto) =>
       (dto as AdminKtoPlaceStatusResponseDto).totalPlaceCount,
-  },
-  RELATED_TOUR: {
-    status: "/admin/kto/related-status",
-    collect: "/admin/kto/related-collect",
-    toLoadedCount: (dto) =>
-      (dto as AdminKtoRelatedStatusResponseDto).matchedPlaceCount,
   },
   CONCENTRATION: {
     status: "/admin/kto/status",
@@ -127,14 +114,7 @@ export const postAdminKtoCollect = async (
   );
 
   return {
-    /**
-     * 연관 관광지는 DB 장소와 연결한 수(`matchedPlaceCount`)가 이번 갱신
-     * 건수입니다. `collectedCount` 는 API 에서 받아 온 연관 관광지 수라 다릅니다.
-     */
-    updatedCount:
-      "matchedPlaceCount" in response
-        ? response.matchedPlaceCount
-        : response.updatedPlaceCount,
+    updatedCount: response.updatedPlaceCount,
     failureCount: response.failureCount,
     cooldownUntil: toCooldownUntil(response.collectedAt),
   };

@@ -151,13 +151,14 @@ export interface AdminStatsOverview {
  * 적재·수집 현황을 보여 주는 KTO 공공데이터.
  *
  * 공공데이터 신청서에 "자동 배치 + 관리자 수동 즉시 수집 병행"으로 적혀 있어,
- * 세 API 모두 현황과 즉시 수집을 따로 둡니다.
+ * API 마다 현황과 즉시 수집을 따로 둡니다.
+ *
+ * 연관 관광지(TarRlteTarService1)는 공공데이터 쪽 실데이터가 제공되지 않고
+ * 추천 로직에서도 쓰지 않게 되어 서비스에서 뺐습니다.
  */
 export type KtoSource =
   /** 국문 관광정보 (장소 마스터) */
   | "TOUR_API"
-  /** 관광빅데이터 연관 관광지 */
-  | "RELATED_TOUR"
   /** 관광지 집중률 (혼잡도) */
   | "CONCENTRATION";
 
