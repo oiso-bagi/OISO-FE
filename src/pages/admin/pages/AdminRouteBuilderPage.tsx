@@ -28,7 +28,19 @@ import { RouteStopList } from "./RouteStopList";
 
 const LIST_PATH = "/admin/contents?tab=routes";
 
+/**
+ * 등록(`routes/new`)과 수정(`routes/:routeId/edit`)이 같은 컴포넌트라, 주소만
+ * 바뀌면 React 가 폼 상태를 그대로 이어 씁니다. 수정 중에 사이드바의 "코스
+ * 등록"을 누르면 수정하던 코스가 폼에 남아 그대로 새 코스로 등록됐습니다.
+ * 코스마다 새 폼으로 그립니다.
+ */
 export function AdminRouteBuilderPage() {
+  const { routeId } = useParams();
+
+  return <RouteBuilderForm key={routeId ?? "new"} />;
+}
+
+function RouteBuilderForm() {
   const { routeId } = useParams();
   const navigate = useNavigate();
 
