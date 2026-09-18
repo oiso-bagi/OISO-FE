@@ -66,17 +66,20 @@ export function AppLayout() {
 
   return (
     <div className={styles.appContainer}>
-      <main className={styles.contentWithBottomNavigation}>
-        {/*
-         * 서비스 화면은 필수 약관에 동의한 사용자만 봅니다. 예전에는 설문 완료
-         * 표시가 없으면 설문으로 보내 간접적으로 막혔는데, 그 표시가 없어지면서
-         * 동의 화면에서 주소창에 `/` 를 치면 그대로 들어올 수 있었습니다.
-         */}
-        <RequireConsents>
+      {/*
+       * 서비스 화면은 필수 약관에 동의한 사용자만 봅니다. 예전에는 설문 완료
+       * 표시가 없으면 설문으로 보내 간접적으로 막혔는데, 그 표시가 없어지면서
+       * 동의 화면에서 주소창에 `/` 를 치면 그대로 들어올 수 있었습니다.
+       *
+       * 하단 네비까지 함께 감싸, 확인하는 동안은 위의 로그인 확인 화면과 같은
+       * 모습으로 이어지게 합니다.
+       */}
+      <RequireConsents>
+        <main className={styles.contentWithBottomNavigation}>
           <Outlet />
-        </RequireConsents>
-      </main>
-      <BottomNavigation />
+        </main>
+        <BottomNavigation />
+      </RequireConsents>
 
       {/* 뒤로가기 시 스크롤 위치 복원 */}
       <ScrollRestoration />

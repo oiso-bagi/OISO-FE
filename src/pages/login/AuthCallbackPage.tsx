@@ -12,7 +12,9 @@ export function AuthCallbackPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const authStatus = useAuthStatus();
-  const consentStatusQuery = useConsentStatus(authStatus === "authenticated");
+  const consentStatusQuery = useConsentStatus(authStatus === "authenticated", {
+    refetchOnMount: "always",
+  });
 
   const hasRedirectError =
     searchParams.get("status") === "error" ||

@@ -22,7 +22,9 @@ interface RequireConsentsProps {
 export function RequireConsents({ children }: RequireConsentsProps) {
   const authStatus = useAuthStatus();
   const showToast = useToast();
-  const consentStatusQuery = useConsentStatus(authStatus === "authenticated");
+  const consentStatusQuery = useConsentStatus(authStatus === "authenticated", {
+    refetchOnMount: false,
+  });
 
   const hasCompletedRequiredConsents =
     consentStatusQuery.data?.hasCompletedRequiredConsents;
@@ -70,13 +72,17 @@ export function RequireConsents({ children }: RequireConsentsProps) {
     );
   }
 
+  /**
+   * 서비스 화면은 로그인 확인이 끝나자마자 이어서 동의 상태를 확인합니다.
+   * 앞 단계(`AppLayout`)와 같은 문구로 두어 확인 화면이 한 번만 보이게 합니다.
+   */
   return (
     <div
       className={`${styles.authStatus} ${typo.body6}`}
       role="status"
       aria-live="polite"
     >
-      약관 동의 상태를 확인하고 있어요...
+      로그인 상태를 확인하고 있어요...
     </div>
   );
 }
