@@ -67,6 +67,11 @@ export const routeList = style({
   paddingBlock: "10px",
 });
 
+/** 설문 조건이 없을 때의 안내. 지도 없이 헤더 바로 아래라 선에 붙지 않게 띄웁니다. */
+export const noConditionsState = style({
+  marginTop: vars.space.md,
+});
+
 export const statusText = style([
   typo.body5,
   {

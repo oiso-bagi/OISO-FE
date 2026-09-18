@@ -78,8 +78,8 @@ export function RoutePage() {
   const { mapStyle, resizeProps } = useMapResize(mapAreaRef, listAreaRef);
 
   /**
-   * 어떤 조건으로 찾은 결과인지 화면에 남깁니다. 설문을 마쳐야 이 화면에
-   * 닿으므로 보통 값이 있지만, 저장이 막힌 환경을 대비해 없을 수 있게 둡니다.
+   * 어떤 조건으로 찾은 결과인지 화면에 남깁니다. 설문을 마치기 전이거나 새
+   * 기기라 없을 수 있어, 없으면 추천 대신 설문 안내를 그립니다.
    */
   const conditions = readRecommendationConditions();
 
@@ -294,6 +294,31 @@ export function RoutePage() {
     setCancelSaveTargetId(null);
   };
 
+  /**
+   * 조건이 없으면 추천을 만들 수 없어 설문으로 안내합니다. 설문으로 바로
+   * 보내지 않는 이유는 설문에 하단 네비가 없어, 탭만 눌렀던 사용자가 다른
+   * 화면으로 돌아갈 길을 잃기 때문입니다.
+   */
+  if (!conditions) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.headerArea}>
+          <Header backTo="/" title="추천 루트" />
+        </div>
+
+        <div className={styles.listArea}>
+          <EmptyState
+            className={styles.noConditionsState}
+            title="아직 고른 조건이 없습니다!!"
+            description="설문에 답하면 조건에 맞는 코스를 추천해 드려요."
+            actionLabel="코스 짜러 가기"
+            actionTo="/survey"
+          />
+        </div>
+      </div>
+    );
+  }
+
   // 펼쳐진 코스의 경유지를 상단 지도에 표시 (없으면 부산 기본 지도)
   const mapStops =
     expandedRouteId !== null && routeDetail?.id === expandedRouteId
@@ -317,15 +342,13 @@ export function RoutePage() {
         <Header backTo="/" title="추천 루트" />
       </div>
 
-      {conditions && (
-        <ConditionSummary
-          durationDays={conditions.durationDays}
-          dailyBudgetWon={conditions.dailyBudgetWon}
-          travelStyleNames={travelStyleNames}
-          // 여기서 들어온 설문만 이전 답을 채웁니다.
-          editTo="/survey?mode=edit"
-        />
-      )}
+      <ConditionSummary
+        durationDays={conditions.durationDays}
+        dailyBudgetWon={conditions.dailyBudgetWon}
+        travelStyleNames={travelStyleNames}
+        // 여기서 들어온 설문만 이전 답을 채웁니다.
+        editTo="/survey?mode=edit"
+      />
 
       {isMultiDay && (
         <DayTabs

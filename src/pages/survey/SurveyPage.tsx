@@ -43,13 +43,14 @@ export function SurveyPage() {
   );
 
   /**
-   * 설문 조건이 없는(처음 설문하는) 사용자는 첫 단계에서 돌아가기를 막습니다.
-   * 로그인 직후라 뒤로 가면 인증 페이지로 나가거나, 조건 없이는 추천을 받을
-   * 수 없습니다.
+   * 약관 동의 직후의 첫 설문(`?mode=onboarding`)에서만 첫 단계 돌아가기를
+   * 막습니다. 가입하자마자 설문을 건너뛰지 않게 하고, 뒤로 가면 방금 끝낸
+   * 약관 화면으로 돌아가는 것도 막습니다.
+   *
+   * 조건이 있는지로 판단하면 안 됩니다. 조건은 기기에만 있어, 새 기기로
+   * 들어온 기존 사용자까지 첫 설문으로 보고 가둡니다.
    */
-  const [canLeaveSurvey] = useState(
-    () => isEditMode || readRecommendationConditions() !== null,
-  );
+  const canLeaveSurvey = searchParams.get("mode") !== "onboarding";
   const canGoBack = !isFirstStep || canLeaveSurvey;
 
   const surveyForm = useSurveyForm({
