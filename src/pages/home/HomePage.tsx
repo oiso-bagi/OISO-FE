@@ -1,5 +1,6 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
+import { useAdminAccess } from "@/pages/admin/lib/useAdminAccess";
 import { CountUpAmount } from "@/shared/components/CountUpAmount/CountUpAmount";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { Skeleton } from "@/shared/components/Skeleton/Skeleton";
@@ -24,6 +25,9 @@ export function HomePage() {
 
   const { data, isPending, isError, error } = useHomeSummary();
 
+  // 관리자 화면이 들여보내는 기준과 같게 판단해, 눌렀는데 막히는 일이 없게 합니다.
+  const isAdmin = useAdminAccess() === "allowed";
+
   const savedRoutes = data?.savedRoutes;
 
   /**
@@ -45,7 +49,19 @@ export function HomePage() {
     <div className={styles.container}>
       <header className={styles.banner}>
         <span className={styles.bannerTitle}>오이소 알뜰 대잔치</span>
-        <img className={styles.bannerLogo} src="/oiso_logo.svg" alt="오이소" />
+
+        <div className={styles.bannerEnd}>
+          {isAdmin && (
+            <Link to="/admin" className={styles.adminLink}>
+              관리자 페이지로 이동
+            </Link>
+          )}
+          <img
+            className={styles.bannerLogo}
+            src="/oiso_logo.svg"
+            alt="오이소"
+          />
+        </div>
       </header>
 
       <div className={styles.content}>
