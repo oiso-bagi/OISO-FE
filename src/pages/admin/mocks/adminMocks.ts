@@ -482,8 +482,18 @@ export const mockGetAdminStatsOverview =
 /** 쿨타임은 서버가 관리하기로 한 값이라, 목에서도 서버처럼 여기서 들고 있습니다. */
 const COOLDOWN_MS = 10 * 60 * 1000;
 const COLLECT_DURATION_MS = 6000;
-/** 모의 수집 한 번에 갱신하는 건수. 호출량도 이만큼 늘어납니다. */
+/** 모의 수집 한 번에 갱신하는 장소 수 */
 const MOCK_COLLECT_COUNT = 40;
+
+/**
+ * 모의 수집 한 번에 쓰는 API 호출 수. 갱신한 장소 수와는 다릅니다.
+ * 서버는 국문 관광정보를 관광 타입 6개마다 100건씩 페이지로 받고, 집중률은
+ * 지역마다 한 번씩 부릅니다.
+ */
+const MOCK_COLLECT_API_CALL_COUNT: Record<KtoSource, number> = {
+  TOUR_API: 6,
+  CONCENTRATION: 4,
+};
 
 interface MockKtoState {
   loadedCount: number;
@@ -523,10 +533,12 @@ const ktoStates: Record<KtoSource, MockKtoState> = {
 };
 
 /** 수집이 끝나는 시점에 사용량과 마지막 수집 기록을 갱신합니다. */
-const finishMockCollect = (state: MockKtoState) => {
+const finishMockCollect = (source: KtoSource) => {
+  const state = ktoStates[source];
+
   state.collectingUntil = 0;
   state.usedCount = Math.min(
-    state.usedCount + MOCK_COLLECT_COUNT,
+    state.usedCount + MOCK_COLLECT_API_CALL_COUNT[source],
     state.dailyLimit,
   );
   state.lastCollectedAt = new Date().toISOString();
@@ -545,7 +557,7 @@ export const mockGetAdminKtoStatus = async (
 
   // 수집 도중 새로고침한 경우에도 끝나는 시점에 기록을 갱신합니다.
   if (!isCollecting && state.collectingUntil !== 0) {
-    finishMockCollect(state);
+    finishMockCollect(source);
   }
 
   return {
@@ -588,7 +600,7 @@ export const mockPostAdminKtoCollect = async (
    */
   state.collectingUntil = now + COLLECT_DURATION_MS;
   await delay(COLLECT_DURATION_MS);
-  finishMockCollect(state);
+  finishMockCollect(source);
   state.cooldownUntil = Date.now() + COOLDOWN_MS;
 
   return {

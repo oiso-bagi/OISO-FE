@@ -6,7 +6,6 @@ import { getErrorStatus, toErrorMessage } from "@/shared/api/apiError";
 import { Badge } from "../components/Badge";
 import { Button } from "../components/Button";
 import { ConfirmDialog } from "../components/ConfirmDialog";
-import * as styles from "../components/ui.css";
 import {
   useAdminKtoStatus,
   useTriggerKtoCollect,
@@ -18,6 +17,9 @@ import type {
   KtoCollectResult,
   KtoSource,
 } from "../types";
+
+import * as ui from "../components/ui.css";
+import * as styles from "./AdminKtoPanel.css";
 
 interface KtoSourceInfo {
   source: KtoSource;
@@ -174,7 +176,7 @@ function KtoSourceCard({ source, title, apiName, countLabel }: KtoSourceInfo) {
           <span className={styles.ktoFieldLabel}>{countLabel}</span>
           <p className={styles.ktoCount}>
             {status ? formatNumber(status.loadedCount) : "—"}
-            <span className={styles.statUnit}>곳</span>
+            <span className={ui.statUnit}>곳</span>
           </p>
         </div>
 
@@ -203,7 +205,7 @@ function KtoSourceCard({ source, title, apiName, countLabel }: KtoSourceInfo) {
               {resultBadge ? (
                 <Badge tone={resultBadge.tone}>{resultBadge.label}</Badge>
               ) : (
-                <span className={styles.cellMuted}>—</span>
+                <span className={ui.cellMuted}>—</span>
               )}
             </dd>
           </div>
@@ -228,7 +230,7 @@ function KtoSourceCard({ source, title, apiName, countLabel }: KtoSourceInfo) {
 
       <footer className={styles.ktoCardFooter}>
         {trigger.isError && (
-          <p className={styles.inlineError} role="alert">
+          <p className={ui.inlineError} role="alert">
             {toCollectErrorMessage(trigger.error)}
           </p>
         )}
@@ -270,10 +272,10 @@ function KtoSourceCard({ source, title, apiName, countLabel }: KtoSourceInfo) {
  */
 export function AdminKtoPanel() {
   return (
-    <section className={styles.panel}>
-      <h2 className={styles.sectionTitle}>KTO 공공데이터 적재 현황</h2>
+    <section className={ui.panel}>
+      <h2 className={ui.sectionTitle}>KTO 공공데이터 적재 현황</h2>
 
-      <div className={`${styles.sectionBody} ${styles.ktoCards}`}>
+      <div className={`${ui.sectionBody} ${styles.ktoCards}`}>
         {KTO_SOURCES.map((info) => (
           <KtoSourceCard key={info.source} {...info} />
         ))}
