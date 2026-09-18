@@ -5,10 +5,25 @@
  * 새로고침 후에도 같은 추천 결과를 보여줘야 하므로 localStorage 를 씁니다.
  * - 설문 화면: 완료 시 `saveRecommendationConditions` 로 저장
  * - 추천 화면: `readRecommendationConditions` 로 읽어 조건 기반 추천을 요청합니다.
- * - 저장된 조건 없이 추천 화면에 접근하면 레이아웃에서 설문으로 보냅니다.
+ * - 저장된 조건이 없으면 추천 화면이 설문으로 가는 안내를 그립니다.
  */
 
-const storageKey = "oiso:recommendation-conditions";
+import { getAccessTokenUserId } from "@/shared/auth/accessToken";
+
+const storageKeyPrefix = "oiso:recommendation-conditions";
+
+/**
+ * 조건은 사용자별 키에 둡니다.
+ *
+ * 로그아웃할 때 지우면 다시 로그인한 같은 사용자도 설문부터 다시 해야 하고,
+ * 키 하나를 같이 쓰면 같은 기기에 다음에 로그인한 사람이 이전 사용자의
+ * 조건으로 추천받습니다. 로그인 전이라 사용자를 모르면 읽지도 쓰지도 않습니다.
+ */
+const getStorageKey = () => {
+  const userId = getAccessTokenUserId();
+
+  return userId ? `${storageKeyPrefix}:${userId}` : null;
+};
 
 /**
  * 서버가 받는 총 여행 예산(일수 × 하루 예산)의 범위.
@@ -131,8 +146,8 @@ export const isValidRecommendationConditions = (
 
   /**
    * 형식만 맞고 값이 서버 기준을 벗어나면(스타일 0개, 0일, 0원 등) 추천
-   * 요청이 400 으로 실패합니다. 그런 값은 무효로 보고 가드가 설문으로
-   * 되돌리게 합니다.
+   * 요청이 400 으로 실패합니다. 그런 값은 무효로 보고 추천 화면이 설문
+   * 안내를 그리게 합니다.
    */
   if (
     !Array.isArray(candidate.travelStyleSlugs) ||
@@ -158,13 +173,16 @@ export const readRecommendationConditions =
   (): RecommendationConditions | null => {
     if (typeof window === "undefined") return null;
 
+    const storageKey = getStorageKey();
+    if (!storageKey) return null;
+
     try {
       const raw = window.localStorage.getItem(storageKey);
       if (!raw) return null;
 
       const parsed = withoutInvalidAllocation(JSON.parse(raw));
 
-      // 저장 형식이 바뀌었거나 손상된 값이면 조건 없이 전체 목록으로 폴백합니다.
+      // 저장 형식이 바뀌었거나 손상된 값이면 조건이 없는 것으로 봅니다.
       return isValidRecommendationConditions(parsed) ? parsed : null;
     } catch {
       return null;
@@ -175,6 +193,9 @@ export const saveRecommendationConditions = (
   conditions: RecommendationConditions,
 ): boolean => {
   if (typeof window === "undefined") return false;
+
+  const storageKey = getStorageKey();
+  if (!storageKey) return false;
 
   const sanitized = withoutInvalidAllocation(conditions);
 
@@ -187,15 +208,5 @@ export const saveRecommendationConditions = (
   } catch {
     // 시크릿 모드 등 저장이 막힌 환경.
     return false;
-  }
-};
-
-export const clearRecommendationConditions = () => {
-  if (typeof window === "undefined") return;
-
-  try {
-    window.localStorage.removeItem(storageKey);
-  } catch {
-    // 삭제 실패는 무시합니다.
   }
 };

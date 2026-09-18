@@ -75,7 +75,7 @@ const isEnabled = () => GA_MEASUREMENT_ID !== "" && Boolean(window.gtag);
  */
 const ALLOWED_QUERY: Record<string, readonly string[]> = {
   source: ["recommended", "saved"],
-  mode: ["edit"],
+  mode: ["edit", "onboarding"],
 };
 
 const toPagePath = (location: { pathname: string; search: string }) => {

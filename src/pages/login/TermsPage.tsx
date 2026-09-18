@@ -76,7 +76,8 @@ export function TermsPage() {
       },
       {
         onSuccess: () => {
-          navigate("/survey");
+          // 첫 설문이라 설문 화면이 돌아가기를 막습니다.
+          navigate("/survey?mode=onboarding");
         },
         onError: () => {
           showToast({

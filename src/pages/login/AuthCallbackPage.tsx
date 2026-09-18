@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { useAuthStatus } from "@/shared/auth/authContext";
 import XIcon from "@/shared/icons/x.svg?react";
-import { clearRecommendationConditions } from "@/shared/lib/recommendationConditions";
 
 import { useConsentStatus } from "./hooks/useConsents";
 import * as styles from "./AuthCallbackPage.css";
@@ -36,8 +35,6 @@ export function AuthCallbackPage() {
     }
 
     if (!consentStatusQuery.data.hasCompletedRequiredConsents) {
-      // 같은 기기에 이전 사용자의 설문 조건이 남아 있으면 그 조건으로 추천받지 않게 지웁니다.
-      clearRecommendationConditions();
       navigate("/consents", { replace: true });
       return;
     }

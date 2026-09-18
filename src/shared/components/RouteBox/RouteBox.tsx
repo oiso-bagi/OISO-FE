@@ -102,7 +102,9 @@ export function RouteBox({
     >
       {isEditable && (
         <div className={styles.editHeader}>
-          <span className={styles.completedText}>여행을 완료하셨나요?</span>
+          <span className={styles.completedText}>
+            {isCompleted ? "여행을 완료했어요" : "여행을 완료하셨나요?"}
+          </span>
 
           <button
             type="button"

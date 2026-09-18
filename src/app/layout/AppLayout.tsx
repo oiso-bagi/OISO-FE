@@ -1,21 +1,13 @@
-import {
-  matchPath,
-  Navigate,
-  Outlet,
-  ScrollRestoration,
-  useLocation,
-} from "react-router-dom";
+import { Navigate, Outlet, ScrollRestoration } from "react-router-dom";
 import { RequireConsents } from "@/app/router/RequireConsents";
 import { BottomNavigation } from "@/shared/components/BottomNavigation";
 import { useAuthStatus } from "@/shared/auth/authContext";
-import { readRecommendationConditions } from "@/shared/lib/recommendationConditions";
 import * as typo from "@/shared/styles/typography.css";
 
 import * as styles from "./AppLayout.css";
 
 export function AppLayout() {
   const authStatus = useAuthStatus();
-  const location = useLocation();
 
   if (authStatus === "checking") {
     return (
@@ -53,17 +45,10 @@ export function AppLayout() {
   }
 
   /**
-   * 설문 조건이 꼭 필요한 추천 화면에 직접 들어온 경우에만 설문으로 보냅니다.
-   * 로그인 직후의 신규/기존 사용자 분기는 서버의 필수 약관 완료 상태로
-   * 판단하므로, 로컬 설문 데이터가 없다는 이유로 앱 전체를 막지 않습니다.
+   * 설문 조건이 없어도 설문으로 보내지 않습니다. 조건은 기기에만 있어 새
+   * 기기로 들어온 기존 사용자도 없을 수 있는데, 여기서 보내면 `루트` 탭을
+   * 누르자마자 하단 네비 없는 설문에 갇힙니다. 안내는 추천 화면이 맡습니다.
    */
-  if (
-    matchPath("/route", location.pathname) &&
-    !readRecommendationConditions()
-  ) {
-    return <Navigate to="/survey" replace />;
-  }
-
   return (
     <div className={styles.appContainer}>
       {/*
