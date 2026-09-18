@@ -15,10 +15,9 @@ interface RequireConsentsProps {
 /**
  * 필수 약관에 동의한 사용자만 들여보냅니다.
  *
- * 설문은 로그인·약관 화면과 같이 인증을 확인하지 않는 레이아웃에 있어, 신규
- * 사용자가 약관 동의 화면에서 주소창에 `/survey` 를 입력하면 동의 없이
- * 넘어갈 수 있었습니다. 레이아웃 전체가 아니라 필요한 페이지만 감쌉니다.
- * 로그인·약관·데이터 출처 페이지는 동의 전에도 열려야 합니다.
+ * 서비스 화면(`AppLayout`)과 설문에 씁니다. 설문은 로그인·약관 화면과 같이
+ * 인증을 확인하지 않는 레이아웃에 있어 페이지를 직접 감쌉니다. 로그인·약관·
+ * 데이터 출처 페이지는 동의 전에도 열려야 해서 감싸지 않습니다.
  */
 export function RequireConsents({ children }: RequireConsentsProps) {
   const authStatus = useAuthStatus();

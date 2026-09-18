@@ -5,6 +5,7 @@ import {
   ScrollRestoration,
   useLocation,
 } from "react-router-dom";
+import { RequireConsents } from "@/app/router/RequireConsents";
 import { BottomNavigation } from "@/shared/components/BottomNavigation";
 import { useAuthStatus } from "@/shared/auth/authContext";
 import { readRecommendationConditions } from "@/shared/lib/recommendationConditions";
@@ -66,7 +67,14 @@ export function AppLayout() {
   return (
     <div className={styles.appContainer}>
       <main className={styles.contentWithBottomNavigation}>
-        <Outlet />
+        {/*
+         * 서비스 화면은 필수 약관에 동의한 사용자만 봅니다. 예전에는 설문 완료
+         * 표시가 없으면 설문으로 보내 간접적으로 막혔는데, 그 표시가 없어지면서
+         * 동의 화면에서 주소창에 `/` 를 치면 그대로 들어올 수 있었습니다.
+         */}
+        <RequireConsents>
+          <Outlet />
+        </RequireConsents>
       </main>
       <BottomNavigation />
 
