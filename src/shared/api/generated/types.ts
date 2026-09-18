@@ -237,6 +237,11 @@ export interface RouteStopResponseDto {
    */
   placeName: string;
   /**
+   * 장소 주소 (도로명 주소 우선, 없으면 지번 주소, 둘 다 없으면 null)
+   * @example "부산광역시 해운대구 우동 123"
+   */
+  address: string | null;
+  /**
    * 장소 카테고리 (FOOD: 식당 | CAFE: 카페 | MARKET: 전통시장 | CULTURE: 문화 | NATURE: 자연 | EXPERIENCE: 체험 | VIEWPOINT: 전망대 | ETC: 기타)
    * @example "NATURE"
    */
@@ -271,7 +276,7 @@ export interface RouteStopResponseDto {
    */
   longitude: number | null;
   /**
-   * 다음 경유지까지 이동 수단
+   * 이전 경유지부터 현재 경유지까지의 이동 수단
    * @example "BUS"
    */
   nextTransportType:
@@ -283,7 +288,7 @@ export interface RouteStopResponseDto {
     | "BIKING"
     | null;
   /**
-   * 다음 경유지까지 예상 이동 시간(분)
+   * 이전 경유지부터 현재 경유지까지의 예상 이동 시간(분)
    * @example 15
    */
   nextTravelTimeMinutes: number | null;
@@ -548,6 +553,11 @@ export interface SavedRouteStopDetailDto {
    */
   placeName: string;
   /**
+   * 장소 주소 (도로명 주소 우선, 없으면 지번 주소, 둘 다 없으면 null)
+   * @example "부산광역시 수영구 광안해변로 219"
+   */
+  address: string | null;
+  /**
    * 장소 카테고리 (FOOD: 식당 | CAFE: 카페 | MARKET: 전통시장 | CULTURE: 문화 | NATURE: 자연 | EXPERIENCE: 체험 | VIEWPOINT: 전망대 | ETC: 기타)
    * @example "NATURE"
    */
@@ -572,7 +582,7 @@ export interface SavedRouteStopDetailDto {
    */
   closeTime: string | null;
   /**
-   * 다음 경유지까지 이동 수단
+   * 이전 경유지부터 현재 경유지까지의 이동 수단
    * @example "BUS"
    */
   nextTransportType:
@@ -584,10 +594,15 @@ export interface SavedRouteStopDetailDto {
     | "BIKING"
     | null;
   /**
-   * 다음 경유지까지 예상 이동 시간(분)
+   * 이전 경유지부터 현재 경유지까지의 예상 이동 시간(분)
    * @example 15
    */
   nextTravelTimeMinutes: number | null;
+  /**
+   * 장소 체류 소요 시간(분)
+   * @example 60
+   */
+  stayMinutes: number | null;
   /**
    * 구간 교통비(원)
    * @example 1500

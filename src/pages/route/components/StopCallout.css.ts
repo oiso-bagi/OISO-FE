@@ -154,6 +154,25 @@ export const metaRow = style([
   },
 ]);
 
+/** 주소는 길어 두 줄까지 보여 주고 줄입니다. */
+export const addressRow = style([
+  typo.detail1,
+  {
+    margin: 0,
+    padding: "5px 8px",
+
+    fontSize: "12px",
+    wordBreak: "keep-all",
+
+    display: "-webkit-box",
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: "vertical",
+    overflow: "hidden",
+
+    borderBottom: LINE,
+  },
+]);
+
 export const priceRow = style([
   typo.body8,
   {

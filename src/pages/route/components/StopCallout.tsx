@@ -91,6 +91,8 @@ export function StopCallout({
 
         <p className={styles.metaRow}>{metaItems.join(" · ")}</p>
 
+        {stop.address && <p className={styles.addressRow}>{stop.address}</p>}
+
         {hasPriceRow && (
           <div className={styles.priceRow}>
             {stop.estimatedPriceWon != null && (
