@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { LuArrowDownRight, LuArrowUpRight } from "react-icons/lu";
 
 import XIcon from "@/shared/icons/x.svg?react";
@@ -26,6 +26,82 @@ interface StopCalloutProps {
 /** 0원은 입장료·이용료가 없는 장소입니다. 값이 없는 것(null)과 구분합니다. */
 const formatPlacePrice = (value: number) =>
   value === 0 ? "무료" : formatPrice(value);
+
+/**
+ * 서비스 지역이 부산뿐이라 모든 주소 앞에 붙는 시·도 이름을 뺍니다. 태그 폭이
+ * 좁아, 이것만 빼도 대부분의 주소가 한 줄에 들어옵니다.
+ */
+const toShortAddress = (address: string) =>
+  address.replace(/^부산(광역시)?\s+/, "");
+
+/**
+ * 태그는 카카오 지도 위에 떠 있어, 주소를 옆으로 밀면 지도가 같이 끌려갑니다.
+ * 지도는 자기 DOM 에서 바로 이벤트를 받으므로, React 보다 먼저 여기서 막습니다.
+ * 휠도 막아야 주소 위에서 옆으로 굴릴 때 지도가 확대·축소되지 않습니다.
+ */
+const MAP_GESTURE_EVENTS = [
+  "mousedown",
+  "pointerdown",
+  "touchstart",
+  "touchmove",
+  "wheel",
+] as const;
+
+/**
+ * 주소 한 줄. 태그를 두 줄로 키우지 않고, 넘치면 옆으로 밀어 봅니다.
+ * 뒤에 글자가 더 있으면 오른쪽 끝을 흐리게 해 밀 수 있다는 걸 보여 줍니다.
+ */
+function AddressRow({ address }: { address: string }) {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  const [hasMoreRight, setHasMoreRight] = useState(false);
+
+  const measure = (scroller: HTMLDivElement) => {
+    setIsOverflowing(scroller.scrollWidth > scroller.clientWidth + 1);
+    setHasMoreRight(
+      scroller.scrollLeft + scroller.clientWidth < scroller.scrollWidth - 1,
+    );
+  };
+
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+
+    scroller.scrollLeft = 0;
+    measure(scroller);
+  }, [address]);
+
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+
+    const stopPropagation = (event: Event) => event.stopPropagation();
+
+    MAP_GESTURE_EVENTS.forEach((type) =>
+      scroller.addEventListener(type, stopPropagation, { passive: true }),
+    );
+
+    return () =>
+      MAP_GESTURE_EVENTS.forEach((type) =>
+        scroller.removeEventListener(type, stopPropagation),
+      );
+  }, []);
+
+  return (
+    <div className={styles.addressRow}>
+      <div
+        ref={scrollerRef}
+        className={styles.addressScroller}
+        data-has-more={hasMoreRight}
+        // 넘칠 때만 키보드로 초점을 옮겨 화살표로 밀 수 있게 합니다.
+        tabIndex={isOverflowing ? 0 : undefined}
+        onScroll={(event) => measure(event.currentTarget)}
+      >
+        {toShortAddress(address)}
+      </div>
+    </div>
+  );
+}
 
 /**
  * 지도 핀 위에 붙는 장소 정보 태그.
@@ -91,7 +167,7 @@ export function StopCallout({
 
         <p className={styles.metaRow}>{metaItems.join(" · ")}</p>
 
-        {stop.address && <p className={styles.addressRow}>{stop.address}</p>}
+        {stop.address && <AddressRow address={stop.address} />}
 
         {hasPriceRow && (
           <div className={styles.priceRow}>

@@ -41,7 +41,9 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       sequence: 2,
       dayNumber: 1,
       placeName: "깡깡이 예술마을",
-      address: "부산광역시 영도구 대평북로 36",
+      // 태그에서 한 줄을 넘는 긴 주소를 확인하는 용도입니다.
+      address:
+        "부산광역시 영도구 대평북로 36 (대평동2가, 깡깡이예술마을 안내센터)",
       category: "문화·체험",
       operatingHours: null,
       latitude: 35.0836,
