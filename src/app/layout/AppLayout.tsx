@@ -1,7 +1,12 @@
-import { Navigate, Outlet, ScrollRestoration } from "react-router-dom";
+import {
+  matchPath,
+  Navigate,
+  Outlet,
+  ScrollRestoration,
+  useLocation,
+} from "react-router-dom";
 import { BottomNavigation } from "@/shared/components/BottomNavigation";
 import { useAuthStatus } from "@/shared/auth/authContext";
-import { isSurveyCompleted } from "@/shared/lib/onboardingFlow";
 import { readRecommendationConditions } from "@/shared/lib/recommendationConditions";
 import * as typo from "@/shared/styles/typography.css";
 
@@ -9,6 +14,7 @@ import * as styles from "./AppLayout.css";
 
 export function AppLayout() {
   const authStatus = useAuthStatus();
+  const location = useLocation();
 
   if (authStatus === "checking") {
     return (
@@ -46,14 +52,14 @@ export function AppLayout() {
   }
 
   /**
-   * 완료 플래그와 설문 답변은 별개 키라 한쪽만 남을 수 있습니다.
-   * 이번 변경 전에 설문을 마친 사용자가 대표적으로, 플래그만 있고 답변이
-   * 없어 조건 기반 추천 대신 전체 목록을 받게 됩니다.
-   *
-   * 답변이 없으면 여행 일수를 알 수 없어 추천을 만들 수 없으므로,
-   * 완료로 보지 않고 설문을 다시 받습니다.
+   * 설문 조건이 꼭 필요한 추천 화면에 직접 들어온 경우에만 설문으로 보냅니다.
+   * 로그인 직후의 신규/기존 사용자 분기는 서버의 필수 약관 완료 상태로
+   * 판단하므로, 로컬 설문 데이터가 없다는 이유로 앱 전체를 막지 않습니다.
    */
-  if (!isSurveyCompleted() || !readRecommendationConditions()) {
+  if (
+    matchPath("/route", location.pathname) &&
+    !readRecommendationConditions()
+  ) {
     return <Navigate to="/survey" replace />;
   }
 

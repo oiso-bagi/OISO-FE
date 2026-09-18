@@ -12,6 +12,7 @@ import type { RecommendationConditions } from "@/shared/lib/recommendationCondit
 const home = ["home"] as const;
 const recommendedRoutes = ["recommendedRoutes"] as const;
 const savedRoutes = ["savedRoutes"] as const;
+const dashboardSavings = ["dashboard", "savings"] as const;
 
 const adminUsers = ["admin", "users"] as const;
 const adminPlaces = ["admin", "places"] as const;
@@ -29,7 +30,9 @@ export const queryKeys = {
   },
 
   dashboard: {
-    savings: ["dashboard", "savings"],
+    savings: dashboardSavings,
+    histories: (size: number) =>
+      [...dashboardSavings, "histories", { size }] as const,
   },
 
   home: {

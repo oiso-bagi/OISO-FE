@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { postLogout } from "@/shared/api/authApi";
 import { clearAccessToken } from "@/shared/auth/accessToken";
-import { resetOnboardingFlow } from "@/shared/lib/onboardingFlow";
+import { clearRecommendationConditions } from "@/shared/lib/recommendationConditions";
 
 export const useLogout = () => {
   const queryClient = useQueryClient();
@@ -12,7 +12,7 @@ export const useLogout = () => {
     onSuccess: () => {
       clearAccessToken();
       queryClient.clear();
-      resetOnboardingFlow();
+      clearRecommendationConditions();
       window.location.replace("/login");
     },
   });

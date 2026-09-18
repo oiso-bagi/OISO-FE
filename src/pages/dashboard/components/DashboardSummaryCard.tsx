@@ -16,7 +16,7 @@ export function DashboardSummaryCard({
 }: DashboardSummaryCardProps) {
   return (
     <Card className={styles.summaryCard}>
-      <p className={styles.summaryLabel}>누적 절약</p>
+      <p className={styles.summaryLabel}>지금까지 완료한 여행의 누적 절약액</p>
       <strong className={styles.totalSaving}>
         {formatWon(totalSavingsWon)}
       </strong>

@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { useToast } from "@/shared/components/Toast/toastContext";
 import { trackEvent } from "@/shared/lib/analytics";
-import { completeSurvey } from "@/shared/lib/onboardingFlow";
 import {
   readRecommendationConditions,
   saveRecommendationConditions,
@@ -81,9 +80,8 @@ export function SurveyPage() {
         dailyBudgetWon: surveyForm.budget.dailyBudget,
         travelStyleLabels,
       });
-      const isSurveyCompleted = areConditionsSaved && completeSurvey();
 
-      if (!isSurveyCompleted || !areConditionsSaved) {
+      if (!areConditionsSaved) {
         showToast({
           message: "설문 완료 상태를 저장하지 못했어요. 다시 시도해 주세요.",
         });

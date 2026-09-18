@@ -5,7 +5,6 @@ import { CURRENT_CONSENT_VERSION } from "@/shared/api/consentApi";
 import { useAuthStatus } from "@/shared/auth/authContext";
 import { Header } from "@/shared/components/header/Header";
 import { useToast } from "@/shared/components/Toast/toastContext";
-import { prepareSurveyOnboarding } from "@/shared/lib/onboardingFlow";
 import { pageContent } from "@/shared/styles/layout.css";
 
 import { TermsAgreementForm } from "./components/TermsAgreementForm";
@@ -76,13 +75,6 @@ export function TermsPage() {
       },
       {
         onSuccess: () => {
-          if (!prepareSurveyOnboarding()) {
-            showToast({
-              message: "설문 상태를 준비하지 못했어요. 다시 시도해 주세요.",
-            });
-            return;
-          }
-
           navigate("/survey");
         },
         onError: () => {
