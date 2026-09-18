@@ -138,6 +138,23 @@ export interface RouteFormErrors {
   stops?: string;
 }
 
+/**
+ * 경유지가 하나도 없는 일차.
+ *
+ * 1일차부터 가장 마지막 일차까지 중 비어 있는 날을 찾습니다. 1·2·4일차만
+ * 담으면 3일차가, 2일차부터 담으면 1일차가 비어 있는 것으로 나옵니다.
+ * 일차를 건너뛴 코스는 서비스에서 "3일 코스"인데 하루가 통째로 빠진 채
+ * 보이게 됩니다.
+ */
+export const findEmptyDays = (stops: AdminRouteStop[]): number[] => {
+  const days = new Set(stops.map((stop) => stop.dayNumber));
+  const lastDay = Math.max(0, ...days);
+
+  return Array.from({ length: lastDay }, (_, index) => index + 1).filter(
+    (day) => !days.has(day),
+  );
+};
+
 export const validateRouteForm = (values: {
   name: string;
   theme: string;
@@ -147,8 +164,15 @@ export const validateRouteForm = (values: {
 
   if (!values.name.trim()) errors.name = "코스명을 입력해 주세요.";
   if (!values.theme) errors.theme = "테마를 선택해 주세요.";
+
+  const emptyDays = findEmptyDays(values.stops);
+
   if (values.stops.length < MIN_STOPS) {
     errors.stops = `경유지를 ${MIN_STOPS}곳 이상 담아 주세요.`;
+  } else if (emptyDays.length > 0) {
+    const dayLabels = emptyDays.map((day) => `${day}일차`).join(", ");
+
+    errors.stops = `${dayLabels}에 경유지가 없어요. 일차는 1일차부터 빠짐없이 이어지게 담아 주세요.`;
   }
 
   return errors;

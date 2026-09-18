@@ -1011,6 +1011,12 @@ export const formActionsNote = style({
   fontSize: admin.fontSize.sm,
 });
 
+/** 저장을 막은 이유. `formActionsNote` 뒤에 정의해 글자색을 덮어씁니다. */
+export const formActionsError = style({
+  color: admin.color.danger,
+  fontWeight: admin.fontWeight.medium,
+});
+
 /* ── Placeholder (후속 이슈에서 채울 화면) ───────────────── */
 
 export const placeholder = style({

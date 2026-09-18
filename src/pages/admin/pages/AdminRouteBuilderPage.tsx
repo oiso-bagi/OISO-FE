@@ -128,6 +128,17 @@ export function AdminRouteBuilderPage() {
   };
 
   const handleSave = () => {
+    /**
+     * 게시 확인을 받기 전에 먼저 검사합니다. 확인창에서 "저장하고 게시"를
+     * 누른 뒤에야 저장할 수 없다고 알려 주면 확인 절차가 헛수고가 됩니다.
+     */
+    const nextErrors = validateRouteForm({ name, theme, stops });
+
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors);
+      return;
+    }
+
     // 즉시 게시는 서비스 사용자에게 바로 보이므로 한 번 확인합니다.
     if (isPublished) {
       setIsPublishConfirmOpen(true);
@@ -287,9 +298,19 @@ export function AdminRouteBuilderPage() {
         )}
 
         <div className={styles.formActions}>
-          <span className={styles.formActionsNote}>
-            {errors.stops ?? `경유지 ${stops.length}곳`}
-          </span>
+          {/* 저장을 막은 이유는 버튼 바로 옆에 빨갛게 보여 줍니다. */}
+          {errors.stops ? (
+            <span
+              className={`${styles.formActionsNote} ${styles.formActionsError}`}
+              role="alert"
+            >
+              {errors.stops}
+            </span>
+          ) : (
+            <span className={styles.formActionsNote}>
+              경유지 {stops.length}곳
+            </span>
+          )}
 
           <Button onClick={() => navigate(LIST_PATH)} disabled={isSaving}>
             취소
