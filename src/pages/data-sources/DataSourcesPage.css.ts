@@ -102,6 +102,20 @@ export const usageList = style([
   },
 ]);
 
+/** 출처 표기·이용 조건. 인용문의 긴 URL 이 카드를 넘지 않게 끊습니다. */
+export const license = style([
+  typographyStyles.body9,
+  {
+    margin: `${vars.space.sm} 0 0`,
+    paddingTop: vars.space.xs,
+    borderTop: `1px solid ${vars.color.neutral100}`,
+
+    color: vars.color.neutral500,
+    wordBreak: "keep-all",
+    overflowWrap: "anywhere",
+  },
+]);
+
 export const otherServices = style({
   padding: vars.space.md,
   border: `2px solid ${vars.color.neutral100}`,
