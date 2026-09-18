@@ -1,3 +1,7 @@
+import {
+  MAX_TOTAL_BUDGET_WON,
+  MIN_TOTAL_BUDGET_WON,
+} from "@/shared/lib/recommendationConditions";
 import { vars } from "@/shared/styles/theme.css";
 
 import { RecommendationOptionsStatus } from "../components/RecommendationOptionsStatus";
@@ -11,6 +15,10 @@ type BudgetSectionProps = {
   optionsQuery: RecommendationOptionsQuery;
   budget: SurveyForm["budget"];
 };
+
+/** 10000 → "1만 원" */
+const formatManWon = (won: number) =>
+  `${(won / 10_000).toLocaleString("ko-KR")}만 원`;
 
 export function BudgetSection({ optionsQuery, budget }: BudgetSectionProps) {
   const tripDayOptions = optionsQuery.data?.durationDays ?? [];
@@ -31,7 +39,9 @@ export function BudgetSection({ optionsQuery, budget }: BudgetSectionProps) {
 
   /** 안내와 오류는 둘 다 눈에 띄어야 해서 같은 강조색을 씁니다. */
   const isHintHighlighted =
-    budget.hasNegativeBudgetInput || isTripDaysNoticeVisible;
+    budget.hasNegativeBudgetInput ||
+    isTripDaysNoticeVisible ||
+    budget.isBudgetOutOfRange;
 
   return (
     <>
@@ -82,7 +92,7 @@ export function BudgetSection({ optionsQuery, budget }: BudgetSectionProps) {
           <span className={styles.currencyUnit}>원</span>
         </label>
 
-        {/* 기간 미선택·음수 입력에 따라 문구가 바뀌므로 화면 낭독기에 알립니다. */}
+        {/* 기간 미선택·음수·범위 밖 입력에 따라 문구가 바뀌므로 화면 낭독기에 알립니다. */}
         <p
           id="budget-hint"
           className={
@@ -94,7 +104,9 @@ export function BudgetSection({ optionsQuery, budget }: BudgetSectionProps) {
             ? "음수는 입력할 수 없어요."
             : isTripDaysNoticeVisible
               ? "여행 기간을 먼저 골라주세요!"
-              : "숙박비를 제외한 가격을 입력해주세요!"}
+              : budget.isBudgetOutOfRange
+                ? `총 예산은 ${formatManWon(MIN_TOTAL_BUDGET_WON)}~${formatManWon(MAX_TOTAL_BUDGET_WON)} 사이로 입력해주세요.`
+                : "숙박비를 제외한 가격을 입력해주세요!"}
         </p>
       </section>
 

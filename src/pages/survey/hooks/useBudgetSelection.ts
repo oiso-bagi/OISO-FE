@@ -1,10 +1,21 @@
 import { useMemo, useState } from "react";
 
+import {
+  MAX_TOTAL_BUDGET_WON,
+  MIN_TOTAL_BUDGET_WON,
+} from "@/shared/lib/recommendationConditions";
+
 import type { BudgetAllocation } from "./useRecommendationOptions";
 
 const initialTripDays = 0;
 const initialBudget = 0;
 const allocationPercentStep = 5;
+
+/**
+ * 입력칸 자릿수 상한. 서버 상한(50만 원)을 넘는 값도 안내 문구를 띄울 수
+ * 있게 여유를 두되, 안전한 정수 범위를 넘는 숫자는 들어오지 않게 막습니다.
+ */
+const maxBudgetDigits = 9;
 
 const normalizeAllocationPercent = (percent: number) => {
   const roundedPercent =
@@ -19,12 +30,14 @@ type UseBudgetSelectionOptions = {
   /** 이미 정한 적이 있으면 그 값으로 시작합니다. */
   initialTripDays?: number;
   initialDailyBudgetWon?: number;
+  initialAllocationPercents?: Record<string, number>;
 };
 
 export function useBudgetSelection({
   budgetAllocationOptions,
   initialTripDays: prefilledTripDays,
   initialDailyBudgetWon,
+  initialAllocationPercents,
 }: UseBudgetSelectionOptions = {}) {
   const [tripDays, setTripDaysState] = useState(
     prefilledTripDays ?? initialTripDays,
@@ -51,7 +64,7 @@ export function useBudgetSelection({
   const [hasNegativeBudgetInput, setHasNegativeBudgetInput] = useState(false);
   const [allocationPercents, setAllocationPercents] = useState<
     Record<string, number>
-  >({});
+  >(initialAllocationPercents ?? {});
 
   const formattedBudget = useMemo(() => {
     return budget.toLocaleString("ko-KR");
@@ -64,7 +77,21 @@ export function useBudgetSelection({
   const dailyBudget = useMemo(() => {
     if (tripDays <= 0) return 0;
 
-    return Math.round(budget / tripDays);
+    const roundedDailyBudget = Math.round(budget / tripDays);
+
+    if (budget < MIN_TOTAL_BUDGET_WON || budget > MAX_TOTAL_BUDGET_WON) {
+      return roundedDailyBudget;
+    }
+
+    /**
+     * 서버는 `일수 × 하루 예산` 으로 총액 범위를 검사합니다. 반올림한 하루
+     * 예산을 다시 곱하면 범위를 살짝 넘을 수 있어(50만 원 ÷ 3일 → 166,667원
+     * × 3 = 500,001원) 입력한 총액이 범위 안이면 결과도 범위 안에 둡니다.
+     */
+    return Math.min(
+      Math.max(roundedDailyBudget, Math.ceil(MIN_TOTAL_BUDGET_WON / tripDays)),
+      Math.floor(MAX_TOTAL_BUDGET_WON / tripDays),
+    );
   }, [budget, tripDays]);
 
   const formattedDailyBudget = useMemo(() => {
@@ -110,10 +137,25 @@ export function useBudgetSelection({
 
   const isBudgetAllocationVisible = dailyBudget > 0 && !hasNegativeBudgetInput;
 
+  /** 금액을 넣었는데 서버가 받는 총액 범위를 벗어난 경우. 안내 문구에 씁니다. */
+  const isBudgetOutOfRange =
+    budget > 0 &&
+    (budget < MIN_TOTAL_BUDGET_WON || budget > MAX_TOTAL_BUDGET_WON);
+
+  /** 이 값으로 추천을 요청해도 서버가 거절하지 않는지. 다음 버튼에 씁니다. */
+  const isBudgetComplete =
+    tripDays > 0 &&
+    dailyBudget > 0 &&
+    !hasNegativeBudgetInput &&
+    !isBudgetOutOfRange &&
+    Number.isSafeInteger(dailyBudget);
+
   const updateBudgetText = (budgetText: string) => {
     setHasNegativeBudgetInput(budgetText.includes("-"));
 
-    const nextBudget = Number(budgetText.replace(/\D/g, ""));
+    const nextBudget = Number(
+      budgetText.replace(/\D/g, "").slice(0, maxBudgetDigits),
+    );
     setBudget(Number.isNaN(nextBudget) ? 0 : nextBudget);
     setSelectedPresetDaily(null);
   };
@@ -214,6 +256,8 @@ export function useBudgetSelection({
     formattedBudget,
     formattedDailyBudget,
     hasNegativeBudgetInput,
+    isBudgetOutOfRange,
+    isBudgetComplete,
     isBudgetAllocationVisible,
     allocationItems,
     setTripDays,

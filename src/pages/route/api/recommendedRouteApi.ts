@@ -1,6 +1,7 @@
 import { http } from "@/shared/api/http";
 import type { RecommendationConditions } from "@/shared/lib/recommendationConditions";
 import type {
+  BudgetRatiosDto,
   RecommendRouteRequestDto,
   RecommendedRouteDetailResponseDto,
   RecommendedRouteListResponseDto,
@@ -41,8 +42,31 @@ type RecommendRouteRequest = Omit<
 // };
 
 /**
+ * 설문에서 조절한 배분(%)을 서버가 받는 비율(0~1)로 바꿉니다.
+ *
+ * 서버는 세 비율의 합이 1.0 이 아니면 400 을 줍니다. 항목이 빠졌거나 합이
+ * 100% 가 아니면 보내지 않고 서버 기본 배분에 맡깁니다.
+ */
+const toBudgetRatios = (
+  percents: RecommendationConditions["budgetAllocationPercents"],
+): BudgetRatiosDto | undefined => {
+  if (!percents) return undefined;
+
+  const { transport, food, activity } = percents;
+
+  if (transport === undefined || food === undefined || activity === undefined)
+    return undefined;
+  if (transport + food + activity !== 100) return undefined;
+
+  return {
+    transportRatio: transport / 100,
+    foodRatio: food / 100,
+    experienceRatio: activity / 100,
+  };
+};
+
+/**
  * 설문 조건에 맞춘 추천 목록. 응답 형태는 전체 목록과 동일합니다.
- * `ratios` 는 선택값이라 보내지 않고 서버 기본 배분을 씁니다.
  */
 export const postRecommendedRoutes = async (
   conditions: RecommendationConditions,
@@ -51,6 +75,7 @@ export const postRecommendedRoutes = async (
     travelStyleSlugs: conditions.travelStyleSlugs,
     durationDays: conditions.durationDays,
     dailyBudgetWon: conditions.dailyBudgetWon,
+    ratios: toBudgetRatios(conditions.budgetAllocationPercents),
   };
 
   const routes = await http.post<RecommendedRouteListResponseDto[]>(
