@@ -53,14 +53,14 @@ export const restoreAuthSession = () => {
         await refreshAccessToken();
       } catch (error: unknown) {
         /**
-         * 세션은 있다는데 재발급이 거절되면(토큰 폐기, 계정 정지 등) 새로고침해도
-         * 결과가 같습니다. 오류로 두면 "다시 시도" 화면에 갇히므로 로그아웃
-         * 상태로 보고 로그인 화면으로 보냅니다. 네트워크 오류나 5xx 는 다시
-         * 시도하면 풀릴 수 있어 그대로 오류로 둡니다.
+         * 세션은 있다는데 재발급이 거절되면(토큰 폐기·만료, 계정 정지 등)
+         * 새로고침해도 결과가 같습니다. 오류로 두면 "다시 시도" 화면에 갇히므로
+         * 로그아웃 상태로 보고 로그인 화면으로 보냅니다.
+         *
+         * 서버는 이런 경우를 모두 401 로 돌려줍니다. 408·429 같은 일시적인
+         * 거절과 네트워크 오류·5xx 는 다시 시도하면 풀릴 수 있어 오류로 둡니다.
          */
-        const status = getErrorStatus(error);
-
-        if (status !== undefined && status >= 400 && status < 500) {
+        if (getErrorStatus(error) === 401) {
           return false;
         }
 

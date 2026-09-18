@@ -88,6 +88,10 @@ export function BudgetSection({ optionsQuery, budget }: BudgetSectionProps) {
             onChange={(event) => budget.updateBudgetText(event.target.value)}
             aria-label="여행 총 예산"
             aria-describedby="budget-hint"
+            // 오류 문구를 놓쳐도 입력값이 잘못됐다는 걸 화면 낭독기가 알립니다.
+            aria-invalid={
+              budget.hasNegativeBudgetInput || budget.isBudgetOutOfRange
+            }
           />
           <span className={styles.currencyUnit}>원</span>
         </label>

@@ -3,9 +3,10 @@ import { useMemo, useState } from "react";
 import type { RecommendedRouteStop } from "@/pages/route/api/types/recommendedRoute";
 import { RouteMap } from "@/pages/route/components/RouteMap";
 
-import * as styles from "../components/ui.css";
 import { toRouteMapStops } from "../lib/routeMapStops";
 import type { AdminRouteStop } from "../types";
+
+import * as styles from "../components/ui.css";
 
 interface RouteMapPreviewProps {
   stops: AdminRouteStop[];
@@ -46,6 +47,31 @@ export function RouteMapPreview({
     new Set(stops.map((stop) => stop.dayNumber)),
   ).sort((a, b) => a - b);
   const isMultiDay = dayNumbers.length > 1;
+
+  const selectedStop = stops.find((stop) => stop.placeId === selectedPlaceId);
+
+  /**
+   * 일차 필터를 건 채로 다른 일차의 경유지를 고르면(목록에서 누르거나 일차를
+   * 바꾸면) 그 핀이 지도에 없어 강조할 수 없습니다. 고른 경유지의 일차로
+   * 필터를 옮깁니다. 렌더 중 상태 조정은 이전 값과 달라졌을 때만 합니다.
+   */
+  const selectionKey = selectedStop
+    ? `${selectedStop.placeId}:${selectedStop.dayNumber}`
+    : null;
+  const [previousSelectionKey, setPreviousSelectionKey] =
+    useState(selectionKey);
+
+  if (selectionKey !== previousSelectionKey) {
+    setPreviousSelectionKey(selectionKey);
+
+    if (
+      selectedStop &&
+      dayFilter !== "all" &&
+      selectedStop.dayNumber !== dayFilter
+    ) {
+      setDayFilter(selectedStop.dayNumber);
+    }
+  }
 
   // 경유지를 옮기다 고른 일차가 사라지면 전체로 돌아갑니다.
   const activeDay =

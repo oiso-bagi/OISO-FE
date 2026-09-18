@@ -1,5 +1,8 @@
 import { http } from "@/shared/api/http";
-import type { RecommendationConditions } from "@/shared/lib/recommendationConditions";
+import {
+  isValidBudgetAllocation,
+  type RecommendationConditions,
+} from "@/shared/lib/recommendationConditions";
 import type {
   BudgetRatiosDto,
   RecommendRouteRequestDto,
@@ -50,13 +53,9 @@ type RecommendRouteRequest = Omit<
 const toBudgetRatios = (
   percents: RecommendationConditions["budgetAllocationPercents"],
 ): BudgetRatiosDto | undefined => {
-  if (!percents) return undefined;
+  if (!isValidBudgetAllocation(percents)) return undefined;
 
   const { transport, food, activity } = percents;
-
-  if (transport === undefined || food === undefined || activity === undefined)
-    return undefined;
-  if (transport + food + activity !== 100) return undefined;
 
   return {
     transportRatio: transport / 100,

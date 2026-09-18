@@ -57,7 +57,10 @@ export const useAdminPlaceSearch = (
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
       lastPage.page < lastPage.totalPages ? lastPage.page + 1 : undefined,
-    placeholderData: keepPreviousData,
+    /**
+     * 이전 검색 결과를 남겨 두지 않습니다. 남겨 두면 새 검색어로 불러오는 동안
+     * 이전 검색어의 장소가 현재 결과처럼 보이고 그대로 담을 수도 있습니다.
+     */
   });
 
 interface TogglePlaceActiveVariables {

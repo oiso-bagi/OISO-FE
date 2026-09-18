@@ -108,8 +108,19 @@ function RouteBuilderForm() {
   const applyStops = (next: AdminRouteStop[]) => {
     setStops(next);
     setIsDirty(true);
-    // 경유지가 채워지면 관련 오류 문구는 바로 걷습니다.
-    setErrors((previous) => ({ ...previous, stops: undefined }));
+    /**
+     * 경유지 오류를 안내 중이면 바뀐 경유지로 다시 검사합니다. 무조건 지우면
+     * 1·3일차만 있는 채로 소요시간만 고쳐도 빈 일차 안내가 사라집니다.
+     * 안내 전(저장을 누르기 전)에는 새로 띄우지 않습니다.
+     */
+    setErrors((previous) =>
+      previous.stops === undefined
+        ? previous
+        : {
+            ...previous,
+            stops: validateRouteForm({ name, theme, stops: next }).stops,
+          },
+    );
   };
 
   const save = () => {

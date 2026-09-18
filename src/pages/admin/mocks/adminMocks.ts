@@ -482,6 +482,8 @@ export const mockGetAdminStatsOverview =
 /** 쿨타임은 서버가 관리하기로 한 값이라, 목에서도 서버처럼 여기서 들고 있습니다. */
 const COOLDOWN_MS = 10 * 60 * 1000;
 const COLLECT_DURATION_MS = 6000;
+/** 모의 수집 한 번에 갱신하는 건수. 호출량도 이만큼 늘어납니다. */
+const MOCK_COLLECT_COUNT = 40;
 
 interface MockKtoState {
   loadedCount: number;
@@ -521,6 +523,18 @@ const ktoStates: Record<KtoSource, MockKtoState> = {
   CONCENTRATION: createKtoState(85, 150, "SUCCESS"),
 };
 
+/** 수집이 끝나는 시점에 사용량과 마지막 수집 기록을 갱신합니다. */
+const finishMockCollect = (state: MockKtoState) => {
+  state.collectingUntil = 0;
+  state.usedCount = Math.min(
+    state.usedCount + MOCK_COLLECT_COUNT,
+    state.dailyLimit,
+  );
+  state.lastCollectedAt = new Date().toISOString();
+  state.lastCollectResult = "SUCCESS";
+  state.lastMessage = null;
+};
+
 export const mockGetAdminKtoStatus = async (
   source: KtoSource,
 ): Promise<AdminKtoStatus> => {
@@ -530,13 +544,9 @@ export const mockGetAdminKtoStatus = async (
   const now = Date.now();
   const isCollecting = now < state.collectingUntil;
 
-  // 수집이 끝나는 시점에 사용량과 마지막 수집 기록을 갱신합니다.
+  // 수집 도중 새로고침한 경우에도 끝나는 시점에 기록을 갱신합니다.
   if (!isCollecting && state.collectingUntil !== 0) {
-    state.collectingUntil = 0;
-    state.usedCount = Math.min(state.usedCount + 40, state.dailyLimit);
-    state.lastCollectedAt = new Date().toISOString();
-    state.lastCollectResult = "SUCCESS";
-    state.lastMessage = null;
+    finishMockCollect(state);
   }
 
   return {
@@ -573,11 +583,17 @@ export const mockPostAdminKtoCollect = async (
     throw new Error("오늘 사용 가능한 쿼터를 모두 사용했습니다.");
   }
 
+  /**
+   * 실제 API 처럼 수집이 끝난 뒤에 응답합니다. 먼저 응답하면 화면에 "수집 중"
+   * 과 "수집을 마쳤어요" 가 함께 보입니다.
+   */
   state.collectingUntil = now + COLLECT_DURATION_MS;
-  state.cooldownUntil = now + COOLDOWN_MS;
+  await delay(COLLECT_DURATION_MS);
+  finishMockCollect(state);
+  state.cooldownUntil = Date.now() + COOLDOWN_MS;
 
   return {
-    updatedCount: state.loadedCount,
+    updatedCount: MOCK_COLLECT_COUNT,
     failureCount: 0,
     cooldownUntil: new Date(state.cooldownUntil).toISOString(),
   };

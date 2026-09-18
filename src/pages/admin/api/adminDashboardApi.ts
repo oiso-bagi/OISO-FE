@@ -127,10 +127,13 @@ export const postAdminKtoCollect = async (
   );
 
   return {
-    // 연관 관광지만 갱신 건수를 `collectedCount` 로 내려줍니다.
+    /**
+     * 연관 관광지는 DB 장소와 연결한 수(`matchedPlaceCount`)가 이번 갱신
+     * 건수입니다. `collectedCount` 는 API 에서 받아 온 연관 관광지 수라 다릅니다.
+     */
     updatedCount:
-      "collectedCount" in response
-        ? response.collectedCount
+      "matchedPlaceCount" in response
+        ? response.matchedPlaceCount
         : response.updatedPlaceCount,
     failureCount: response.failureCount,
     cooldownUntil: toCooldownUntil(response.collectedAt),

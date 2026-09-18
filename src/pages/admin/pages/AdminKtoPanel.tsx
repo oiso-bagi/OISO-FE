@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 
 import { getErrorStatus, toErrorMessage } from "@/shared/api/apiError";
@@ -63,15 +64,15 @@ const COOLDOWN_MESSAGE =
 /**
  * 즉시 동기화 실패 문구.
  *
- * 서버는 쿼터 보호를 위해 10분 안에 다시 부르면 429 로 막습니다. 서버
- * 응답이면 상태 코드 기준 문구를, 목 데이터처럼 직접 던진 에러면 그 메시지를
- * 씁니다.
+ * 서버는 쿼터 보호를 위해 10분 안에 다시 부르면 429 로 막습니다. API 요청
+ * 오류는 상태 코드 기준의 정해 둔 문구를 쓰고, 목 데이터처럼 직접 던진 에러만
+ * 그 메시지를 씁니다.
  */
 const toCollectErrorMessage = (error: unknown) => {
-  const status = getErrorStatus(error);
+  if (getErrorStatus(error) === 429) return COOLDOWN_MESSAGE;
 
-  if (status === 429) return COOLDOWN_MESSAGE;
-  if (status !== undefined) {
+  // 응답이 없는 네트워크 오류·타임아웃도 axios 원문 대신 안내 문구로 바꿉니다.
+  if (axios.isAxiosError(error)) {
     return toErrorMessage(error, "수집을 시작하지 못했어요.");
   }
 
@@ -81,11 +82,13 @@ const toCollectErrorMessage = (error: unknown) => {
 const toCollectDoneMessage = ({
   updatedCount,
   failureCount,
+  cooldownUntil,
 }: AdminKtoCollectResponse) =>
   [
     `수집을 마쳤어요. ${formatNumber(updatedCount)}건을 갱신했어요.`,
     failureCount > 0 ? `${formatNumber(failureCount)}건은 실패했어요.` : "",
-    "10분 뒤 다시 실행할 수 있어요.",
+    // 쿨타임 정보가 없으면 언제 다시 되는지 알 수 없어 안내하지 않습니다.
+    cooldownUntil ? "10분 뒤 다시 실행할 수 있어요." : "",
   ]
     .filter(Boolean)
     .join(" ");
