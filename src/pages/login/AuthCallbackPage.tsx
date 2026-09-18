@@ -3,7 +3,11 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { useAuthStatus } from "@/shared/auth/authContext";
 import XIcon from "@/shared/icons/x.svg?react";
-import { isSurveyCompleted } from "@/shared/lib/onboardingFlow";
+import {
+  isSurveyCompleted,
+  prepareSurveyOnboarding,
+} from "@/shared/lib/onboardingFlow";
+import { clearRecommendationConditions } from "@/shared/lib/recommendationConditions";
 
 import { useConsentStatus } from "./hooks/useConsents";
 import * as styles from "./AuthCallbackPage.css";
@@ -34,6 +38,13 @@ export function AuthCallbackPage() {
     }
 
     if (!consentStatusQuery.data.hasCompletedRequiredConsents) {
+      /**
+       * 같은 기기에 이전 사용자의 설문 완료 표시가 남아 있으면, 동의 화면에서
+       * 주소창에 `/` 를 쳐 동의 없이 서비스 화면으로 들어갈 수 있습니다.
+       * 동의 전인 사용자는 설문부터 다시 시작하게 지웁니다.
+       */
+      prepareSurveyOnboarding();
+      clearRecommendationConditions();
       navigate("/consents", { replace: true });
       return;
     }
