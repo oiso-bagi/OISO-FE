@@ -5,7 +5,7 @@ import * as styles from "./DataAttribution.css";
 export const DATA_SOURCES_PATH = "/data-sources";
 
 export const DATA_ATTRIBUTION_TEXT =
-  "데이터 출처: ⓒ한국관광공사 · 카카오모빌리티 · Google";
+  "데이터 출처: ⓒ한국관광공사 · 카카오모빌리티 · Open-Elevation";
 
 /**
  * 출처 안내 페이지에서 뒤로가기로 돌아올 경로.

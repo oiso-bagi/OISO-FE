@@ -61,6 +61,7 @@ const toRouteStop = (stop: RouteStopResponseDto): RecommendedRouteStop => ({
   operatingHours: toOperatingHours(stop.openTime, stop.closeTime),
   latitude: stop.latitude,
   longitude: stop.longitude,
+  address: stop.address,
   transportationFromPrevious: stop.nextTransportType,
   durationFromPreviousMinutes: stop.nextTravelTimeMinutes,
   stayMinutes: stop.stayMinutes,

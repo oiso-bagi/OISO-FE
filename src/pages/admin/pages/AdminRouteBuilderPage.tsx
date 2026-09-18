@@ -22,12 +22,25 @@ import {
   validateRouteForm,
 } from "../lib/routeStops";
 import type { AdminRouteStop } from "../types";
+import { RouteMapPreview } from "./RouteMapPreview";
 import { RoutePlaceSearch } from "./RoutePlaceSearch";
 import { RouteStopList } from "./RouteStopList";
 
 const LIST_PATH = "/admin/contents?tab=routes";
 
+/**
+ * 등록(`routes/new`)과 수정(`routes/:routeId/edit`)이 같은 컴포넌트라, 주소만
+ * 바뀌면 React 가 폼 상태를 그대로 이어 씁니다. 수정 중에 사이드바의 "코스
+ * 등록"을 누르면 수정하던 코스가 폼에 남아 그대로 새 코스로 등록됐습니다.
+ * 코스마다 새 폼으로 그립니다.
+ */
 export function AdminRouteBuilderPage() {
+  const { routeId } = useParams();
+
+  return <RouteBuilderForm key={routeId ?? "new"} />;
+}
+
+function RouteBuilderForm() {
   const { routeId } = useParams();
   const navigate = useNavigate();
 
@@ -46,6 +59,18 @@ export function AdminRouteBuilderPage() {
   const [errors, setErrors] = useState<RouteFormErrors>({});
   const [isDirty, setIsDirty] = useState(false);
   const [isPublishConfirmOpen, setIsPublishConfirmOpen] = useState(false);
+
+  /**
+   * 지도와 경유지 목록이 함께 강조하는 경유지. 순서를 옮겨도 같은 장소를
+   * 가리키도록 `sequence` 가 아니라 장소 id 로 들고 있습니다.
+   */
+  const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
+
+  const handleSelectPlace = (placeId: string | null) => {
+    setSelectedPlaceId((previous) =>
+      placeId !== null && previous === placeId ? null : placeId,
+    );
+  };
 
   const detail = detailQuery.data;
 
@@ -83,8 +108,19 @@ export function AdminRouteBuilderPage() {
   const applyStops = (next: AdminRouteStop[]) => {
     setStops(next);
     setIsDirty(true);
-    // 경유지가 채워지면 관련 오류 문구는 바로 걷습니다.
-    setErrors((previous) => ({ ...previous, stops: undefined }));
+    /**
+     * 경유지 오류를 안내 중이면 바뀐 경유지로 다시 검사합니다. 무조건 지우면
+     * 1·3일차만 있는 채로 소요시간만 고쳐도 빈 일차 안내가 사라집니다.
+     * 안내 전(저장을 누르기 전)에는 새로 띄우지 않습니다.
+     */
+    setErrors((previous) =>
+      previous.stops === undefined
+        ? previous
+        : {
+            ...previous,
+            stops: validateRouteForm({ name, theme, stops: next }).stops,
+          },
+    );
   };
 
   const save = () => {
@@ -115,6 +151,17 @@ export function AdminRouteBuilderPage() {
   };
 
   const handleSave = () => {
+    /**
+     * 게시 확인을 받기 전에 먼저 검사합니다. 확인창에서 "저장하고 게시"를
+     * 누른 뒤에야 저장할 수 없다고 알려 주면 확인 절차가 헛수고가 됩니다.
+     */
+    const nextErrors = validateRouteForm({ name, theme, stops });
+
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors);
+      return;
+    }
+
     // 즉시 게시는 서비스 사용자에게 바로 보이므로 한 번 확인합니다.
     if (isPublished) {
       setIsPublishConfirmOpen(true);
@@ -237,6 +284,12 @@ export function AdminRouteBuilderPage() {
         </div>
       </section>
 
+      <RouteMapPreview
+        stops={stops}
+        selectedPlaceId={selectedPlaceId}
+        onSelectPlace={handleSelectPlace}
+      />
+
       <div className={styles.builderColumns}>
         <RoutePlaceSearch
           addedPlaceIds={addedPlaceIds}
@@ -245,6 +298,8 @@ export function AdminRouteBuilderPage() {
 
         <RouteStopList
           stops={stops}
+          selectedPlaceId={selectedPlaceId}
+          onSelectStop={handleSelectPlace}
           onMove={(index, toIndex) =>
             applyStops(moveStop(stops, index, toIndex))
           }
@@ -266,9 +321,19 @@ export function AdminRouteBuilderPage() {
         )}
 
         <div className={styles.formActions}>
-          <span className={styles.formActionsNote}>
-            {errors.stops ?? `경유지 ${stops.length}곳`}
-          </span>
+          {/* 저장을 막은 이유는 버튼 바로 옆에 빨갛게 보여 줍니다. */}
+          {errors.stops ? (
+            <span
+              className={`${styles.formActionsNote} ${styles.formActionsError}`}
+              role="alert"
+            >
+              {errors.stops}
+            </span>
+          ) : (
+            <span className={styles.formActionsNote}>
+              경유지 {stops.length}곳
+            </span>
+          )}
 
           <Button onClick={() => navigate(LIST_PATH)} disabled={isSaving}>
             취소

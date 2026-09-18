@@ -1,5 +1,6 @@
 import {
   keepPreviousData,
+  useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
@@ -32,6 +33,34 @@ export const useAdminPlaces = (query: AdminPlacesQuery) =>
     queryKey: queryKeys.admin.places.list(query),
     queryFn: () => getAdminPlaces(query),
     placeholderData: keepPreviousData,
+  });
+
+const PLACE_SEARCH_PAGE_SIZE = 20;
+
+/**
+ * 코스 등록의 장소 검색. 목록 끝에 닿으면 다음 페이지를 이어 붙입니다.
+ *
+ * 서버가 페이지 번호 방식이라 마지막으로 받은 페이지가 `totalPages` 보다
+ * 작을 때만 다음 페이지를 요청합니다.
+ */
+export const useAdminPlaceSearch = (
+  query: Omit<AdminPlacesQuery, "page" | "size">,
+) =>
+  useInfiniteQuery({
+    queryKey: queryKeys.admin.places.search(query),
+    queryFn: ({ pageParam }) =>
+      getAdminPlaces({
+        ...query,
+        page: pageParam,
+        size: PLACE_SEARCH_PAGE_SIZE,
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.page < lastPage.totalPages ? lastPage.page + 1 : undefined,
+    /**
+     * 이전 검색 결과를 남겨 두지 않습니다. 남겨 두면 새 검색어로 불러오는 동안
+     * 이전 검색어의 장소가 현재 결과처럼 보이고 그대로 담을 수도 있습니다.
+     */
   });
 
 interface TogglePlaceActiveVariables {

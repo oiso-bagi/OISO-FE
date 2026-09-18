@@ -23,10 +23,10 @@ import type {
   AdminPlacesQuery,
   AdminRoute,
   AdminRoutesQuery,
-  AdminSavingsBreakdown,
   AdminStatsOverview,
   AdminUser,
   AdminUsersQuery,
+  KtoSource,
   AuthProvider,
   PaginatedResponse,
   PlaceCategory,
@@ -365,6 +365,8 @@ const buildStops = (route: AdminRoute): AdminRouteStop[] =>
       placeId: place.id,
       placeName: place.name,
       address: place.address,
+      latitude: place.latitude,
+      longitude: place.longitude,
       nextTransportType: isLast ? null : index % 2 === 0 ? "WALKING" : "BUS",
       nextTravelTimeMinutes: isLast ? null : 8 + (index % 5) * 4,
       nextTravelCostWon: isLast ? null : index % 2 === 0 ? 0 : 1550,
@@ -475,113 +477,135 @@ export const mockGetAdminStatsOverview =
     };
   };
 
-export const mockGetAdminSavingsBreakdown =
-  async (): Promise<AdminSavingsBreakdown> => {
-    await delay();
-
-    return {
-      byCategory: [
-        {
-          category: "FOOD",
-          label: "식당·카페",
-          amountWon: 12_000_000,
-          ratio: 0.42,
-        },
-        {
-          category: "TRANSPORT",
-          label: "교통비",
-          amountWon: 8_000_000,
-          ratio: 0.28,
-        },
-        {
-          category: "ACTIVITY",
-          label: "체험비",
-          amountWon: 8_600_000,
-          ratio: 0.3,
-        },
-      ],
-      byMarketType: [
-        {
-          type: "MARKET",
-          label: "전통시장",
-          amountWon: 15_000_000,
-          ratio: 0.55,
-        },
-        {
-          type: "LOCAL",
-          label: "로컬 상권",
-          amountWon: 12_300_000,
-          ratio: 0.45,
-        },
-      ],
-    };
-  };
-
 /* ── KTO 공공데이터 배치 ────────────────────────────────── */
 
 /** 쿨타임은 서버가 관리하기로 한 값이라, 목에서도 서버처럼 여기서 들고 있습니다. */
 const COOLDOWN_MS = 10 * 60 * 1000;
 const COLLECT_DURATION_MS = 6000;
+/** 모의 수집 한 번에 갱신하는 장소 수 */
+const MOCK_COLLECT_COUNT = 40;
 
-const ktoState = {
-  dailyLimit: 1000,
-  usedCount: 150,
-  lastCollectedAt: new Date(2026, 7, 16, 4, 0, 0).toISOString() as
-    string | null,
-  lastCollectStatus: "SUCCESS" as AdminKtoStatus["lastCollectStatus"],
-  collectingUntil: 0,
-  cooldownUntil: 0,
+/**
+ * 모의 수집 한 번에 쓰는 API 호출 수. 갱신한 장소 수와는 다릅니다.
+ * 서버는 국문 관광정보를 관광 타입 6개마다 100건씩 페이지로 받고, 집중률은
+ * 지역마다 한 번씩 부릅니다.
+ */
+const MOCK_COLLECT_API_CALL_COUNT: Record<KtoSource, number> = {
+  TOUR_API: 6,
+  CONCENTRATION: 4,
 };
 
-export const mockGetAdminKtoStatus = async (): Promise<AdminKtoStatus> => {
+interface MockKtoState {
+  loadedCount: number;
+  dailyLimit: number;
+  usedCount: number;
+  lastCollectedAt: string | null;
+  lastCollectResult: AdminKtoStatus["lastCollectResult"];
+  lastMessage: string | null;
+  collectingUntil: number;
+  cooldownUntil: number;
+}
+
+const createKtoState = (
+  loadedCount: number,
+  usedCount: number,
+  lastCollectResult: AdminKtoStatus["lastCollectResult"],
+  lastMessage: string | null = null,
+): MockKtoState => ({
+  loadedCount,
+  dailyLimit: 1000,
+  usedCount,
+  lastCollectedAt: new Date(2026, 8, 17, 4, 0, 0).toISOString(),
+  lastCollectResult,
+  lastMessage,
+  collectingUntil: 0,
+  cooldownUntil: 0,
+});
+
+const ktoStates: Record<KtoSource, MockKtoState> = {
+  TOUR_API: createKtoState(1024, 12, "SUCCESS"),
+  CONCENTRATION: createKtoState(
+    85,
+    150,
+    "PARTIAL_SUCCESS",
+    "혼잡도 집중률을 받지 못한 장소가 3곳 있습니다.",
+  ),
+};
+
+/** 수집이 끝나는 시점에 사용량과 마지막 수집 기록을 갱신합니다. */
+const finishMockCollect = (source: KtoSource) => {
+  const state = ktoStates[source];
+
+  state.collectingUntil = 0;
+  state.usedCount = Math.min(
+    state.usedCount + MOCK_COLLECT_API_CALL_COUNT[source],
+    state.dailyLimit,
+  );
+  state.lastCollectedAt = new Date().toISOString();
+  state.lastCollectResult = "SUCCESS";
+  state.lastMessage = null;
+};
+
+export const mockGetAdminKtoStatus = async (
+  source: KtoSource,
+): Promise<AdminKtoStatus> => {
   await delay(180);
 
+  const state = ktoStates[source];
   const now = Date.now();
-  const isCollecting = now < ktoState.collectingUntil;
+  const isCollecting = now < state.collectingUntil;
 
-  // 수집이 끝나는 시점에 사용량과 마지막 수집 기록을 갱신합니다.
-  if (!isCollecting && ktoState.collectingUntil !== 0) {
-    ktoState.collectingUntil = 0;
-    ktoState.usedCount = Math.min(ktoState.usedCount + 40, ktoState.dailyLimit);
-    ktoState.lastCollectedAt = new Date().toISOString();
-    ktoState.lastCollectStatus = "SUCCESS";
+  // 수집 도중 새로고침한 경우에도 끝나는 시점에 기록을 갱신합니다.
+  if (!isCollecting && state.collectingUntil !== 0) {
+    finishMockCollect(source);
   }
 
   return {
-    dailyLimit: ktoState.dailyLimit,
-    usedCount: ktoState.usedCount,
-    remainingCount: ktoState.dailyLimit - ktoState.usedCount,
-    lastCollectedAt: ktoState.lastCollectedAt,
-    lastCollectStatus: ktoState.lastCollectStatus,
+    loadedCount: state.loadedCount,
+    dailyLimit: state.dailyLimit,
+    usedCount: state.usedCount,
+    remainingCount: state.dailyLimit - state.usedCount,
+    lastCollectedAt: state.lastCollectedAt,
+    lastCollectResult: state.lastCollectResult,
+    lastMessage: state.lastMessage,
     isCollecting,
     cooldownUntil:
-      ktoState.cooldownUntil > now
-        ? new Date(ktoState.cooldownUntil).toISOString()
+      state.cooldownUntil > now
+        ? new Date(state.cooldownUntil).toISOString()
         : null,
   };
 };
 
-export const mockPostAdminKtoCollect =
-  async (): Promise<AdminKtoCollectResponse> => {
-    await delay(200);
+export const mockPostAdminKtoCollect = async (
+  source: KtoSource,
+): Promise<AdminKtoCollectResponse> => {
+  await delay(200);
 
-    const now = Date.now();
+  const state = ktoStates[source];
+  const now = Date.now();
 
-    if (now < ktoState.collectingUntil) {
-      throw new Error("이미 수집이 진행 중입니다.");
-    }
-    if (now < ktoState.cooldownUntil) {
-      throw new Error("쿨타임이 끝난 뒤에 다시 시도해 주세요.");
-    }
-    if (ktoState.dailyLimit - ktoState.usedCount <= 0) {
-      throw new Error("오늘 사용 가능한 쿼터를 모두 사용했습니다.");
-    }
+  if (now < state.collectingUntil) {
+    throw new Error("이미 수집이 진행 중입니다.");
+  }
+  if (now < state.cooldownUntil) {
+    throw new Error("쿨타임이 끝난 뒤에 다시 시도해 주세요.");
+  }
+  if (state.dailyLimit - state.usedCount <= 0) {
+    throw new Error("오늘 사용 가능한 쿼터를 모두 사용했습니다.");
+  }
 
-    ktoState.collectingUntil = now + COLLECT_DURATION_MS;
-    ktoState.cooldownUntil = now + COOLDOWN_MS;
+  /**
+   * 실제 API 처럼 수집이 끝난 뒤에 응답합니다. 먼저 응답하면 화면에 "수집 중"
+   * 과 "수집을 마쳤어요" 가 함께 보입니다.
+   */
+  state.collectingUntil = now + COLLECT_DURATION_MS;
+  await delay(COLLECT_DURATION_MS);
+  finishMockCollect(source);
+  state.cooldownUntil = Date.now() + COOLDOWN_MS;
 
-    return {
-      accepted: true,
-      cooldownUntil: new Date(ktoState.cooldownUntil).toISOString(),
-    };
+  return {
+    updatedCount: MOCK_COLLECT_COUNT,
+    failureCount: 0,
+    cooldownUntil: new Date(state.cooldownUntil).toISOString(),
   };
+};

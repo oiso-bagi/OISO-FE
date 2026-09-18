@@ -37,9 +37,20 @@ export function SurveyPage() {
    * 끼어들 수 있고, 이 값은 시작값으로만 쓰입니다.
    */
   const [searchParams] = useSearchParams();
+  const isEditMode = searchParams.get("mode") === "edit";
   const [savedConditions] = useState(() =>
-    searchParams.get("mode") === "edit" ? readRecommendationConditions() : null,
+    isEditMode ? readRecommendationConditions() : null,
   );
+
+  /**
+   * 설문 조건이 없는(처음 설문하는) 사용자는 첫 단계에서 돌아가기를 막습니다.
+   * 로그인 직후라 뒤로 가면 인증 페이지로 나가거나, 조건 없이는 추천을 받을
+   * 수 없습니다.
+   */
+  const [canLeaveSurvey] = useState(
+    () => isEditMode || readRecommendationConditions() !== null,
+  );
+  const canGoBack = !isFirstStep || canLeaveSurvey;
 
   const surveyForm = useSurveyForm({
     recommendationOptions: optionsQuery.data,
@@ -52,8 +63,37 @@ export function SurveyPage() {
       return;
     }
 
-    navigate(-1);
+    if (!canLeaveSurvey) return;
+
+    /**
+     * 앱 안에서 들어온 기록이 있을 때만 뒤로 갑니다.
+     *
+     * 로그인 직후에는 바로 앞 기록이 카카오·구글 인증 페이지라 `navigate(-1)`
+     * 이 앱 밖으로 나가고, 새 탭에서 바로 열었으면 앞 기록이 없어 아무 일도
+     * 일어나지 않습니다. `idx` 는 React Router 가 기록마다 매기는 순번입니다.
+     */
+    const historyIndex =
+      (window.history.state as { idx?: number } | null)?.idx ?? 0;
+
+    if (historyIndex > 0) {
+      navigate(-1);
+      return;
+    }
+
+    navigate(isEditMode ? "/route" : "/", { replace: true });
   };
+
+  /**
+   * 서버가 받지 않는 값(스타일 0개, 기간 미선택, 범위 밖 예산)으로는 넘어가지
+   * 못하게 합니다. 그대로 제출하면 추천 요청이 400 으로 실패하고, 추천
+   * 화면에서 조건을 고치기 전까지 빠져나올 수 없습니다.
+   */
+  const tripDayOptions = optionsQuery.data?.durationDays;
+  const canProceed =
+    currentStep === 1
+      ? surveyForm.travelStyle.selectedCount > 0
+      : surveyForm.budget.isBudgetComplete &&
+        (tripDayOptions?.includes(surveyForm.budget.tripDays) ?? true);
 
   const handleResetSurvey = () => {
     surveyForm.reset();
@@ -61,24 +101,56 @@ export function SurveyPage() {
   };
 
   const handleNext = () => {
+    // 버튼을 비활성화해도 연타로 들어오는 클릭까지 여기서 한 번 더 막습니다.
+    if (!canProceed) return;
+
     if (currentStep >= totalStep) {
       const selectedStyleIds = surveyForm.travelStyle.selectedStyleIds;
 
       /**
        * 고른 스타일의 이름을 함께 저장합니다. 추천 화면의 조건 요약이 옵션
        * API 를 기다리지 않고 바로 그릴 수 있습니다.
+       *
+       * 옵션을 못 불러왔으면 이전에 저장한 이름을 씁니다. 그래도 모르는 이름이
+       * 있으면 slug 를 대신 넣지 않고 비워 둡니다. 비어 있으면 추천 화면이
+       * 옵션을 다시 불러와 채우지만, slug 가 들어가면 영문 그대로 남습니다.
        */
       const travelStyles = optionsQuery.data?.travelStyles ?? [];
-      const travelStyleLabels = selectedStyleIds.map(
-        (styleId) =>
-          travelStyles.find((style) => style.id === styleId)?.label ?? styleId,
+      const savedLabelBySlug = new Map(
+        (savedConditions?.travelStyleSlugs ?? []).map((slug, index) => [
+          slug,
+          savedConditions?.travelStyleLabels?.[index],
+        ]),
       );
+      const resolvedLabels = selectedStyleIds.map(
+        (styleId) =>
+          travelStyles.find((style) => style.id === styleId)?.label ??
+          savedLabelBySlug.get(styleId),
+      );
+      const travelStyleLabels = resolvedLabels.every(
+        (label): label is string => label !== undefined,
+      )
+        ? resolvedLabels
+        : undefined;
+
+      /**
+       * 조절한 예산 배분도 함께 저장해 추천 요청에 싣습니다. 옵션을 못 불러와
+       * 배분 카드가 비어 있으면 이전에 저장한 배분을 유지합니다.
+       */
+      const { allocationItems } = surveyForm.budget;
+      const budgetAllocationPercents =
+        allocationItems.length > 0
+          ? Object.fromEntries(
+              allocationItems.map((item) => [item.id, item.percent]),
+            )
+          : savedConditions?.budgetAllocationPercents;
 
       const areConditionsSaved = saveRecommendationConditions({
         travelStyleSlugs: selectedStyleIds,
         durationDays: surveyForm.budget.tripDays,
         dailyBudgetWon: surveyForm.budget.dailyBudget,
         travelStyleLabels,
+        budgetAllocationPercents,
       });
 
       if (!areConditionsSaved) {
@@ -103,7 +175,11 @@ export function SurveyPage() {
 
   return (
     <div className={styles.page}>
-      <SurveyHeader onBack={handleBack} onReset={handleResetSurvey} />
+      <SurveyHeader
+        onBack={handleBack}
+        onReset={handleResetSurvey}
+        canGoBack={canGoBack}
+      />
 
       <main className={styles.content}>
         <SurveyProgress currentStep={currentStep} totalStep={totalStep} />
@@ -121,7 +197,12 @@ export function SurveyPage() {
         )}
       </main>
 
-      <SurveyFooter onPrevious={handleBack} onNext={handleNext} />
+      <SurveyFooter
+        onPrevious={handleBack}
+        onNext={handleNext}
+        isPreviousDisabled={!canGoBack}
+        isNextDisabled={!canProceed}
+      />
     </div>
   );
 }

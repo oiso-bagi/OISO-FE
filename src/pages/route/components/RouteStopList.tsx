@@ -27,16 +27,24 @@ interface RouteStopListProps {
   isSaved?: boolean;
 }
 
+/** 방문 순서. 지도 핀도 이 순서로 번호를 매깁니다. */
+const bySequence = (a: RecommendedRouteStop, b: RecommendedRouteStop) =>
+  a.sequence - b.sequence;
+
 /** 다일 코스일 때만 일차별로 묶습니다. 단일 일차는 기존처럼 평면 리스트로 표시합니다. */
 const groupStopsByDay = (stops: RecommendedRouteStop[]) => {
   const dayNumbers = Array.from(new Set(stops.map((stop) => stop.dayNumber)));
-  if (dayNumbers.length <= 1) return [{ dayNumber: null, stops }];
+  if (dayNumbers.length <= 1) {
+    return [{ dayNumber: null, stops: [...stops].sort(bySequence) }];
+  }
 
   return dayNumbers
     .sort((a, b) => a - b)
     .map((dayNumber) => ({
       dayNumber,
-      stops: stops.filter((stop) => stop.dayNumber === dayNumber),
+      stops: stops
+        .filter((stop) => stop.dayNumber === dayNumber)
+        .sort(bySequence),
     }));
 };
 
@@ -91,7 +99,11 @@ export function RouteStopList({
                     aria-pressed={stop.sequence === selectedStopSequence}
                     onClick={() => onSelectStop(stop.sequence)}
                   >
-                    <span className={styles.stopOrder}>{stop.sequence}</span>
+                    {/*
+                     * 지도 핀과 같은 번호(일차 안 방문 순서)를 씁니다. 전체
+                     * 순번을 쓰면 2일차부터 핀 번호와 어긋납니다.
+                     */}
+                    <span className={styles.stopOrder}>{index + 1}</span>
 
                     <span className={styles.stopContent}>
                       <strong className={styles.stopName}>

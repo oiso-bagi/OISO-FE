@@ -79,6 +79,8 @@ const toAdminRouteStop = (stop: AdminRouteDetailStopDto): AdminRouteStop => ({
   placeId: stop.placeId,
   placeName: stop.placeName,
   address: stop.address,
+  latitude: stop.latitude,
+  longitude: stop.longitude,
   stayTimeMinutes: stop.stayTimeMinutes,
   nextTransportType: stop.nextTransportType,
   nextTravelTimeMinutes: toNullableNumber(stop.nextTravelTimeMinutes),

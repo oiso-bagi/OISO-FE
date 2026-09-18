@@ -225,14 +225,23 @@ export function RoutePage() {
     cancelSave(routeId);
   };
 
+  /**
+   * `mutate` 의 호출별 콜백은 요청 중 화면을 벗어나면 실행되지 않아, 저장하고
+   * 바로 다른 탭으로 가면 `route_save` 이벤트와 결과 토스트가 빠집니다.
+   * 컴포넌트 수명과 무관한 `mutateAsync` 로 처리합니다.
+   *
+   * 성공·실패 처리는 `then` 의 두 인자로 나눕니다. `.catch` 로 받으면 성공
+   * 뒤 이벤트 전송이나 토스트에서 난 오류까지 요청 실패로 보고, 서버에는
+   * 저장됐는데 화면을 되돌리고 실패 토스트를 띄웁니다.
+   */
   const saveRoute = (routeId: string) => {
     setSaveOverride(routeId, true);
 
-    createSavedRoute.mutate(routeId, {
-      // 저장하고 나면 할 일이 없어 흐름이 끊깁니다. 토스트에서 바로 넘어갑니다.
-      onSuccess: () => {
+    createSavedRoute.mutateAsync(routeId).then(
+      () => {
         trackEvent("route_save", { route_id: routeId });
 
+        // 저장하고 나면 할 일이 없어 흐름이 끊깁니다. 토스트에서 바로 넘어갑니다.
         showToast({
           message: "저장되었습니다",
           duration: SAVE_TOAST_DURATION_MS,
@@ -240,7 +249,7 @@ export function RoutePage() {
           onAction: () => navigate("/saved"),
         });
       },
-      onError: (saveError) => {
+      (saveError: unknown) => {
         // 실패했으면 다시 누를 수 있도록 되돌립니다.
         setSaveOverride(routeId, null);
 
@@ -251,20 +260,20 @@ export function RoutePage() {
           ),
         });
       },
-    });
+    );
   };
 
   const cancelSave = (routeId: string) => {
     setSaveOverride(routeId, false);
 
-    deleteSavedRoute.mutate(routeId, {
-      onSuccess: () => {
+    deleteSavedRoute.mutateAsync(routeId).then(
+      () => {
         showToast({
           message: "저장이 취소되었습니다",
           duration: SAVE_TOAST_DURATION_MS,
         });
       },
-      onError: (cancelError) => {
+      (cancelError: unknown) => {
         setSaveOverride(routeId, null);
 
         showToast({
@@ -274,7 +283,7 @@ export function RoutePage() {
           ),
         });
       },
-    });
+    );
   };
 
   const handleConfirmCancelSave = () => {

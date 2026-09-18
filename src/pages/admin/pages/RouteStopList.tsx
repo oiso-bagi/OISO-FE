@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import type { DragEvent } from "react";
 
 import { MAX_DAY_NUMBER, TRANSPORT_OPTIONS } from "../constants";
@@ -8,6 +8,10 @@ import * as styles from "../components/ui.css";
 
 interface RouteStopListProps {
   stops: AdminRouteStop[];
+  /** 지도와 함께 강조할 경유지 */
+  selectedPlaceId: string | null;
+  /** 장소 칸을 누르면 호출합니다. 지도에서 그 핀을 강조합니다. */
+  onSelectStop: (placeId: string) => void;
   /** `toIndex` 는 배열 인덱스입니다. 서버 `sequence` 와 다릅니다. */
   onMove: (index: number, toIndex: number) => void;
   onChangeDay: (index: number, dayNumber: number) => void;
@@ -33,6 +37,8 @@ const toNumber = (raw: string) => Math.max(0, Number(raw) || 0);
 
 export function RouteStopList({
   stops,
+  selectedPlaceId,
+  onSelectStop,
   onMove,
   onChangeDay,
   onChangeNext,
@@ -40,6 +46,20 @@ export function RouteStopList({
 }: RouteStopListProps) {
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
   const [dropIndex, setDropIndex] = useState<number | null>(null);
+
+  const sectionRef = useRef<HTMLElement>(null);
+
+  /**
+   * 지도에서 핀을 누르면 목록 밖에 있던 경유지도 보이게 스크롤합니다. 이미
+   * 보이는 행이면 움직이지 않습니다.
+   */
+  useEffect(() => {
+    if (selectedPlaceId === null) return;
+
+    sectionRef.current
+      ?.querySelector(`[data-place-id="${CSS.escape(selectedPlaceId)}"]`)
+      ?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [selectedPlaceId]);
 
   /**
    * 손잡이만 draggable 로 둡니다. 행 전체에 걸면 안쪽 입력칸을 선택하려 할 때
@@ -114,7 +134,7 @@ export function RouteStopList({
   }
 
   return (
-    <section className={styles.panel}>
+    <section ref={sectionRef} className={styles.panel}>
       <h2 className={styles.sectionTitle}>담은 경유지 {stops.length}곳</h2>
 
       <div className={styles.stopHeaderRow}>
@@ -136,6 +156,7 @@ export function RouteStopList({
         const rowClassName = [
           styles.stopRow,
           isLast ? styles.stopRowLast : "",
+          stop.placeId === selectedPlaceId ? styles.stopRowSelected : "",
           draggingIndex === index ? styles.stopRowDragging : "",
           dropIndex === index && draggingIndex !== index
             ? styles.stopRowDropTarget
@@ -152,6 +173,7 @@ export function RouteStopList({
 
             <div
               data-stop-row
+              data-place-id={stop.placeId}
               className={rowClassName}
               onDragOver={handleDragOver(index)}
               onDrop={handleDrop(index)}
@@ -187,12 +209,18 @@ export function RouteStopList({
                 }
               />
 
-              <span className={styles.stopName}>
+              <button
+                type="button"
+                className={`${styles.stopName} ${styles.stopNameButton}`}
+                aria-pressed={stop.placeId === selectedPlaceId}
+                title="지도에서 보기"
+                onClick={() => onSelectStop(stop.placeId)}
+              >
                 <span>{stop.placeName}</span>
                 <span className={`${styles.cellMuted} ${styles.cellEllipsis}`}>
                   {stop.address}
                 </span>
-              </span>
+              </button>
 
               <select
                 className={`${styles.select} ${styles.stopSelect}`}

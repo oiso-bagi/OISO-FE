@@ -27,6 +27,13 @@ export function HomePage() {
   const savedRoutes = data?.savedRoutes;
 
   /**
+   * 다시 불러오기만 실패하면 TanStack Query 는 이전 데이터를 둔 채 오류로
+   * 표시합니다. 그때 오류까지 그리면 금액과 "—", 오류 문구와 카드 목록이
+   * 한꺼번에 보이므로, 보여 줄 데이터가 없을 때만 오류로 봅니다.
+   */
+  const hasError = isError && !data;
+
+  /**
    * 언제 눌러도 빈 설문으로 보냅니다. 새 여행을 처음부터 짜는 입구라,
    * 이전 답이 채워져 있으면 안 됩니다. 조건을 고치는 쪽은 추천 화면이 맡습니다.
    */
@@ -55,7 +62,7 @@ export function HomePage() {
             {isPending && <Skeleton width="220px" height="50px" />}
 
             {/* 못 불러온 걸 0원으로 보여 주면 아래 오류 문구와 어긋납니다. */}
-            {isError && <strong className={styles.savingAmount}>—</strong>}
+            {hasError && <strong className={styles.savingAmount}>—</strong>}
 
             {data && (
               <CountUpAmount
@@ -70,7 +77,7 @@ export function HomePage() {
           {/* 아직 못 받았거나 실패한 걸 0개로 보여 주면 사실과 다릅니다. */}
           <p className={styles.savingCaption}>
             {isPending && "저장한 루트를 불러오는 중이에요"}
-            {isError && "절약 정보를 불러오지 못했어요"}
+            {hasError && "절약 정보를 불러오지 못했어요"}
             {data &&
               `저장한 루트 ${data.savedRouteCount}개 기준 · 오늘도 아꼈습니다`}
           </p>
@@ -130,7 +137,7 @@ export function HomePage() {
             </div>
           )}
 
-          {isError && (
+          {hasError && (
             <p className={styles.statusText}>
               {toErrorMessage(
                 error,

@@ -1,7 +1,8 @@
 import type {
   AdminKtoCollectResponseDto,
+  AdminKtoPlaceCollectResponseDto,
+  AdminKtoPlaceStatusResponseDto,
   AdminKtoStatusResponseDto,
-  AdminSavingsBreakdownResponseDto,
   AdminStatsOverviewResponseDto,
 } from "@/shared/api/generated/types";
 import { http } from "@/shared/api/http";
@@ -9,17 +10,11 @@ import { http } from "@/shared/api/http";
 import type {
   AdminKtoCollectResponse,
   AdminKtoStatus,
-  AdminSavingsBreakdown,
   AdminStatsOverview,
-  SavingsCategoryBreakdown,
-  SavingsMarketBreakdown,
+  KtoSource,
 } from "../types";
 
 const KTO_COOLDOWN_MS = 10 * 60 * 1000;
-const MARKET_CATEGORIES = new Set(["MARKET", "LOCAL"]);
-
-const toRatio = (percentage: number) =>
-  Math.min(1, Math.max(0, percentage / 100));
 
 const toLastCollectedAt = (value: object | null) =>
   typeof value === "string" ? value : null;
@@ -51,39 +46,49 @@ export const getAdminStatsOverview = async (): Promise<AdminStatsOverview> => {
   };
 };
 
-export const getAdminSavingsBreakdown =
-  async (): Promise<AdminSavingsBreakdown> => {
-    const response = await http.get<AdminSavingsBreakdownResponseDto>(
-      "/admin/stats/savings-breakdown",
-    );
+type KtoStatusDto = AdminKtoStatusResponseDto | AdminKtoPlaceStatusResponseDto;
 
-    const byCategory: SavingsCategoryBreakdown[] = [];
-    const byMarketType: SavingsMarketBreakdown[] = [];
+type KtoCollectDto =
+  AdminKtoCollectResponseDto | AdminKtoPlaceCollectResponseDto;
 
-    response.breakdown.forEach((item) => {
-      const breakdown = {
-        label: item.label,
-        amountWon: item.amountWon,
-        ratio: toRatio(item.percentage),
-      };
+/**
+ * 데이터마다 현황·수집 엔드포인트와 적재 건수 필드가 다릅니다.
+ * 화면은 이 차이를 모르도록 여기서 한 번에 맞춥니다.
+ */
+const KTO_ENDPOINTS: Record<
+  KtoSource,
+  {
+    status: string;
+    collect: string;
+    toLoadedCount: (dto: KtoStatusDto) => number;
+  }
+> = {
+  TOUR_API: {
+    status: "/admin/kto/place-status",
+    collect: "/admin/kto/place-collect",
+    toLoadedCount: (dto) =>
+      (dto as AdminKtoPlaceStatusResponseDto).totalPlaceCount,
+  },
+  CONCENTRATION: {
+    status: "/admin/kto/status",
+    collect: "/admin/kto/collect",
+    toLoadedCount: (dto) => (dto as AdminKtoStatusResponseDto).targetPlaceCount,
+  },
+};
 
-      if (MARKET_CATEGORIES.has(item.category)) {
-        byMarketType.push({ ...breakdown, type: item.category });
-        return;
-      }
+/** 생성 타입은 `object | null` 이지만 실제로는 문자열이 옵니다. */
+const toLastMessage = (value: unknown) =>
+  typeof value === "string" && value.trim() ? value : null;
 
-      byCategory.push({ ...breakdown, category: item.category });
-    });
-
-    return { byCategory, byMarketType };
-  };
-
-export const getAdminKtoStatus = async (): Promise<AdminKtoStatus> => {
-  const response =
-    await http.get<AdminKtoStatusResponseDto>("/admin/kto/status");
+export const getAdminKtoStatus = async (
+  source: KtoSource,
+): Promise<AdminKtoStatus> => {
+  const endpoint = KTO_ENDPOINTS[source];
+  const response = await http.get<KtoStatusDto>(endpoint.status);
   const lastCollectedAt = toLastCollectedAt(response.lastCollectedAt);
 
   return {
+    loadedCount: endpoint.toLoadedCount(response),
     dailyLimit: response.dailyQuotaLimit,
     usedCount: response.dailyApiUsage,
     remainingCount: Math.max(
@@ -91,19 +96,26 @@ export const getAdminKtoStatus = async (): Promise<AdminKtoStatus> => {
       response.dailyQuotaLimit - response.dailyApiUsage,
     ),
     lastCollectedAt,
-    lastCollectStatus: lastCollectedAt ? "SUCCESS" : null,
+    lastCollectResult: response.lastResult,
+    lastMessage: toLastMessage(response.lastMessage),
     isCollecting: response.status === "RUNNING",
     cooldownUntil: toCooldownUntil(lastCollectedAt),
   };
 };
 
-export const postAdminKtoCollect =
-  async (): Promise<AdminKtoCollectResponse> => {
-    const response =
-      await http.post<AdminKtoCollectResponseDto>("/admin/kto/collect");
+/**
+ * 즉시 수집. 쿨타임(10분) 안에 다시 부르면 서버가 429 로 막습니다.
+ */
+export const postAdminKtoCollect = async (
+  source: KtoSource,
+): Promise<AdminKtoCollectResponse> => {
+  const response = await http.post<KtoCollectDto>(
+    KTO_ENDPOINTS[source].collect,
+  );
 
-    return {
-      accepted: response.failureCount === 0,
-      cooldownUntil: toCooldownUntil(response.collectedAt),
-    };
+  return {
+    updatedCount: response.updatedPlaceCount,
+    failureCount: response.failureCount,
+    cooldownUntil: toCooldownUntil(response.collectedAt),
   };
+};
