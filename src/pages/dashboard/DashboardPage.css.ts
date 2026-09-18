@@ -157,6 +157,11 @@ export const historyCard = style({
   padding: `${vars.space.md} ${vars.space.sm}`,
 });
 
+export const historyStatusCard = style([
+  statusCard,
+  { marginTop: vars.space.sm },
+]);
+
 export const historyItem = style({
   display: "flex",
   alignItems: "center",
@@ -218,3 +223,78 @@ export const historyAmount = style([
     whiteSpace: "nowrap",
   },
 ]);
+
+export const historyLoadMore = style([
+  typographyStyles.body9,
+  {
+    minHeight: "48px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: vars.color.neutral500,
+    textAlign: "center",
+  },
+]);
+
+export const historyLoadMoreError = style({
+  display: "flex",
+  alignItems: "center",
+  gap: vars.space.xs,
+});
+
+export const historyLoadMoreRetryButton = style([
+  typographyStyles.body8,
+  {
+    padding: `${vars.space.xxs} ${vars.space.xs}`,
+    border: `2px solid ${vars.color.black}`,
+    backgroundColor: vars.color.white,
+    color: vars.color.black,
+    cursor: "pointer",
+  },
+]);
+
+export const scrollToTopButton = style({
+  position: "fixed",
+  right: "max(16px, calc((100vw - 430px) / 2 + 16px))",
+  bottom: "calc(88px + env(safe-area-inset-bottom, 0px))",
+  zIndex: 90,
+
+  width: "48px",
+  height: "48px",
+  padding: 0,
+
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+
+  border: `2.5px solid ${vars.color.black}`,
+  borderRadius: vars.radius.full,
+  boxShadow: `3px 3px 0 ${vars.color.black}`,
+  backgroundColor: vars.color.primary500,
+  color: vars.color.black,
+  cursor: "pointer",
+
+  selectors: {
+    "&:hover": {
+      backgroundColor: vars.color.primary400,
+    },
+    "&:focus-visible": {
+      outline: `3px solid ${vars.color.secondary500}`,
+      outlineOffset: "3px",
+    },
+    "&:active": {
+      transform: "translate(2px, 2px)",
+      boxShadow: `1px 1px 0 ${vars.color.black}`,
+    },
+  },
+});
+
+export const scrollToTopIcon = style({
+  width: "24px",
+  height: "24px",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 2.5,
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+});

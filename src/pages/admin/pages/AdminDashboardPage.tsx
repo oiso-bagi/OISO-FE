@@ -48,7 +48,7 @@ export function AdminDashboardPage() {
           isPending={isPending}
         />
         <StatCard
-          label="로컬 기여 지수 평균"
+          label="관광지 대비 원도심 절약액 평균"
           value={stats ? stats.averageLocalContributionScore.toFixed(1) : "—"}
           unit="%"
           isPending={isPending}

@@ -14,11 +14,11 @@ export function LocalContributionCard({
 
   return (
     <Card className={styles.contributionCard}>
-      <h2 className={styles.contributionTitle}>로컬 기여 지수</h2>
+      <h2 className={styles.contributionTitle}>관광지 대비 원도심 절약액</h2>
       <div
         className={styles.progressTrack}
         role="progressbar"
-        aria-label="로컬 기여 지수"
+        aria-label="관광지 대비 원도심 절약액"
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={score}

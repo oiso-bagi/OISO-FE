@@ -3,11 +3,9 @@
  *
  * 설문 화면과 추천 화면이 라우트로 분리되어 있어 상태를 직접 넘길 수 없고,
  * 새로고침 후에도 같은 추천 결과를 보여줘야 하므로 localStorage 를 씁니다.
- * `onboardingFlow` 와 같은 방식입니다.
- *
  * - 설문 화면: 완료 시 `saveRecommendationConditions` 로 저장
- * - 추천 화면: `readRecommendationConditions` 로 읽어 조건 기반 추천을 요청하고,
- *   값이 없으면 전체 추천 목록을 보여줍니다.
+ * - 추천 화면: `readRecommendationConditions` 로 읽어 조건 기반 추천을 요청합니다.
+ * - 저장된 조건 없이 추천 화면에 접근하면 레이아웃에서 설문으로 보냅니다.
  */
 
 const storageKey = "oiso:recommendation-conditions";

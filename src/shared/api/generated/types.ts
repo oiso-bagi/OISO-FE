@@ -1550,7 +1550,7 @@ export interface AdminStatsOverviewResponseDto {
    */
   totalSavingsCostWon: number;
   /**
-   * 누적 로컬 기여 지수 평균 (0~100점)
+   * 누적 관광지 대비 원도심 절약액 평균 (0~100점)
    * @example 78.4
    */
   averageLocalContributionScore: number;

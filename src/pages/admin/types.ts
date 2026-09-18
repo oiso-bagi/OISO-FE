@@ -141,7 +141,7 @@ export interface AdminStatsOverview {
   totalUserCount: number;
   totalSavedRouteCount: number;
   totalSavingsWon: number;
-  /** 로컬 기여 지수 평균 (%) */
+  /** 관광지 대비 원도심 절약액 평균 (%) */
   averageLocalContributionScore: number;
 }
 

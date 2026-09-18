@@ -7,17 +7,22 @@ import { pageContent } from "@/shared/styles/layout.css";
 import { DashboardStatusCard } from "./components/DashboardStatusCard";
 import { DashboardSummaryCard } from "./components/DashboardSummaryCard";
 import { LocalContributionCard } from "./components/LocalContributionCard";
+import { ScrollToTopButton } from "./components/ScrollToTopButton";
 import { SavingsCategorySection } from "./components/SavingsCategorySection";
 import { SavingsHistorySection } from "./components/SavingsHistorySection";
 import { useCurrentUser } from "./hooks/useCurrentUser";
 import { useLogout } from "./hooks/useLogout";
-import { useSavingsDashboard } from "./hooks/useSavingsDashboard";
+import {
+  useSavingsDashboard,
+  useSavingsHistories,
+} from "./hooks/useSavingsDashboard";
 import * as styles from "./DashboardPage.css";
 
 export function DashboardPage() {
   const showToast = useToast();
   const currentUserQuery = useCurrentUser();
   const savingsDashboardQuery = useSavingsDashboard();
+  const savingsHistoriesQuery = useSavingsHistories();
   const logoutMutation = useLogout();
 
   useEffect(() => {
@@ -40,6 +45,8 @@ export function DashboardPage() {
     ? `${currentUserQuery.data.nickname}님의 절약 기록`
     : "여행자님의 절약 기록";
   const dashboard = savingsDashboardQuery.data;
+  const histories =
+    savingsHistoriesQuery.data?.pages.flatMap((page) => page.items) ?? [];
 
   return (
     <main className={styles.page}>
@@ -68,10 +75,28 @@ export function DashboardPage() {
             />
             <SavingsCategorySection categories={dashboard.savingsByCategory} />
             <LocalContributionCard contribution={dashboard.localContribution} />
-            <SavingsHistorySection histories={dashboard.histories} />
           </>
         )}
+
+        <SavingsHistorySection
+          histories={histories}
+          isPending={savingsHistoriesQuery.isPending}
+          isInitialError={
+            savingsHistoriesQuery.isError && !savingsHistoriesQuery.data
+          }
+          isFetchingNextPage={savingsHistoriesQuery.isFetchingNextPage}
+          isNextPageError={savingsHistoriesQuery.isFetchNextPageError}
+          hasNextPage={savingsHistoriesQuery.hasNextPage}
+          onLoadMore={() => {
+            void savingsHistoriesQuery.fetchNextPage();
+          }}
+          onRetry={() => {
+            void savingsHistoriesQuery.refetch();
+          }}
+        />
       </div>
+
+      <ScrollToTopButton />
     </main>
   );
 }

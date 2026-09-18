@@ -4,10 +4,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/shared/components/Toast/toastContext";
 import { trackEvent } from "@/shared/lib/analytics";
 import {
-  completeSurvey,
-  isSurveyCompleted as hasCompletedSurvey,
-} from "@/shared/lib/onboardingFlow";
-import {
   readRecommendationConditions,
   saveRecommendationConditions,
 } from "@/shared/lib/recommendationConditions";
@@ -47,10 +43,13 @@ export function SurveyPage() {
   );
 
   /**
-   * 설문을 한 번도 마치지 않은 사용자는 가드 때문에 다른 화면으로 갈 수
-   * 없습니다. 첫 단계에서 돌아가기를 막습니다.
+   * 설문 조건이 없는(처음 설문하는) 사용자는 첫 단계에서 돌아가기를 막습니다.
+   * 로그인 직후라 뒤로 가면 인증 페이지로 나가거나, 조건 없이는 추천을 받을
+   * 수 없습니다.
    */
-  const [canLeaveSurvey] = useState(() => isEditMode || hasCompletedSurvey());
+  const [canLeaveSurvey] = useState(
+    () => isEditMode || readRecommendationConditions() !== null,
+  );
   const canGoBack = !isFirstStep || canLeaveSurvey;
 
   const surveyForm = useSurveyForm({
@@ -153,9 +152,8 @@ export function SurveyPage() {
         travelStyleLabels,
         budgetAllocationPercents,
       });
-      const isSurveyCompleted = areConditionsSaved && completeSurvey();
 
-      if (!isSurveyCompleted || !areConditionsSaved) {
+      if (!areConditionsSaved) {
         showToast({
           message: "설문 완료 상태를 저장하지 못했어요. 다시 시도해 주세요.",
         });
