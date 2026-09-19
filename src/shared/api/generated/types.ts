@@ -1001,10 +1001,10 @@ export interface SavingsCategoryDto {
    */
   label: string;
   /**
-   * 카테고리별 절약 금액(원)
-   * @example 12000
+   * 관광지 대비 절약률(%)
+   * @example 35
    */
-  amountWon: number;
+  savingRatePercent: number;
 }
 
 export interface LocalContributionDto {
@@ -1065,7 +1065,7 @@ export interface SavingsDashboardResponseDto {
    * @example 16000
    */
   averageSavingsWon: number;
-  /** 카테고리별 절약 금액 목록 */
+  /** 카테고리별 절약률(%) 목록 */
   savingsByCategory: SavingsCategoryDto[];
   /** 지역 기여 정보 */
   localContribution: LocalContributionDto;
@@ -1550,7 +1550,7 @@ export interface AdminStatsOverviewResponseDto {
    */
   totalSavingsCostWon: number;
   /**
-   * 누적 관광지 대비 원도심 절약액 평균 (0~100점)
+   * 누적 로컬 기여 지수 평균 (0~100점)
    * @example 78.4
    */
   averageLocalContributionScore: number;
