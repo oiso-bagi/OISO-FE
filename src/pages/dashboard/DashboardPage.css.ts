@@ -78,17 +78,22 @@ export const sectionDescription = style([
   },
 ]);
 
+/** 세 항목을 카드 한 장에 나란히 담습니다. */
 export const categoryGrid = style({
   marginTop: vars.space.sm,
+  paddingBlock: vars.space.sm,
+
   display: "grid",
   gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-  gap: vars.space.xs,
+
+  border: `2.5px solid ${vars.color.black}`,
+  boxShadow: `4px 4px 0 ${vars.color.black}`,
+  backgroundColor: vars.color.white,
 });
 
 export const categoryCard = style({
   minWidth: 0,
-  minHeight: "128px",
-  padding: vars.space.sm,
+  paddingInline: vars.space.xs,
 
   display: "flex",
   flexDirection: "column",
@@ -96,15 +101,26 @@ export const categoryCard = style({
   justifyContent: "space-between",
   gap: vars.space.xs,
 
-  border: `2.5px solid ${vars.color.black}`,
-  boxShadow: `4px 4px 0 ${vars.color.black}`,
-  backgroundColor: vars.color.white,
+  selectors: {
+    /**
+     * 홈의 저장한 루트 목록처럼 항목 사이를 점선으로 나눕니다.
+     *
+     * `border-left: dashed` 는 iOS Safari 가 맨 위 점 하나만 그리고 말아,
+     * 왼쪽 가장자리에 배경으로 점선을 직접 그립니다(선 7.2px, 틈 4.8px).
+     */
+    "& + &": {
+      backgroundImage: `linear-gradient(${vars.color.black} 60%, transparent 60%)`,
+      backgroundPosition: "left top",
+      backgroundSize: "2.5px 12px",
+      backgroundRepeat: "repeat-y",
+    },
+  },
 });
 
 export const categoryLabel = style([
-  typographyStyles.body7,
+  typographyStyles.body4,
   {
-    color: vars.color.neutral500,
+    color: vars.color.black,
     textAlign: "center",
   },
 ]);
@@ -135,14 +151,15 @@ export const categoryRateProgress = style({
   fill: "none",
   stroke: vars.color.secondary500,
   strokeWidth: 10,
-  strokeLinecap: "round",
+  // 서비스의 각진 모서리에 맞춰 끝을 둥글리지 않습니다.
+  strokeLinecap: "butt",
   transform: "rotate(-90deg)",
   transformOrigin: "center",
   transition: "stroke-dasharray 240ms ease",
 });
 
 export const categoryPercent = style([
-  typographyStyles.largeBody2,
+  typographyStyles.largeBody3,
   {
     position: "absolute",
     inset: 0,
