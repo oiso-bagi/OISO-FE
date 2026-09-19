@@ -57,26 +57,49 @@ export function useMapResize(
    *
    * 지도 상세 화면처럼 목록이 페이지와 함께 흐르는 경우에는 부모가 내용만큼
    * 커져 화면 비율 쪽이 걸립니다.
+   *
+   * 지도 상세는 지도를 손잡이와 함께 한 겹 감싸 상단에 붙여 둡니다. 그래서
+   * 지도의 부모가 아니라 목록의 부모를 기준으로 잽니다.
    */
   const maxHeight = useCallback(() => {
     const ratioLimit = Math.round(window.innerHeight * MAX_RATIO);
 
     const mapElement = mapRef.current;
     const listElement = listRef.current;
-    const parent = mapElement?.parentElement;
+    const parent = listElement?.parentElement;
     if (!mapElement || !listElement || !parent) return ratioLimit;
 
-    // 헤더·일차 탭·손잡이처럼 지도가 커져도 줄지 않는 형제들.
+    const mapHeight = mapElement.getBoundingClientRect().height;
+
+    // 헤더·일차 탭·손잡이처럼 지도가 커져도 줄지 않는 영역.
     const fixedHeight = Array.from(parent.children)
-      .filter((child) => child !== mapElement && child !== listElement)
-      .reduce(
-        (total, child) => total + child.getBoundingClientRect().height,
-        0,
-      );
+      .filter((child) => child !== listElement)
+      .reduce((total, child) => {
+        const height = child.getBoundingClientRect().height;
+
+        // 지도를 감싼 요소는 지도를 뺀 나머지(손잡이)만 셉니다.
+        return (
+          total + (child.contains(mapElement) ? height - mapHeight : height)
+        );
+      }, 0);
 
     const available = parent.clientHeight - fixedHeight - MIN_LIST_HEIGHT;
 
-    return Math.max(MIN_HEIGHT, Math.min(ratioLimit, available));
+    /**
+     * 화면이 CSS 로 최대 높이를 걸어 뒀으면(지도 상세) 그보다 키우지 않습니다.
+     * 넘기면 상태 값만 커지고 화면은 그대로라, 방향키로 줄일 때 몇 번은
+     * 반응이 없습니다.
+     */
+    const cssLimit = Number.parseFloat(getComputedStyle(mapElement).maxHeight);
+
+    return Math.max(
+      MIN_HEIGHT,
+      Math.min(
+        ratioLimit,
+        available,
+        Number.isNaN(cssLimit) ? Number.POSITIVE_INFINITY : cssLimit,
+      ),
+    );
   }, [listRef, mapRef]);
 
   const clampSize = useCallback(

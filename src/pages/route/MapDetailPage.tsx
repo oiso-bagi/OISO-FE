@@ -11,6 +11,7 @@ import { Skeleton } from "@/shared/components/Skeleton/Skeleton";
 import { useToast } from "@/shared/components/Toast/toastContext";
 import { toErrorMessage } from "@/shared/api/apiError";
 import { trackEvent } from "@/shared/lib/analytics";
+import { BOTTOM_NAV_TOTAL_HEIGHT } from "@/shared/styles/bottomNavigationSize";
 
 import { RouteMap } from "./components/RouteMap";
 import { RouteStopList } from "./components/RouteStopList";
@@ -24,6 +25,9 @@ import { useUpdateSavedRouteCompleted } from "./hooks/useSavedRoutes";
 import type { SelectedDay } from "./types/day";
 
 import * as styles from "./MapDetailPage.css";
+
+/** 목록에서 고른 경유지를 지도·하단 네비에 딱 붙이지 않고 띄우는 간격 */
+const SELECTED_STOP_GAP_PX = 8;
 
 /**
  * 코스 하나를 지도로 크게 보는 풀스크린 읽기전용 페이지.
@@ -118,6 +122,7 @@ export function MapDetailPage() {
   >(null);
 
   // 지도/목록 비율은 사용자가 손잡이로 조절합니다.
+  const mapPanelRef = useRef<HTMLDivElement>(null);
   const mapAreaRef = useRef<HTMLDivElement>(null);
   const listAreaRef = useRef<HTMLDivElement>(null);
   const { mapStyle, resizeProps } = useMapResize(mapAreaRef, listAreaRef);
@@ -135,17 +140,28 @@ export function MapDetailPage() {
   };
 
   /**
-   * 이 페이지는 지도와 목록이 함께 스크롤돼, 목록 아래쪽 경유지를 누르면 정보가
-   * 뜬 지도가 화면 밖에 있습니다. 지도가 가려져 있을 때만 끌어올립니다.
+   * 고른 경유지를 목록에서도 보이게 합니다. 지도 핀으로 고르면 그 경유지가
+   * 목록 아래쪽 화면 밖에 있을 수 있습니다.
+   *
+   * 지도는 상단 바 아래에 붙어 있고 하단 네비는 화면 아래에 떠 있어, 목록은
+   * 그 사이에서만 보입니다. 두 높이를 여백으로 주고 옮깁니다. 이미 보이면
+   * 움직이지 않습니다.
    */
-  const handleSelectStopFromList = (sequence: number) => {
-    handleSelectStop(sequence);
+  useEffect(() => {
+    if (selectedStopSequence === null) return;
 
-    mapAreaRef.current?.scrollIntoView({
-      block: "nearest",
-      behavior: "smooth",
-    });
-  };
+    const mapPanel = mapPanelRef.current;
+    const selectedStop = listAreaRef.current?.querySelector<HTMLElement>(
+      '[data-selected="true"]',
+    );
+    if (!mapPanel || !selectedStop) return;
+
+    const stickyTop = Number.parseFloat(getComputedStyle(mapPanel).top) || 0;
+
+    selectedStop.style.scrollMarginTop = `${stickyTop + mapPanel.offsetHeight + SELECTED_STOP_GAP_PX}px`;
+    selectedStop.style.scrollMarginBottom = `calc(${BOTTOM_NAV_TOTAL_HEIGHT} + ${SELECTED_STOP_GAP_PX}px)`;
+    selectedStop.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [selectedStopSequence]);
 
   // 일차를 바꾸면 보던 장소가 지도에서 사라질 수 있어 정보를 닫습니다.
   const handleSelectDay = (day: SelectedDay) => {
@@ -207,21 +223,23 @@ export function MapDetailPage() {
         />
       )}
 
-      <div
-        id="map-detail-map-area"
-        ref={mapAreaRef}
-        className={styles.mapArea}
-        style={mapStyle}
-      >
-        <RouteMap
-          stops={route?.stops ?? []}
-          selectedDay={selectedDay === "all" ? undefined : selectedDay}
-          selectedStopSequence={selectedStopSequence}
-          onSelectStop={handleSelectStop}
-        />
-      </div>
+      <div ref={mapPanelRef} className={styles.mapPanel}>
+        <div
+          id="map-detail-map-area"
+          ref={mapAreaRef}
+          className={styles.mapArea}
+          style={mapStyle}
+        >
+          <RouteMap
+            stops={route?.stops ?? []}
+            selectedDay={selectedDay === "all" ? undefined : selectedDay}
+            selectedStopSequence={selectedStopSequence}
+            onSelectStop={handleSelectStop}
+          />
+        </div>
 
-      <MapResizeHandle controlsId="map-detail-map-area" {...resizeProps} />
+        <MapResizeHandle controlsId="map-detail-map-area" {...resizeProps} />
+      </div>
 
       <div ref={listAreaRef} className={styles.listArea}>
         {!isInvalid && isPending && (
@@ -248,7 +266,7 @@ export function MapDetailPage() {
           <RouteStopList
             stops={visibleStops}
             selectedStopSequence={selectedStopSequence}
-            onSelectStop={handleSelectStopFromList}
+            onSelectStop={handleSelectStop}
           />
         )}
       </div>
