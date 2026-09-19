@@ -1,6 +1,10 @@
 import { http } from "@/shared/api/http";
-import type { RecommendationConditions } from "@/shared/lib/recommendationConditions";
+import {
+  isValidBudgetAllocation,
+  type RecommendationConditions,
+} from "@/shared/lib/recommendationConditions";
 import type {
+  BudgetRatiosDto,
   RecommendRouteRequestDto,
   RecommendedRouteDetailResponseDto,
   RecommendedRouteListResponseDto,
@@ -27,8 +31,8 @@ type RecommendRouteRequest = Omit<
  *
  * 설문 조건이 없을 때 이 API 로 폴백하던 시절이 있었는데, 일수·예산과
  * 무관한 마스터 코스가 통째로(100여 개) 내려와 추천 화면이 top 3 대신
- * 전부를 그리는 문제가 있었습니다. 지금은 조건이 없으면 `AppLayout` 가드가
- * 설문으로 되돌리므로 폴백 자체가 필요 없습니다.
+ * 전부를 그리는 문제가 있었습니다. 지금은 조건이 없으면 추천 화면이 설문
+ * 안내를 그리므로 폴백 자체가 필요 없습니다.
  *
  * 관리자 화면이나 전체 목록이 필요한 기능이 생기면 그때 되살립니다.
  */
@@ -41,8 +45,27 @@ type RecommendRouteRequest = Omit<
 // };
 
 /**
+ * 설문에서 조절한 배분(%)을 서버가 받는 비율(0~1)로 바꿉니다.
+ *
+ * 서버는 세 비율의 합이 1.0 이 아니면 400 을 줍니다. 항목이 빠졌거나 합이
+ * 100% 가 아니면 보내지 않고 서버 기본 배분에 맡깁니다.
+ */
+const toBudgetRatios = (
+  percents: RecommendationConditions["budgetAllocationPercents"],
+): BudgetRatiosDto | undefined => {
+  if (!isValidBudgetAllocation(percents)) return undefined;
+
+  const { transport, food, activity } = percents;
+
+  return {
+    transportRatio: transport / 100,
+    foodRatio: food / 100,
+    experienceRatio: activity / 100,
+  };
+};
+
+/**
  * 설문 조건에 맞춘 추천 목록. 응답 형태는 전체 목록과 동일합니다.
- * `ratios` 는 선택값이라 보내지 않고 서버 기본 배분을 씁니다.
  */
 export const postRecommendedRoutes = async (
   conditions: RecommendationConditions,
@@ -51,6 +74,7 @@ export const postRecommendedRoutes = async (
     travelStyleSlugs: conditions.travelStyleSlugs,
     durationDays: conditions.durationDays,
     dailyBudgetWon: conditions.dailyBudgetWon,
+    ratios: toBudgetRatios(conditions.budgetAllocationPercents),
   };
 
   const routes = await http.post<RecommendedRouteListResponseDto[]>(

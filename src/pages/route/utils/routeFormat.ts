@@ -2,6 +2,7 @@ import type {
   RouteBoxProps,
   RouteSummaryItem,
 } from "@/shared/components/RouteBox";
+import { toSeoulDateParts } from "@/shared/lib/seoulDate";
 
 import type {
   CongestionLevel,
@@ -68,15 +69,16 @@ interface RouteSummarySource {
 }
 
 /**
- * 저장일 짧은 표기. "2026-05-18" → "26.05.18"
+ * 저장일 짧은 표기. "2026-05-18T03:00:00.000Z" → "26.05.18"
  *
- * 서버는 "2026-08-01T00:00:00.000Z" 형태의 ISO datetime 을 내려주므로
- * 시각 부분을 먼저 떼어냅니다.
+ * 서버는 UTC ISO datetime 을 내려주므로 한국 날짜로 바꿔 표기합니다.
  */
 const formatSavedDateShort = (isoDate: string): string => {
-  const [year, month, day] = isoDate.split("T")[0].split("-");
+  const parts = toSeoulDateParts(isoDate);
 
-  return `${year.slice(2)}.${month}.${day}`;
+  if (!parts) return "-";
+
+  return `${parts.year.slice(2)}.${parts.month}.${parts.day}`;
 };
 
 /**

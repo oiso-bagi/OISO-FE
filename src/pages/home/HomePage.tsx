@@ -1,5 +1,6 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
+import { useAdminAccess } from "@/pages/admin/lib/useAdminAccess";
 import { CountUpAmount } from "@/shared/components/CountUpAmount/CountUpAmount";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { Skeleton } from "@/shared/components/Skeleton/Skeleton";
@@ -24,7 +25,17 @@ export function HomePage() {
 
   const { data, isPending, isError, error } = useHomeSummary();
 
+  // 관리자 화면이 들여보내는 기준과 같게 판단해, 눌렀는데 막히는 일이 없게 합니다.
+  const isAdmin = useAdminAccess() === "allowed";
+
   const savedRoutes = data?.savedRoutes;
+
+  /**
+   * 다시 불러오기만 실패하면 TanStack Query 는 이전 데이터를 둔 채 오류로
+   * 표시합니다. 그때 오류까지 그리면 금액과 "—", 오류 문구와 카드 목록이
+   * 한꺼번에 보이므로, 보여 줄 데이터가 없을 때만 오류로 봅니다.
+   */
+  const hasError = isError && !data;
 
   /**
    * 언제 눌러도 빈 설문으로 보냅니다. 새 여행을 처음부터 짜는 입구라,
@@ -38,7 +49,19 @@ export function HomePage() {
     <div className={styles.container}>
       <header className={styles.banner}>
         <span className={styles.bannerTitle}>오이소 알뜰 대잔치</span>
-        <img className={styles.bannerLogo} src="/oiso_logo.svg" alt="오이소" />
+
+        <div className={styles.bannerEnd}>
+          {isAdmin && (
+            <Link to="/admin" className={styles.adminLink}>
+              관리자 페이지로 이동
+            </Link>
+          )}
+          <img
+            className={styles.bannerLogo}
+            src="/oiso_logo.svg"
+            alt="오이소"
+          />
+        </div>
       </header>
 
       <div className={styles.content}>
@@ -55,7 +78,7 @@ export function HomePage() {
             {isPending && <Skeleton width="220px" height="50px" />}
 
             {/* 못 불러온 걸 0원으로 보여 주면 아래 오류 문구와 어긋납니다. */}
-            {isError && <strong className={styles.savingAmount}>—</strong>}
+            {hasError && <strong className={styles.savingAmount}>—</strong>}
 
             {data && (
               <CountUpAmount
@@ -70,7 +93,7 @@ export function HomePage() {
           {/* 아직 못 받았거나 실패한 걸 0개로 보여 주면 사실과 다릅니다. */}
           <p className={styles.savingCaption}>
             {isPending && "저장한 루트를 불러오는 중이에요"}
-            {isError && "절약 정보를 불러오지 못했어요"}
+            {hasError && "절약 정보를 불러오지 못했어요"}
             {data &&
               `저장한 루트 ${data.savedRouteCount}개 기준 · 오늘도 아꼈습니다`}
           </p>
@@ -130,7 +153,7 @@ export function HomePage() {
             </div>
           )}
 
-          {isError && (
+          {hasError && (
             <p className={styles.statusText}>
               {toErrorMessage(
                 error,

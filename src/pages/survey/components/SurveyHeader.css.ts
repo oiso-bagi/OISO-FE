@@ -19,6 +19,11 @@ export const backButton = style({
   placeItems: "center",
 });
 
+/** 돌아갈 곳이 없을 때. 자리는 남겨 "다시하기" 버튼 위치가 흔들리지 않게 합니다. */
+export const backButtonHidden = style({
+  visibility: "hidden",
+});
+
 export const backIcon = style({
   width: "1.5rem",
   height: "1.5rem",

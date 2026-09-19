@@ -27,6 +27,7 @@ export function useSurveyForm({
     budgetAllocationOptions: recommendationOptions?.budgetAllocations,
     initialTripDays: savedConditions?.durationDays,
     initialDailyBudgetWon: savedConditions?.dailyBudgetWon,
+    initialAllocationPercents: savedConditions?.budgetAllocationPercents,
   });
 
   const reset = () => {

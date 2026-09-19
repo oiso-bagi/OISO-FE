@@ -105,6 +105,9 @@ export interface AdminRouteStop {
   /** 수정 화면에서 장소를 다시 조회하지 않도록 서버가 함께 내려줍니다. */
   placeName: string;
   address: string;
+  /** 코스 미리보기 지도에 찍습니다. 서버에는 보내지 않습니다. */
+  latitude: number;
+  longitude: number;
   /** 서버 기본값은 60분이며, 현재 화면에서는 별도로 편집하지 않습니다. */
   stayTimeMinutes?: number;
   /** 다음 경유지까지의 정보. 마지막 경유지는 모두 null 입니다. */
@@ -142,36 +145,35 @@ export interface AdminStatsOverview {
   averageLocalContributionScore: number;
 }
 
-export interface SavingsCategoryBreakdown {
-  category: string;
-  label: string;
-  amountWon: number;
-  /** 서버의 percentage(0~100)를 API 경계에서 0~1로 변환합니다. */
-  ratio: number;
-}
-
-export interface SavingsMarketBreakdown {
-  type: string;
-  label: string;
-  amountWon: number;
-  ratio: number;
-}
-
-export interface AdminSavingsBreakdown {
-  byCategory: SavingsCategoryBreakdown[];
-  byMarketType: SavingsMarketBreakdown[];
-}
-
 /* ── KTO 공공데이터 배치 ────────────────────────────────── */
 
-export type KtoCollectStatus = "SUCCESS" | "FAILED";
+/**
+ * 적재·수집 현황을 보여 주는 KTO 공공데이터.
+ *
+ * 공공데이터 신청서에 "자동 배치 + 관리자 수동 즉시 수집 병행"으로 적혀 있어,
+ * API 마다 현황과 즉시 수집을 따로 둡니다.
+ *
+ * 연관 관광지(TarRlteTarService1)는 공공데이터 쪽 실데이터가 제공되지 않고
+ * 추천 로직에서도 쓰지 않게 되어 서비스에서 뺐습니다.
+ */
+export type KtoSource =
+  /** 국문 관광정보 (장소 마스터) */
+  | "TOUR_API"
+  /** 관광지 집중률 (혼잡도) */
+  | "CONCENTRATION";
+
+export type KtoCollectResult = "SUCCESS" | "PARTIAL_SUCCESS" | "FAILURE";
 
 export interface AdminKtoStatus {
+  /** 적재된 장소 수. API 마다 세는 대상이 다릅니다. */
+  loadedCount: number;
   dailyLimit: number;
   usedCount: number;
   remainingCount: number;
   lastCollectedAt: string | null;
-  lastCollectStatus: KtoCollectStatus | null;
+  lastCollectResult: KtoCollectResult | null;
+  /** 마지막 수집 결과 안내. 실패·부분 성공 사유가 담깁니다. */
+  lastMessage: string | null;
   /** 현재 수집 진행 중 여부 */
   isCollecting: boolean;
   /** 쿨타임 종료 시각. 쿨타임이 없으면 null */
@@ -179,6 +181,8 @@ export interface AdminKtoStatus {
 }
 
 export interface AdminKtoCollectResponse {
-  accepted: boolean;
+  /** 이번 수집으로 갱신된 건수 */
+  updatedCount: number;
+  failureCount: number;
   cooldownUntil: string | null;
 }

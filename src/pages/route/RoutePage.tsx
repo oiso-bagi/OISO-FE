@@ -78,8 +78,8 @@ export function RoutePage() {
   const { mapStyle, resizeProps } = useMapResize(mapAreaRef, listAreaRef);
 
   /**
-   * 어떤 조건으로 찾은 결과인지 화면에 남깁니다. 설문을 마쳐야 이 화면에
-   * 닿으므로 보통 값이 있지만, 저장이 막힌 환경을 대비해 없을 수 있게 둡니다.
+   * 어떤 조건으로 찾은 결과인지 화면에 남깁니다. 설문을 마치기 전이거나 새
+   * 기기라 없을 수 있어, 없으면 추천 대신 설문 안내를 그립니다.
    */
   const conditions = readRecommendationConditions();
 
@@ -225,14 +225,23 @@ export function RoutePage() {
     cancelSave(routeId);
   };
 
+  /**
+   * `mutate` 의 호출별 콜백은 요청 중 화면을 벗어나면 실행되지 않아, 저장하고
+   * 바로 다른 탭으로 가면 `route_save` 이벤트와 결과 토스트가 빠집니다.
+   * 컴포넌트 수명과 무관한 `mutateAsync` 로 처리합니다.
+   *
+   * 성공·실패 처리는 `then` 의 두 인자로 나눕니다. `.catch` 로 받으면 성공
+   * 뒤 이벤트 전송이나 토스트에서 난 오류까지 요청 실패로 보고, 서버에는
+   * 저장됐는데 화면을 되돌리고 실패 토스트를 띄웁니다.
+   */
   const saveRoute = (routeId: string) => {
     setSaveOverride(routeId, true);
 
-    createSavedRoute.mutate(routeId, {
-      // 저장하고 나면 할 일이 없어 흐름이 끊깁니다. 토스트에서 바로 넘어갑니다.
-      onSuccess: () => {
+    createSavedRoute.mutateAsync(routeId).then(
+      () => {
         trackEvent("route_save", { route_id: routeId });
 
+        // 저장하고 나면 할 일이 없어 흐름이 끊깁니다. 토스트에서 바로 넘어갑니다.
         showToast({
           message: "저장되었습니다",
           duration: SAVE_TOAST_DURATION_MS,
@@ -240,7 +249,7 @@ export function RoutePage() {
           onAction: () => navigate("/saved"),
         });
       },
-      onError: (saveError) => {
+      (saveError: unknown) => {
         // 실패했으면 다시 누를 수 있도록 되돌립니다.
         setSaveOverride(routeId, null);
 
@@ -251,20 +260,20 @@ export function RoutePage() {
           ),
         });
       },
-    });
+    );
   };
 
   const cancelSave = (routeId: string) => {
     setSaveOverride(routeId, false);
 
-    deleteSavedRoute.mutate(routeId, {
-      onSuccess: () => {
+    deleteSavedRoute.mutateAsync(routeId).then(
+      () => {
         showToast({
           message: "저장이 취소되었습니다",
           duration: SAVE_TOAST_DURATION_MS,
         });
       },
-      onError: (cancelError) => {
+      (cancelError: unknown) => {
         setSaveOverride(routeId, null);
 
         showToast({
@@ -274,7 +283,7 @@ export function RoutePage() {
           ),
         });
       },
-    });
+    );
   };
 
   const handleConfirmCancelSave = () => {
@@ -284,6 +293,31 @@ export function RoutePage() {
 
     setCancelSaveTargetId(null);
   };
+
+  /**
+   * 조건이 없으면 추천을 만들 수 없어 설문으로 안내합니다. 설문으로 바로
+   * 보내지 않는 이유는 설문에 하단 네비가 없어, 탭만 눌렀던 사용자가 다른
+   * 화면으로 돌아갈 길을 잃기 때문입니다.
+   */
+  if (!conditions) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.headerArea}>
+          <Header backTo="/" title="추천 루트" />
+        </div>
+
+        <div className={styles.listArea}>
+          <EmptyState
+            className={styles.noConditionsState}
+            title="아직 고른 조건이 없습니다!!"
+            description="설문에 답하면 조건에 맞는 코스를 추천해 드려요."
+            actionLabel="코스 짜러 가기"
+            actionTo="/survey"
+          />
+        </div>
+      </div>
+    );
+  }
 
   // 펼쳐진 코스의 경유지를 상단 지도에 표시 (없으면 부산 기본 지도)
   const mapStops =
@@ -308,15 +342,13 @@ export function RoutePage() {
         <Header backTo="/" title="추천 루트" />
       </div>
 
-      {conditions && (
-        <ConditionSummary
-          durationDays={conditions.durationDays}
-          dailyBudgetWon={conditions.dailyBudgetWon}
-          travelStyleNames={travelStyleNames}
-          // 여기서 들어온 설문만 이전 답을 채웁니다.
-          editTo="/survey?mode=edit"
-        />
-      )}
+      <ConditionSummary
+        durationDays={conditions.durationDays}
+        dailyBudgetWon={conditions.dailyBudgetWon}
+        travelStyleNames={travelStyleNames}
+        // 여기서 들어온 설문만 이전 답을 채웁니다.
+        editTo="/survey?mode=edit"
+      />
 
       {isMultiDay && (
         <DayTabs

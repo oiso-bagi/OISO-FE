@@ -25,6 +25,7 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       sequence: 1,
       dayNumber: 1,
       placeName: "흰여울문화마을",
+      address: "부산광역시 영도구 영선동4가 1044-6",
       category: "관광·포토",
       operatingHours: "09:00-18:00",
       latitude: 35.0785,
@@ -40,6 +41,9 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       sequence: 2,
       dayNumber: 1,
       placeName: "깡깡이 예술마을",
+      // 태그에서 한 줄을 넘는 긴 주소를 확인하는 용도입니다.
+      address:
+        "부산광역시 영도구 대평북로 36 (대평동2가, 깡깡이예술마을 안내센터)",
       category: "문화·체험",
       operatingHours: null,
       latitude: 35.0836,
@@ -55,6 +59,7 @@ const stopsByRouteId: Record<string, RecommendedRouteStop[]> = {
       sequence: 3,
       dayNumber: 1,
       placeName: "남항시장",
+      address: "부산광역시 영도구 남항서로 26-1",
       category: "전통시장",
       operatingHours: "매일 영업",
       latitude: 35.0952,

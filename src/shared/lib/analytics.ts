@@ -75,7 +75,7 @@ const isEnabled = () => GA_MEASUREMENT_ID !== "" && Boolean(window.gtag);
  */
 const ALLOWED_QUERY: Record<string, readonly string[]> = {
   source: ["recommended", "saved"],
-  mode: ["edit"],
+  mode: ["edit", "onboarding"],
 };
 
 const toPagePath = (location: { pathname: string; search: string }) => {
@@ -125,8 +125,15 @@ export const trackEvent = <K extends keyof EventParams>(
 
 const loadGtag = () => {
   window.dataLayer = window.dataLayer ?? [];
-  window.gtag = function gtag(...args: GtagArgs) {
-    window.dataLayer?.push(args);
+
+  /**
+   * 나머지 매개변수(`...args`)로 받으면 안 됩니다. gtag.js 는 `arguments`
+   * 객체로 쌓인 항목만 명령으로 처리하고 배열은 무시해서, 에러 없이 이벤트가
+   * 하나도 전송되지 않습니다.
+   */
+  window.gtag = function gtag() {
+    // oxlint-disable-next-line prefer-rest-params
+    window.dataLayer?.push(arguments);
   };
 
   const script = document.createElement("script");

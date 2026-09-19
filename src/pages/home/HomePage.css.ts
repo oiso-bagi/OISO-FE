@@ -52,6 +52,43 @@ export const bannerTitle = style({
   ...outlined,
 });
 
+/** 로고와 그 왼쪽의 관리자 버튼을 한 묶음으로 오른쪽 끝에 둡니다. */
+export const bannerEnd = style({
+  flexShrink: 0,
+
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+});
+
+/** 관리자에게만 보이는 관리자 페이지 바로가기 */
+export const adminLink = style({
+  padding: "4px 8px 5px",
+
+  fontFamily: vars.font.heading,
+  fontWeight: vars.fontWeight.regular,
+  fontSize: "13px",
+  whiteSpace: "nowrap",
+  textDecoration: "none",
+
+  color: vars.color.ink,
+  backgroundColor: vars.color.cream,
+  border: `2.5px solid ${vars.color.ink}`,
+  boxShadow: `2px 2px 0 0 ${vars.color.ink}`,
+
+  selectors: {
+    // 눌리는 느낌. 그림자만큼 밀어 넣습니다.
+    "&:active": {
+      transform: "translate(2px, 2px)",
+      boxShadow: "none",
+    },
+    "&:focus-visible": {
+      outline: `3px solid ${vars.color.secondary500}`,
+      outlineOffset: "2px",
+    },
+  },
+});
+
 export const bannerLogo = style({
   width: "56px",
   height: "56px",

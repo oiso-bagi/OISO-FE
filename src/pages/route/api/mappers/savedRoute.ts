@@ -31,10 +31,10 @@ const toSavedRouteStop = (
   operatingHours: toOperatingHours(stop.openTime, stop.closeTime),
   latitude: stop.latitude,
   longitude: stop.longitude,
+  address: stop.address,
   transportationFromPrevious: stop.nextTransportType,
   durationFromPreviousMinutes: stop.nextTravelTimeMinutes,
-  // 저장 루트 상세 응답에는 체류 시간이 없습니다.
-  stayMinutes: null,
+  stayMinutes: stop.stayMinutes,
   estimatedPriceWon: stop.estimatedPriceWon,
   touristPremiumWon: stop.touristPremiumWon,
   savedPriceWon: stop.savedPriceWon,

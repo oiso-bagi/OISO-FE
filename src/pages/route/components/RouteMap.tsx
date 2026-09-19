@@ -36,6 +36,18 @@ interface RouteMapProps {
    * null 로 호출합니다.
    */
   onSelectStop?: (sequence: number | null) => void;
+
+  /**
+   * 고른 핀 위에 장소 정보 태그를 띄울지. 끄면 핀 강조만 합니다.
+   * 관리자 코스 미리보기처럼 옆에 경유지 목록이 따로 있는 화면에서 끕니다.
+   */
+  showCallout?: boolean;
+
+  /**
+   * 경로선 모양. 실제 도로 좌표가 없는 초안 코스는 점선으로 그려, 직선이 실제
+   * 이동 경로가 아니라는 걸 드러냅니다.
+   */
+  pathStyle?: "solid" | "dashed";
 }
 
 interface MarkerEntry {
@@ -59,6 +71,21 @@ const toDayStops = (stops: PlottableStop[], dayNumber: number) =>
   stops
     .filter((stop) => stop.dayNumber === dayNumber)
     .sort((a, b) => a.sequence - b.sequence);
+
+/**
+ * 핀 번호. 일차 안에서의 방문 순서입니다.
+ *
+ * 경유지 목록도 같은 번호를 씁니다. 좌표가 없어 핀을 못 그리는 경유지도
+ * 목록에는 있으므로, 번호가 밀리지 않게 그런 경유지까지 세어 매깁니다.
+ */
+const getDayOrder = (
+  stops: RecommendedRouteStop[],
+  target: RecommendedRouteStop,
+) =>
+  stops
+    .filter((stop) => stop.dayNumber === target.dayNumber)
+    .sort((a, b) => a.sequence - b.sequence)
+    .findIndex((stop) => stop.sequence === target.sequence) + 1;
 
 // Polyline 은 CSS 변수를 못 받으므로 디자인 토큰 값을 직접 지정합니다.
 const CASING_COLOR = "#FFFFFF";
@@ -91,6 +118,8 @@ export function RouteMap({
   selectedDay,
   selectedStopSequence = null,
   onSelectStop,
+  showCallout = true,
+  pathStyle = "solid",
 }: RouteMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<kakao.maps.Map | null>(null);
@@ -245,15 +274,15 @@ export function RouteMap({
         strokeWeight: 3.5,
         strokeColor: color,
         strokeOpacity: 1,
-        strokeStyle: "solid",
+        strokeStyle: pathStyle === "dashed" ? "shortdash" : "solid",
       });
       casing.setMap(map);
       line.setMap(map);
       overlaysRef.current.push(casing, line);
 
       // 경유지 순번 마커 — 해당 일차 안에서의 방문 순서로 표시
-      dayStops.forEach((stop, index) => {
-        const markerNumber = index + 1;
+      dayStops.forEach((stop) => {
+        const markerNumber = getDayOrder(stops, stop);
 
         const element = document.createElement("button");
         element.type = "button";
@@ -290,7 +319,7 @@ export function RouteMap({
       bounds.extend(new kakao.maps.LatLng(point.latitude, point.longitude)),
     );
     map.setBounds(bounds);
-  }, [stops, status, selectedDay]);
+  }, [stops, status, selectedDay, pathStyle]);
 
   /**
    * 4) 선택한 경유지의 핀을 강조하고 그 위에 정보 태그를 붙입니다.
@@ -359,6 +388,11 @@ export function RouteMap({
       }
     }
 
+    if (!showCallout) {
+      calloutOverlayRef.current?.setMap(null);
+      return;
+    }
+
     if (calloutOverlayRef.current) {
       calloutOverlayRef.current.setPosition(position);
     } else {
@@ -411,7 +445,14 @@ export function RouteMap({
     }
 
     return () => cancelAnimationFrame(frame);
-  }, [calloutContainer, selectedStopSequence, status, stops, selectedDay]);
+  }, [
+    calloutContainer,
+    selectedStopSequence,
+    status,
+    stops,
+    selectedDay,
+    showCallout,
+  ]);
 
   /** 5) 빈 지도를 누르면 정보를 닫습니다. 핀·태그는 clickable 이라 해당하지 않습니다. */
   useEffect(() => {
@@ -463,15 +504,12 @@ export function RouteMap({
       )}
 
       {status === "ready" &&
+        showCallout &&
         selectedStop &&
         createPortal(
           <StopCallout
             stop={selectedStop}
-            markerNumber={
-              toDayStops(plottableStops, selectedStop.dayNumber).indexOf(
-                selectedStop,
-              ) + 1
-            }
+            markerNumber={getDayOrder(stops, selectedStop)}
             markerColor={getDayColor(selectedStop.dayNumber)}
             isMultiDay={isMultiDay}
             onClose={() => onSelectStop?.(null)}

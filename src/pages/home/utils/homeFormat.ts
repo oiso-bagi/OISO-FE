@@ -1,13 +1,15 @@
+import { toSeoulDateParts } from "@/shared/lib/seoulDate";
+
 /**
- * 저장 날짜 표기. 예: "2026-05-18" → "2026. 5. 18."
- * timezone 영향을 피하려고 Date 파싱 대신 문자열을 직접 나눕니다.
+ * 저장 날짜 표기. 예: "2026-05-18T03:00:00.000Z" → "2026. 5. 18."
+ * 서버 시각은 UTC 라 한국 날짜로 바꿔 표기합니다.
  */
 export const formatSavedDate = (isoDate: string): string => {
-  const [year, month, day] = isoDate.split("T")[0].split("-");
+  const parts = toSeoulDateParts(isoDate);
 
-  if (!year || !month || !day) return "-";
+  if (!parts) return "-";
 
-  return `${year}. ${Number(month)}. ${Number(day)}.`;
+  return `${parts.year}. ${Number(parts.month)}. ${Number(parts.day)}.`;
 };
 
 /**

@@ -736,10 +736,10 @@ export interface SavedRouteDetailResponseDto {
 }
 
 export interface LocalLoginRequestDto {
-  /** 로컬 계정 로그인 아이디 */
+  /** Local account email. */
   email: string;
   /**
-   * 로컬 계정 비밀번호
+   * Local account password.
    * @minLength 8
    */
   password: string;

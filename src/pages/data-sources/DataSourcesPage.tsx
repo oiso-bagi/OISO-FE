@@ -57,6 +57,8 @@ export function DataSourcesPage() {
                   <li key={usage}>{usage}</li>
                 ))}
               </ul>
+
+              <p className={styles.license}>{source.license}</p>
             </li>
           ))}
         </ul>

@@ -154,6 +154,48 @@ export const metaRow = style([
   },
 ]);
 
+/** 흐림 효과가 칸 아래 선까지 지우지 않도록 선은 바깥에서 긋습니다. */
+export const addressRow = style({
+  borderBottom: LINE,
+});
+
+const ADDRESS_FADE =
+  "linear-gradient(to right, #000 calc(100% - 24px), transparent)";
+
+/**
+ * 주소는 한 줄로 두고, 넘치면 옆으로 밀어 봅니다. 태그가 작아 스크롤바는
+ * 숨기고, 뒤에 글자가 더 있을 때만 오른쪽 끝을 흐리게 합니다.
+ */
+export const addressScroller = style([
+  typo.detail1,
+  {
+    padding: "5px 8px",
+
+    fontSize: "12px",
+    whiteSpace: "nowrap",
+
+    overflowX: "auto",
+    overflowY: "hidden",
+    overscrollBehaviorX: "contain",
+    scrollbarWidth: "none",
+
+    selectors: {
+      '&[data-has-more="true"]': {
+        maskImage: ADDRESS_FADE,
+        WebkitMaskImage: ADDRESS_FADE,
+      },
+      "&:focus-visible": {
+        outline: `3px solid ${vars.color.secondary500}`,
+        outlineOffset: "-3px",
+      },
+    },
+  },
+]);
+
+globalStyle(`${addressScroller}::-webkit-scrollbar`, {
+  display: "none",
+});
+
 export const priceRow = style([
   typo.body8,
   {

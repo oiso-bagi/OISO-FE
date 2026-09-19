@@ -58,7 +58,8 @@ export function DashboardPage() {
       />
 
       <div className={`${pageContent} ${styles.content}`}>
-        {(savingsDashboardQuery.isPending || savingsDashboardQuery.isError) && (
+        {/* 다시 불러오기만 실패했으면 이전 기록을 그대로 보여 줍니다. */}
+        {!dashboard && (
           <DashboardStatusCard
             isError={savingsDashboardQuery.isError}
             onRetry={() => savingsDashboardQuery.refetch()}

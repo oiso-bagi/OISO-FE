@@ -4,7 +4,10 @@ import { style } from "@vanilla-extract/css";
 
 /**
  * 앱 전체 레이아웃
- * 최소 대응 너비: 375px
+ * 최소 대응 너비: 360px
+ *
+ * 375px 로 막아 두면 갤럭시 기본 폭(360px)에서 모든 화면이 가로로 15px
+ * 넘치고, 폭 100% 인 고정 하단 네비와도 정렬이 어긋납니다.
  */
 
 /**
@@ -19,7 +22,7 @@ const SCREEN_HEIGHT = "100dvh";
 
 export const appContainer = style({
   width: "100%",
-  minWidth: "375px",
+  minWidth: "360px",
   maxWidth: "430px",
   minHeight: SCREEN_HEIGHT,
 
