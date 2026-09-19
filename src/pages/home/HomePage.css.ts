@@ -61,9 +61,18 @@ export const bannerEnd = style({
   gap: "8px",
 });
 
-/** 관리자에게만 보이는 관리자 페이지 바로가기 */
+/**
+ * 관리자에게만 보이는 관리자 페이지 바로가기.
+ *
+ * 글자가 길면 로고와 함께 오른쪽을 너무 차지해 왼쪽 제목이 두 줄로 밀립니다.
+ * 문구를 줄이고 이동은 화살표로 알립니다.
+ */
 export const adminLink = style({
-  padding: "4px 8px 5px",
+  padding: "4px 7px 5px 8px",
+
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "3px",
 
   fontFamily: vars.font.heading,
   fontWeight: vars.fontWeight.regular,
@@ -87,6 +96,12 @@ export const adminLink = style({
       outlineOffset: "2px",
     },
   },
+});
+
+export const adminLinkIcon = style({
+  width: "10px",
+  height: "10px",
+  flexShrink: 0,
 });
 
 export const bannerLogo = style({

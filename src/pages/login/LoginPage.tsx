@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import { API_BASE_URL } from "@/shared/config/env";
 import { useToast } from "@/shared/components/Toast/toastContext";
@@ -112,6 +112,13 @@ export function LoginPage() {
           <GoogleLogo className={styles.logoSlot} aria-hidden="true" />
           Google로 계속하기
         </button>
+
+        <p className={styles.reviewerHint}>
+          심사위원이신가요?{" "}
+          <Link to="/login/reviewer" className={styles.reviewerLink}>
+            심사용 로그인
+          </Link>
+        </p>
       </section>
 
       <footer className={styles.footer}>

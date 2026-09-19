@@ -1,3 +1,4 @@
+import { FaChevronRight } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
 
 import { useAdminAccess } from "@/pages/admin/lib/useAdminAccess";
@@ -52,8 +53,16 @@ export function HomePage() {
 
         <div className={styles.bannerEnd}>
           {isAdmin && (
-            <Link to="/admin" className={styles.adminLink}>
-              관리자 페이지로 이동
+            <Link
+              to="/admin"
+              className={styles.adminLink}
+              aria-label="관리자 페이지로 이동"
+            >
+              관리자 페이지
+              <FaChevronRight
+                className={styles.adminLinkIcon}
+                aria-hidden="true"
+              />
             </Link>
           )}
           <img

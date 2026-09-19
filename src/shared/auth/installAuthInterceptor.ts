@@ -9,8 +9,14 @@ type RetryableRequestConfig = InternalAxiosRequestConfig & {
   hasRetriedAfterRefresh?: boolean;
 };
 
-const isRefreshRequest = (url: string | undefined) =>
-  url?.endsWith("/auth/refresh") ?? false;
+/**
+ * 401 을 받아도 토큰 재발급을 시도하지 않는 요청.
+ *
+ * 로그인 요청의 401 은 아이디·비밀번호가 틀렸다는 뜻이라 재발급해도 소용없고,
+ * 재발급 실패로 로그인 화면에 튕겨 나가면 오류 문구를 보여줄 수 없습니다.
+ */
+const isAuthRequest = (url: string | undefined) =>
+  (url?.endsWith("/auth/refresh") || url?.endsWith("/auth/login")) ?? false;
 
 const redirectToLogin = () => {
   if (window.location.pathname !== "/login") {
@@ -29,7 +35,7 @@ export const installAuthInterceptor = () => {
       const originalRequest = error.config as
         RetryableRequestConfig | undefined;
 
-      if (!originalRequest || isRefreshRequest(originalRequest.url)) {
+      if (!originalRequest || isAuthRequest(originalRequest.url)) {
         throw error;
       }
 

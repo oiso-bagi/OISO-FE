@@ -9,6 +9,7 @@ import { HomePage } from "@/pages/home/HomePage";
 import { RoutePage } from "@/pages/route/RoutePage";
 import { SavedRoutePage } from "@/pages/route/SavedRoutePage";
 import { LoginPage } from "@/pages/login/LoginPage";
+import { ReviewerLoginPage } from "@/pages/login/ReviewerLoginPage";
 import { TermsPage } from "@/pages/login/TermsPage";
 import { AuthCallbackPage } from "@/pages/login/AuthCallbackPage";
 import { SurveyPage } from "@/pages/survey/SurveyPage";
@@ -52,6 +53,11 @@ export const router = createBrowserRouter([
       {
         path: "/login",
         element: <LoginPage />,
+      },
+      {
+        // 공모전 심사위원 전용 아이디·비밀번호 로그인
+        path: "/login/reviewer",
+        element: <ReviewerLoginPage />,
       },
       {
         path: "/consents/*",
