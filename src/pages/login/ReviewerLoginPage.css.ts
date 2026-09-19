@@ -43,9 +43,13 @@ export const input = style([
       "&::placeholder": {
         color: vars.color.neutral500,
       },
+      /**
+       * 바깥에 따로 테두리를 두르면 그림자까지 겹쳐 선이 세 겹이 됩니다.
+       * 입력칸 자기 테두리를 핑크로 바꿔 박스 크기 그대로 표시합니다.
+       */
       "&:focus-visible": {
-        outline: `3px solid ${vars.color.secondary500}`,
-        outlineOffset: "3px",
+        outline: "none",
+        borderColor: vars.color.secondary500,
       },
     },
   },

@@ -67,7 +67,7 @@ export function ReviewerLoginPage() {
     setErrorMessage(null);
 
     // 필드 이름만 `email` 이고 백엔드는 로그인 아이디를 받습니다. 공모전 양식의
-    // 심사용 계정이 이메일이 아닌 아이디(`openapi`)라 입력칸도 아이디로 둡니다.
+    // 심사용 계정이 이메일이 아닌 아이디 형식이라 입력칸도 아이디로 둡니다.
     loginMutation.mutate({ email: trimmedLoginId, password });
   };
 
