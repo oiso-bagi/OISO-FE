@@ -6,10 +6,38 @@ import type {
 import { clearAccessToken, setAccessToken } from "@/shared/auth/accessToken";
 
 import { getErrorStatus } from "./apiError";
+import { apiClient } from "./client";
 import { http } from "./http";
 
 let refreshPromise: Promise<AuthTokenResponseDto> | null = null;
 let restoreSessionPromise: Promise<boolean> | null = null;
+
+const LOCAL_LOGIN_PATH = "/auth/login";
+
+/** 내 컴퓨터 안에서만 오가는 주소. 개발 서버처럼 평문이어도 밖으로 나가지 않습니다. */
+const LOOPBACK_HOSTNAMES = new Set(["localhost", "127.0.0.1", "[::1]"]);
+
+/**
+ * 비밀번호를 보내기 전에 요청이 암호화된 연결로만 나가는지 확인합니다.
+ *
+ * - 요청 주소: `API_BASE_URL` 은 절대 주소일 수도, 배포처럼 `/api/v1` 같은
+ *   상대 주소일 수도 있어 페이지 주소를 기준으로 풀어서 봅니다.
+ * - 리디렉션: 브라우저 XHR 은 리디렉션을 따라가는 걸 막을 수 없습니다. 대신
+ *   페이지가 안전한 컨텍스트(HTTPS)면 브라우저가 HTTP 로 내려가는 리디렉션을
+ *   혼합 콘텐츠로 막으므로, 페이지도 함께 확인합니다.
+ */
+const assertSecureLocalLogin = () => {
+  const url = new URL(
+    apiClient.getUri({ url: LOCAL_LOGIN_PATH }),
+    window.location.href,
+  );
+  const isSecureUrl =
+    url.protocol === "https:" || LOOPBACK_HOSTNAMES.has(url.hostname);
+
+  if (!window.isSecureContext || !isSecureUrl) {
+    throw new Error("비밀번호는 HTTPS 연결로만 보낼 수 있습니다.");
+  }
+};
 
 export const getAuthSession = () => {
   return http.get<AuthSessionResponseDto>("/auth/session");
@@ -22,11 +50,16 @@ export const postLogout = () => {
 /**
  * 아이디·비밀번호 로그인. 심사위원 전용 계정에만 씁니다(회원가입 없음).
  *
+ * 요청 필드 이름은 `email` 이지만, 백엔드는 이메일이 아닌 로그인 아이디도
+ * 받습니다(Swagger 설명: "로컬 계정 로그인 아이디").
+ *
  * 성공하면 서버가 refresh token 쿠키도 함께 심어 줍니다.
  */
 export const postLocalLogin = async (loginRequest: LocalLoginRequestDto) => {
+  assertSecureLocalLogin();
+
   const tokenResponse = await http.post<AuthTokenResponseDto>(
-    "/auth/login",
+    LOCAL_LOGIN_PATH,
     loginRequest,
   );
 
