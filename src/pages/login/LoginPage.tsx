@@ -96,9 +96,6 @@ export function LoginPage() {
       </section>
 
       <section className={styles.actions} aria-label="로그인 방법">
-        <Link to="/login/reviewer" className={styles.reviewerButton}>
-          심사위원으로 시작하기
-        </Link>
         <button
           type="button"
           className={styles.kakaoButton}
@@ -115,6 +112,13 @@ export function LoginPage() {
           <GoogleLogo className={styles.logoSlot} aria-hidden="true" />
           Google로 계속하기
         </button>
+
+        <p className={styles.reviewerHint}>
+          심사위원이신가요?{" "}
+          <Link to="/login/reviewer" className={styles.reviewerLink}>
+            심사용 로그인
+          </Link>
+        </p>
       </section>
 
       <footer className={styles.footer}>

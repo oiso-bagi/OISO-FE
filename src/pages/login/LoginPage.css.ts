@@ -97,6 +97,10 @@ export const savingsAmount = style({
 export const actions = style({
   // 위 영역과 버튼 사이를 벌려 버튼을 화면 아래쪽에 붙입니다.
   marginTop: "auto",
+
+  // 화면이 짧아 남는 공간이 없으면 `auto` 가 0 이 되어 버튼이 절약액 띠에
+  // 붙습니다. 그때도 이만큼은 띄웁니다.
+  paddingTop: "24px",
   paddingInline: "24px",
 
   display: "flex",
@@ -131,17 +135,45 @@ const loginButton = style([
   },
 ]);
 
-export const reviewerButton = style([
-  loginButton,
-  { backgroundColor: vars.color.primary300 },
-]);
-
 export const kakaoButton = style([loginButton, { backgroundColor: "#FEE500" }]);
 
 export const googleButton = style([
   loginButton,
   { backgroundColor: vars.color.white },
 ]);
+
+/**
+ * 심사위원 전용 로그인으로 가는 링크.
+ *
+ * 일반 사용자에게는 로그인 버튼만큼 클 필요가 없어 글씨로 두되, 심사위원이
+ * 바로 찾도록 누르는 부분만 서비스 핑크로 칠합니다.
+ */
+export const reviewerHint = style([
+  body3,
+  {
+    color: vars.color.black,
+    textAlign: "center",
+  },
+]);
+
+export const reviewerLink = style({
+  // 글씨만 있어도 누르기 쉽게 위아래로 터치 영역을 넓힙니다.
+  display: "inline-block",
+  paddingBlock: "6px",
+
+  fontWeight: vars.fontWeight.bold,
+  color: vars.color.secondary500,
+  textDecoration: "underline",
+  textDecorationThickness: "2px",
+  textUnderlineOffset: "4px",
+
+  selectors: {
+    "&:focus-visible": {
+      outline: `3px solid ${vars.color.secondary500}`,
+      outlineOffset: "2px",
+    },
+  },
+});
 
 export const logoSlot = style({
   width: "20px",
