@@ -1,5 +1,6 @@
 import { style } from "@vanilla-extract/css";
 
+import { BOTTOM_NAV_TOTAL_HEIGHT } from "@/shared/styles/bottomNavigationSize";
 import { vars } from "@/shared/styles/theme.css";
 import { typographyStyles } from "@/shared/styles/typography";
 
@@ -69,17 +70,32 @@ export const section = style({
 
 export const sectionTitle = style([typographyStyles.largeBody2]);
 
+export const sectionDescription = style([
+  typographyStyles.body9,
+  {
+    marginTop: vars.space.xxs,
+    color: vars.color.neutral500,
+  },
+]);
+
 export const categoryGrid = style({
   marginTop: vars.space.sm,
   display: "grid",
   gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-  gap: vars.space.sm,
+  gap: vars.space.xs,
 });
 
 export const categoryCard = style({
   minWidth: 0,
-  minHeight: "70px",
+  minHeight: "128px",
   padding: vars.space.sm,
+
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: vars.space.xs,
+
   border: `2.5px solid ${vars.color.black}`,
   boxShadow: `4px 4px 0 ${vars.color.black}`,
   backgroundColor: vars.color.white,
@@ -89,16 +105,53 @@ export const categoryLabel = style([
   typographyStyles.body7,
   {
     color: vars.color.neutral500,
+    textAlign: "center",
   },
 ]);
 
-export const categoryAmount = style([
+export const categoryRate = style({
+  margin: 0,
+});
+
+export const categoryRateChart = style({
+  position: "relative",
+  width: "clamp(64px, 20vw, 84px)",
+  aspectRatio: "1",
+});
+
+export const categoryRateChartSvg = style({
+  width: "100%",
+  height: "100%",
+  display: "block",
+});
+
+export const categoryRateTrack = style({
+  fill: "none",
+  stroke: vars.color.neutral100,
+  strokeWidth: 10,
+});
+
+export const categoryRateProgress = style({
+  fill: "none",
+  stroke: vars.color.secondary500,
+  strokeWidth: 10,
+  strokeLinecap: "round",
+  transform: "rotate(-90deg)",
+  transformOrigin: "center",
+  transition: "stroke-dasharray 240ms ease",
+});
+
+export const categoryPercent = style([
   typographyStyles.largeBody2,
   {
-    margin: `${vars.space.xxs} 0 0`,
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
+    position: "absolute",
+    inset: 0,
+
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+
+    color: vars.color.black,
   },
 ]);
 
@@ -256,7 +309,7 @@ export const historyLoadMoreRetryButton = style([
 export const scrollToTopButton = style({
   position: "fixed",
   right: "max(16px, calc((100vw - 430px) / 2 + 16px))",
-  bottom: "calc(88px + env(safe-area-inset-bottom, 0px))",
+  bottom: `calc(${BOTTOM_NAV_TOTAL_HEIGHT} + ${vars.space.md})`,
   zIndex: 90,
 
   width: "48px",

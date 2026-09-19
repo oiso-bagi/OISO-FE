@@ -237,6 +237,11 @@ export interface RouteStopResponseDto {
    */
   placeName: string;
   /**
+   * 장소 주소 (도로명 주소 우선, 없으면 지번 주소, 둘 다 없으면 null)
+   * @example "부산광역시 해운대구 우동 123"
+   */
+  address: string | null;
+  /**
    * 장소 카테고리 (FOOD: 식당 | CAFE: 카페 | MARKET: 전통시장 | CULTURE: 문화 | NATURE: 자연 | EXPERIENCE: 체험 | VIEWPOINT: 전망대 | ETC: 기타)
    * @example "NATURE"
    */
@@ -271,7 +276,7 @@ export interface RouteStopResponseDto {
    */
   longitude: number | null;
   /**
-   * 다음 경유지까지 이동 수단
+   * 이전 경유지부터 현재 경유지까지의 이동 수단
    * @example "BUS"
    */
   nextTransportType:
@@ -283,7 +288,7 @@ export interface RouteStopResponseDto {
     | "BIKING"
     | null;
   /**
-   * 다음 경유지까지 예상 이동 시간(분)
+   * 이전 경유지부터 현재 경유지까지의 예상 이동 시간(분)
    * @example 15
    */
   nextTravelTimeMinutes: number | null;
@@ -365,6 +370,11 @@ export interface RecommendedRouteDetailResponseDto {
    * @example 87.5
    */
   recommendScore: number;
+  /**
+   * 로컬(외곽·원도심 상권) 기여 지수 점수 (0~100)
+   * @example 65
+   */
+  localContributionScore: number;
   /**
    * 추천 루트 여부
    * @example true
@@ -482,6 +492,14 @@ export interface CreateSavedRouteDto {
   routeId: string;
 }
 
+export interface SaveRouteResponseDto {
+  /**
+   * 새로운 보관함 저장 생성 여부 (신규 저장 시 true, 이미 저장되어 있어 중복 생성 없는 경우 false)
+   * @example true
+   */
+  created: boolean;
+}
+
 export interface ToggleSavedRouteCompletionDto {
   /**
    * 여행 완료 여부 (true: 여행 완료 ON, false: 미완료 OFF)
@@ -535,6 +553,11 @@ export interface SavedRouteStopDetailDto {
    */
   placeName: string;
   /**
+   * 장소 주소 (도로명 주소 우선, 없으면 지번 주소, 둘 다 없으면 null)
+   * @example "부산광역시 수영구 광안해변로 219"
+   */
+  address: string | null;
+  /**
    * 장소 카테고리 (FOOD: 식당 | CAFE: 카페 | MARKET: 전통시장 | CULTURE: 문화 | NATURE: 자연 | EXPERIENCE: 체험 | VIEWPOINT: 전망대 | ETC: 기타)
    * @example "NATURE"
    */
@@ -559,7 +582,7 @@ export interface SavedRouteStopDetailDto {
    */
   closeTime: string | null;
   /**
-   * 다음 경유지까지 이동 수단
+   * 이전 경유지부터 현재 경유지까지의 이동 수단
    * @example "BUS"
    */
   nextTransportType:
@@ -571,10 +594,15 @@ export interface SavedRouteStopDetailDto {
     | "BIKING"
     | null;
   /**
-   * 다음 경유지까지 예상 이동 시간(분)
+   * 이전 경유지부터 현재 경유지까지의 예상 이동 시간(분)
    * @example 15
    */
   nextTravelTimeMinutes: number | null;
+  /**
+   * 장소 체류 소요 시간(분)
+   * @example 60
+   */
+  stayMinutes: number | null;
   /**
    * 구간 교통비(원)
    * @example 1500
@@ -698,8 +726,36 @@ export interface SavedRouteDetailResponseDto {
    * @example 15000
    */
   estimatedSavingsWon: number;
+  /**
+   * 로컬(외곽·원도심 상권) 기여 지수 점수 (0~100)
+   * @example 65
+   */
+  localContributionScore: number;
   /** 저장 루트 경유지 상세 목록 */
   stops: SavedRouteStopDetailDto[];
+}
+
+export interface LocalLoginRequestDto {
+  /** 로컬 계정 로그인 아이디 */
+  email: string;
+  /**
+   * 로컬 계정 비밀번호
+   * @minLength 8
+   */
+  password: string;
+}
+
+export interface AuthTokenResponseDto {
+  /**
+   * 재발급된 액세스 토큰
+   * @example "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+   */
+  accessToken: string;
+  /**
+   * 토큰 타입
+   * @example "Bearer"
+   */
+  tokenType: string;
 }
 
 export interface CurrentUserResponseDto {
@@ -728,19 +784,6 @@ export interface CurrentUserResponseDto {
    * @example "USER"
    */
   role: "USER" | "ADMIN";
-}
-
-export interface AuthTokenResponseDto {
-  /**
-   * 재발급된 액세스 토큰
-   * @example "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-   */
-  accessToken: string;
-  /**
-   * 토큰 타입
-   * @example "Bearer"
-   */
-  tokenType: string;
 }
 
 export interface AuthSessionResponseDto {
@@ -958,10 +1001,10 @@ export interface SavingsCategoryDto {
    */
   label: string;
   /**
-   * 카테고리별 절약 금액(원)
-   * @example 12000
+   * 관광지 대비 절약률(%)
+   * @example 35
    */
-  amountWon: number;
+  savingRatePercent: number;
 }
 
 export interface LocalContributionDto {
@@ -1022,12 +1065,37 @@ export interface SavingsDashboardResponseDto {
    * @example 16000
    */
   averageSavingsWon: number;
-  /** 카테고리별 절약 금액 목록 */
+  /** 카테고리별 절약률(%) 목록 */
   savingsByCategory: SavingsCategoryDto[];
   /** 지역 기여 정보 */
   localContribution: LocalContributionDto;
   /** 최근 완료 여행 절약 내역 */
   histories: SavingsHistoryDto[];
+}
+
+export interface SavingsHistoriesPageResponseDto {
+  /** Savings history items. */
+  items: SavingsHistoryDto[];
+  /**
+   * Current page number. Starts from 1.
+   * @example 1
+   */
+  page: number;
+  /**
+   * Number of items per page.
+   * @example 10
+   */
+  size: number;
+  /**
+   * Total number of savings histories.
+   * @example 25
+   */
+  totalCount: number;
+  /**
+   * Total number of pages.
+   * @example 3
+   */
+  totalPages: number;
 }
 
 export interface SavedRouteSummaryItemDto {
@@ -1482,7 +1550,7 @@ export interface AdminStatsOverviewResponseDto {
    */
   totalSavingsCostWon: number;
   /**
-   * 누적 관광지 대비 원도심 절약액 평균 (0~100점)
+   * 누적 로컬 기여 지수 평균 (0~100점)
    * @example 78.4
    */
   averageLocalContributionScore: number;
@@ -1612,6 +1680,145 @@ export interface AdminKtoCollectResponseDto {
    * @example 0
    */
   failureCount: number;
+}
+
+export interface AdminKtoPlaceStatusResponseDto {
+  /**
+   * 오늘 관광지 마스터 KTO API 호출 사용량 (쿼터 1,000건 한도)
+   * @example 6
+   */
+  dailyApiUsage: number;
+  /**
+   * 일일 최대 허용 쿼터 수
+   * @example 1000
+   */
+  dailyQuotaLimit: number;
+  /**
+   * 마지막 수집 성공 일시
+   * @example "2026-08-17T05:00:00.000Z"
+   */
+  lastCollectedAt: object | null;
+  /**
+   * 현재 수집 작업 상태 (IDLE | RUNNING)
+   * @example "IDLE"
+   */
+  status: string;
+  /**
+   * 마지막 수집 실행 결과 상태 (SUCCESS | PARTIAL_SUCCESS | FAILURE)
+   * @example "SUCCESS"
+   */
+  lastResult: "SUCCESS" | "PARTIAL_SUCCESS" | "FAILURE" | null;
+  /**
+   * 마지막 수집 실행 결과 메시지
+   * @example "한국관광공사 관광지 마스터 수동 수집이 성공적으로 완료되었습니다."
+   */
+  lastMessage: object | null;
+  /**
+   * 전체 부산 등록 장소 수
+   * @example 450
+   */
+  totalPlaceCount: number;
+}
+
+export interface AdminKtoPlaceCollectResponseDto {
+  /**
+   * 수동 수집 실행 결과 메시지
+   * @example "한국관광공사 관광지 마스터 수동 수집이 성공적으로 완료되었습니다."
+   */
+  message: string;
+  /**
+   * 수집 실행 완료 일시
+   * @format date-time
+   * @example "2026-08-17T05:30:00.000Z"
+   */
+  collectedAt: string;
+  /**
+   * 갱신된 장소 건수
+   * @example 120
+   */
+  updatedPlaceCount: number;
+  /**
+   * 갱신 실패한 장소 건수
+   * @example 0
+   */
+  failureCount: number;
+  /**
+   * API 호출 건수
+   * @example 6
+   */
+  apiCallCount: number;
+}
+
+export interface AdminKtoRelatedStatusResponseDto {
+  /**
+   * 오늘 연관관광지 KTO API 호출 사용량 (쿼터 1,000건 한도)
+   * @example 1
+   */
+  dailyApiUsage: number;
+  /**
+   * 일일 최대 허용 쿼터 수
+   * @example 1000
+   */
+  dailyQuotaLimit: number;
+  /**
+   * 마지막 수집 성공 일시
+   * @example "2026-08-17T08:00:00.000Z"
+   */
+  lastCollectedAt: object | null;
+  /**
+   * 현재 수집 작업 상태 (IDLE | RUNNING)
+   * @example "IDLE"
+   */
+  status: string;
+  /**
+   * 마지막 수집 실행 결과 상태 (SUCCESS | PARTIAL_SUCCESS | FAILURE)
+   * @example "SUCCESS"
+   */
+  lastResult: "SUCCESS" | "PARTIAL_SUCCESS" | "FAILURE" | null;
+  /**
+   * 마지막 수집 실행 결과 메시지
+   * @example "한국관광공사 연관관광지 수동 수집이 성공적으로 완료되었습니다."
+   */
+  lastMessage: object | null;
+  /**
+   * DB 매칭 연관 관광지 수
+   * @example 45
+   */
+  matchedPlaceCount: number;
+}
+
+export interface AdminKtoRelatedCollectResponseDto {
+  /**
+   * 수동 수집 실행 결과 메시지
+   * @example "한국관광공사 연관관광지 수동 수집이 성공적으로 완료되었습니다."
+   */
+  message: string;
+  /**
+   * 수집 실행 완료 일시
+   * @format date-time
+   * @example "2026-08-17T08:05:00.000Z"
+   */
+  collectedAt: string;
+  /**
+   * 수집된 연관 관광지 건수
+   * @example 50
+   */
+  collectedCount: number;
+  /**
+   * DB에 매칭되어 갱신된 장소 건수
+   * @example 45
+   */
+  matchedPlaceCount: number;
+  /**
+   * 수집 실패 건수
+   * @example 0
+   */
+  failureCount: number;
+  /**
+   * API 호출 건수
+   * @example 1
+   */
+  apiCallCount: number;
 }
 
 export interface AdminUserListItemDto {
